@@ -62,6 +62,7 @@ public class SocioRepository{
                 rs.getBoolean("patronembarcacion"),
                 rs.getInt("inscriptionid"),
                 rs.getInt("familiaid"),
+                // maybe tenemos que hacer algo si familiaID es null?
                 FamiliaType.valueOf(rs.getString("relacionfamiliar"))
                 );
               };
