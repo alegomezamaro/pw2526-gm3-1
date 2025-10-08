@@ -10,15 +10,23 @@ import es.uco.pw.demo.model.Student;
 import es.uco.pw.demo.model.StudentRepository;
 import es.uco.pw.demo.model.StudentType;
 
+import es.uco.pw.demo.model.Socio;
+import es.uco.pw.demo.model.SocioRepository;
+
 @Controller
 public class HomeController {
 
     StudentRepository studentRepository;
+    SocioRepository socioRepository;
         
-    public HomeController(StudentRepository studentRepository){
+    public HomeController(StudentRepository studentRepository,
+                          SocioRepository socioRepository) {
         this.studentRepository = studentRepository;
+        this.socioRepository = socioRepository;
+
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         this.studentRepository.setSQLQueriesFileName(sqlQueriesFileName);
+        this.socioRepository.setSQLQueriesFileName(sqlQueriesFileName);
     }
 
     @GetMapping("/")
@@ -59,6 +67,30 @@ public class HomeController {
         // Count students by type
         int numberOfPartialStudents = studentRepository.getNumberStudentsByType(StudentType.PARTIAL_TIME);
         System.out.println("Number of partial-time students: " + numberOfPartialStudents);
+
+
+        LocalDate birth = LocalDate.of(1999, 3, 21);
+        LocalDate inscription = LocalDate.now();
+
+        // Ajusta al constructor real que tengas en tu Socio.java
+        Socio socio = new Socio(
+            12345678,           // dni
+            "Ana",                 // name
+            "López",               // surname
+            birth,                 // birthDate
+            inscription,           // inscriptionDate
+            "C/ Real 1",           // address
+            true,                  // patronEmbarcacion
+            null                   // inscriptionId (null si aún no vinculado)
+        );
+
+        // Guarda / actualiza
+        socioRepository.addSocio(socio);
+
+        // Lista todos
+        var socios = socioRepository.findAllSocios();
+        System.out.println("[HomeController] Socios in memory: " + socios.size());
+
 
         return new String("home");
     }

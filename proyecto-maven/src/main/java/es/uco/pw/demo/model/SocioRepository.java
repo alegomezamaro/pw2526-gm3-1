@@ -16,13 +16,13 @@ import java.util.List;
 import java.util.Properties;
 
 @Repository
-public class StudentRepository {
-    
+public class SocioRepository{
+
     private JdbcTemplate jdbcTemplate;
     private Properties sqlQueries;
     private String sqlQueriesFileName;
 
-    public StudentRepository(JdbcTemplate jdbcTemplate){
+    public SocioRepository(JdbcTemplate jdbcTemplate){
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -31,171 +31,80 @@ public class StudentRepository {
         createProperties();
     }
 
-    public List<Student> findAllStudents(){
-        try{
-            //String query = "SELECT id, name, surname, birthDate, type FROM Student;";
-            String query = sqlQueries.getProperty("select-findAllStudents");
-            if(query != null){
-                List<Student> result = jdbcTemplate.query(query, new RowMapper<Student>(){
-                public Student mapRow(ResultSet rs, int rowNumber) throws SQLException{
-                    return new Student(
-                        rs.getInt("dni"),
-                        rs.getString("name"),
-                        rs.getString("surname"),
-                        rs.getString("direction"),
-                        rs.getBoolean("patronembarcacion"),
-                        rs.getInteger("cuota"),
-                        Date.valueOf(rs.getString("inscriptiondate")).toLocalDate(),
-                        Date.valueOf(rs.getString("birthdate")).toLocalDate();
-                    };
-                });
-                return result;
-            }
-            else
-                return null;
-        }catch(DataAccessException exception){
-            System.err.println("Unable to find students");
-            exception.printStackTrace();
-            return null;
-        }
-    }
-
-    public Student findStudentById(int id){
-        try{
-            //String query = "SELECT id, name, surname, birthDate, type FROM Student WHERE id=?;";
-            String query = sqlQueries.getProperty("select-findStudentById");
-            Student result = jdbcTemplate.query(query, this::mapRowToStudent, id);
-            if (result != null)
-                return result;
-            else
-                return null;
-        }catch(DataAccessException exception){
-            System.err.println("Unable to find student with id=" + id);
-            exception.printStackTrace();
-            return null;
-        }
-    }
-            
-    private Student mapRowToStudent(ResultSet row){
-        try{
-            if(row.first()){
-                int id = row.getInt("id");
-                String name = row.getString("name");
-                String surname = row.getString("surname");
-                Date birthDateInTable = Date.valueOf(row.getString("birthdate"));
-                StudentType type = StudentType.valueOf(row.getString("type"));
-
-                Student student = new Student(id, name, surname, birthDateInTable.toLocalDate(), type);
-                return student;
-            }
-            else{
-                return null;
-            }
-                       
-        } catch (SQLException exception) {
-            System.err.println("Unable to retrieve results from the database");
-            exception.printStackTrace();
-            return null;
-        }
-    }
-
-    public List<Student> findStudentsByCuota(int cuota){
-        try{
-            //String query = "SELECT id, name, surname, birthDate FROM Student WHERE type=?;";
-            String query = sqlQueries.getProperty("select-findStudentByType");
-            if(query != null){
-                List<Student> result = jdbcTemplate.query(query, new RowMapper<Student>(){
-                public Student mapRow(ResultSet rs, int rowNumber) throws SQLException{
-                    return new Student(
-                        rs.getInt("dni"),
-                        rs.getString("name"),
-                        rs.getString("surname"),
-                        rs.getString("direction"),
-                        rs.getBoolean("patronembarcacion"),
-                        rs.getInteger("cuota"),
-                        Date.valueOf(rs.getString("inscriptiondate")).toLocalDate(),
-                        Date.valueOf(rs.getString("birthdate")).toLocalDate(),
-                        cuota);
-                    };
-                }, type.toString());
-                return result;
-                // MIRAR
-            }
-            else
-                return null;    
-        }catch(DataAccessException exception){
-            System.err.println("Unable to find student with type=" + type.toString());
-            exception.printStackTrace();
-            return null;
-        }
-    }
-
-    public int getNumberStudentsByType(StudentType type){
-        //String query = "SELECT id, name, surname, birthDate FROM Student WHERE type=?;";
-        String query = sqlQueries.getProperty("select-findStudentByType");
-        if(query != null){
-            try{
-                int result = jdbcTemplate.query(query, this::countRowsStudentType, type.toString());
-                return result;
-            }catch(DataAccessException exception){
-                System.err.println("Unable to find student with type=" + type.toString());
-                exception.printStackTrace();
-                return -1;
-            }
-        }
-        else
-         return -1;
-    }
-
-    private int countRowsStudentType(ResultSet row){
-        try{
-            int numberOfStudents = 0;
-            while(row.next()){
-                numberOfStudents++;
-            }
-            return numberOfStudents;                   
-        } catch (SQLException exception) {
-            System.err.println("Unable to retrieve results from the database");
-            exception.printStackTrace();
-            return -1;
-        }
-    }
-
-    public boolean addStudent(Student student){
-        try{
-            //String query = "INSERT INTO Student (id, name, surname, birthDate, type) VALUES (?, ?, ?, ?, ?);";
-            String query = sqlQueries.getProperty("insert-addStudent");
-            if(query != null){
-                int result = jdbcTemplate.update(query, 
-                student.getId(),
-                student.getName(),
-                student.getSurname(),
-                student.getBirthDate().toString(),
-                student.getType().toString());
-                if (result>0)
-                    return true;
-                else
-                    return false;
-            }
-            else
-                return false;
-            } catch(DataAccessException exception){
-                System.err.println("Unable to insert student in the database");
-                exception.printStackTrace();
-            return false;
-        }
-    }
-
     private void createProperties(){
         sqlQueries = new Properties();
-        try {
+        try{
             BufferedReader reader;
             File f = new File(sqlQueriesFileName);
             reader = new BufferedReader(new FileReader(f));
             sqlQueries.load(reader);
-        } catch (IOException e) {
-            System.err.println("Error creating properties object for SQL queries");
+        }
+        catch (IOException e){
+            System.err.println("Error creating properties object for SQL Queries");
             e.printStackTrace();
         }
     }
+
+    public List<Socio> findAllSocios(){
+      try{
+        String query = sqlQueries.getProperty("select-findAllSocios");
+        if(query != null){
+
+          List<Socio> socios = jdbcTemplate.query(query, new RowMapper<Socio>(){
+            public Socio mapRow(ResultSet rs, int rowNumber) throws SQLException{
+              return new Socio(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getString("surname"),
+                Date.valueOf(rs.getString("birthdate")).toLocalDate(),
+                Date.valueOf(rs.getString("inscriptiondate")).toLocalDate(),
+                rs.getString("address"),
+                rs.getBoolean("patronembarcacion"),
+                rs.getInt("inscriptionid"),
+                rs.getInt("familiaid"),
+                FamiliaType.valueOf(rs.getString("relacionfamiliar"))
+                );
+              };
+            });
+            return socios;
+        }
+        else return null;
+      }
+      catch(DataAccessException e){
+        System.err.println("Unable to find socios");
+        e.printStackTrace();
+        return null;
+      }
+    }
+
+    public boolean addSocio(Socio socio){
+      try{
+        String query = sqlQueries.getProperty("insert-addSocio");
+        if(query != null){
+
+          int result = jdbcTemplate.update(query,
+            socio.getDni(),
+            socio.getName(),
+            socio.getSurname(),
+            socio.getBirthDate().toString(),
+            socio.getInscriptionDate().toString(),
+            socio.getAddress(),
+            socio.isPatronEmbarcacion(),
+            socio.getInscriptionId(),
+            socio.getFamiliaId(),
+            socio.getRelacionFamiliar()
+          );
+          if(result>0) return true;
+          else return false;
+
+        }
+        else return false;
+      }
+      catch(DataAccessException e){
+        System.err.println("Unable to insert socio into the db");
+        e.printStackTrace();
+        return false;
+      }
+    }
+
 }
