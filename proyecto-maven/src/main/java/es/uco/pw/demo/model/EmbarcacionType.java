@@ -1,5 +1,5 @@
 package es.uco.pw.demo.model;
 
-public class EmbarcacionType {
-  
+public enum  EmbarcacionType {
+  VELERO, YATE, CATAMARAN, LANCHA;
 }
