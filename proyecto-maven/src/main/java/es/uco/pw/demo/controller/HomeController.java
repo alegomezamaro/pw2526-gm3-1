@@ -10,8 +10,28 @@ import es.uco.pw.demo.model.Student;
 import es.uco.pw.demo.model.StudentRepository;
 import es.uco.pw.demo.model.StudentType;
 
-import es.uco.pw.demo.model.Socio;
+import es.uco.pw.demo.model.Socio; 
 import es.uco.pw.demo.model.SocioRepository;
+
+import es.uco.pw.demo.model.Alquiler; 
+import es.uco.pw.demo.model.AlquilerRepository;
+
+import es.uco.pw.demo.model.Embarcacion; 
+import es.uco.pw.demo.model.EmbarcacionRepository;
+import es.uco.pw.demo.model.EmbarcacionType;
+
+import es.uco.pw.demo.model.Familia; 
+import es.uco.pw.demo.model.FamiliaRepository;
+
+import es.uco.pw.demo.model.Inscripcion; 
+import es.uco.pw.demo.model.InscripcionRepository;
+import es.uco.pw.demo.model.InscripcionType;
+
+import es.uco.pw.demo.model.Patron; 
+import es.uco.pw.demo.model.PatronRepository;
+
+import es.uco.pw.demo.model.Reserva; 
+import es.uco.pw.demo.model.ReservaRepository;
 
 @Controller
 public class HomeController {
