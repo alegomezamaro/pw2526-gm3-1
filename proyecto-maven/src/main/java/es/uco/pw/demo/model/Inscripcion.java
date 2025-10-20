@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class Inscripcion {
   
   private Integer id;
-  private InscriptionType type;
+  private InscripcionType type;
   private Integer yearFee;
   private Integer socioTitular;
   private LocalDate date;
@@ -17,7 +17,7 @@ public class Inscripcion {
       return id;
   }
 
-  public InscriptionType getType() {
+  public InscripcionType getType() {
       return type;
   }
 
@@ -41,7 +41,7 @@ public class Inscripcion {
       this.id = id;
   }
 
-  public void setType(InscriptionType type) {
+  public void setType(InscripcionType type) {
       this.type = type;
   }
 

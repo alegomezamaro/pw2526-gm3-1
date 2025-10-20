@@ -55,7 +55,7 @@ public class InscripcionRepository {
                         ins.setId(rs.getInt("id"));
                         String typeStr = rs.getString("type");
                         if (typeStr != null) {
-                            ins.setType(InscriptionType.valueOf(typeStr));
+                            ins.setType(InscripcionType.valueOf(typeStr));
                         }
                         ins.setYearFee(rs.getInt("yearfee"));
                         ins.setSocioTitular(rs.getInt("sociotitular"));
