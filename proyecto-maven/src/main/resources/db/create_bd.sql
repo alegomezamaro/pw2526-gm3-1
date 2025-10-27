@@ -3,13 +3,6 @@
 -- Solo creación de tablas e inserción de datos
 -- =========================================================
 
--- Crear base de datos
--- DROP DATABASE IF EXISTS club_nautico;
--- CREATE DATABASE club_nautico
---   DEFAULT CHARACTER SET utf8
---   DEFAULT COLLATE utf8_unicode_ci;
--- USE club_nautico;
-
 -- =========================================================
 -- Tabla: Socio
 -- =========================================================
@@ -25,6 +18,8 @@ CREATE TABLE Socio (
   inscriptionId INT DEFAULT NULL,
   PRIMARY KEY (dni)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ADD FOREIGN KEY (inscriptionId) REFERENCES Inscripcion(id);
 
 INSERT INTO Socio VALUES
 (12345678, 'Ana', 'López García', 'Av. del Puerto 12, Cádiz', '1999-03-21', '2023-06-15', 1, NULL),
@@ -47,6 +42,8 @@ CREATE TABLE Inscripcion (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+ADD FOREIGN KEY (titular_dni) REFERENCES Socio(dni);
+
 INSERT INTO Inscripcion (tipo, cuota, fecha_creacion, titular_dni) VALUES
 ('INDIVIDUAL', 300.00, '2023-06-15', 12345678),
 ('FAMILIAR',   650.00, '2024-01-10', 87654321);
@@ -61,6 +58,9 @@ CREATE TABLE Familia (
   rol ENUM('TITULAR','ADULTO','HIJO') NOT NULL,
   PRIMARY KEY (inscripcion_id, socio_dni)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ADD FOREIGN KEY (inscripcion_id) REFERENCES Inscripcion(id);
+ADD FOREIGN KEY (socio_dni) REFERENCES Socio(dni);
 
 INSERT INTO Familia VALUES
 (1, 12345678, 'TITULAR'),
@@ -101,6 +101,8 @@ CREATE TABLE Embarcacion (
   PRIMARY KEY (matricula)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+ADD FOREIGN KEY (patron_dni) REFERENCES Patron(dni);
+
 INSERT INTO Embarcacion VALUES
 ('CAD-0001', 'Luna de Mar', 'VELERO', 8, 10.50, 3.50, 1.80, 11112222),
 ('CAD-0002', 'Brisa Azul', 'LANCHA', 6, 7.20, 2.50, 0.90, 22223333),
@@ -121,6 +123,9 @@ CREATE TABLE Alquiler (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+ADD FOREIGN KEY (socio_titular_dni) REFERENCES Socio(dni);
+ADD FOREIGN KEY (matricula) REFERENCES Embarcacion(matricula);
+
 INSERT INTO Alquiler (socio_titular_dni, matricula, fecha_inicio, fecha_fin, plazas_solicitadas, num_personas) VALUES
 (12345678, 'CAD-0001', '2025-05-05', '2025-05-11', 6, 4);
 
@@ -136,6 +141,9 @@ CREATE TABLE Reserva (
   plazas_solicitadas INT NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ADD FOREIGN KEY (socio_dni) REFERENCES Socio(dni);
+ADD FOREIGN KEY (matricula) REFERENCES Embarcacion(matricula);
 
 INSERT INTO Reserva (socio_dni, matricula, fecha_evento, plazas_solicitadas) VALUES
 (87654321, 'CAD-0002', '2025-06-20', 5);
