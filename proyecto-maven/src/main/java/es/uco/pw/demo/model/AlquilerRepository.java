@@ -53,21 +53,21 @@ public class AlquilerRepository {
                     public Alquiler mapRow(ResultSet rs, int rowNum) throws SQLException {
                         return new Alquiler(
                             rs.getInt("id"),
-                            /* embarcacion */ null,             
-                            /* socioTitular */ null,            
-                            /* participantes */ null,           
+                            rs.getInt("matricula"),             
+                            rs.getInt("socio_titular_dni"),
+                            null,         
                             rs.getDate("fechainicio") != null
                                 ? rs.getDate("fechainicio").toLocalDate()
                                 : null,
                             rs.getDate("fechafin") != null
                                 ? rs.getDate("fechafin").toLocalDate()
                                 : null,
-                            rs.getInt("plazassolicitadas"),
+                            rs.getInt("plazas_solicitadas"),
                             rs.getDouble("preciototal")
                         );
                     }
                 });
-            } else {
+            } else{
                 return null;
             }
         } catch (DataAccessException e) {
@@ -84,8 +84,8 @@ public class AlquilerRepository {
                 int result = jdbcTemplate.update(
                     query,
                     a.getId(),
-                    (a.getEmbarcacion() != null ? a.getEmbarcacion().getMatricula() : null),
-                    (a.getSocioTitular() != null ? a.getSocioTitular().getDni() : null),
+                    a.getEmbarcacion(),
+                    a.getSocioTitular(),
                     a.getFechaInicio() != null ? Date.valueOf(a.getFechaInicio()) : null,
                     a.getFechaFin() != null ? Date.valueOf(a.getFechaFin()) : null,
                     a.getPlazasSolicitadas(),

@@ -7,15 +7,15 @@ import java.util.List;
 public class Alquiler {
 
     private int id;
-    private Embarcacion embarcacion;
-    private Socio socioTitular;
-    private List<Socio> participantes;
+    private int embarcacion;
+    private int socioTitular;
+    private List<String> participantes;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private int plazasSolicitadas;
     private double precioTotal;
 
-    public Alquiler(int id, Embarcacion embarcacion, Socio socioTitular, List<Socio> participantes, LocalDate fechaInicio, LocalDate fechaFin, int plazasSolicitadas, double precioTotal) {
+    public Alquiler(int id, int embarcacion, int socioTitular, List<String> participantes, LocalDate fechaInicio, LocalDate fechaFin, int plazasSolicitadas, double precioTotal) {
         this.id = id;
         this.embarcacion = embarcacion;
         this.socioTitular = socioTitular;
@@ -26,19 +26,21 @@ public class Alquiler {
         this.precioTotal = precioTotal;
     }
 
+    public Alquiler(){}
+
     public int getId() {
         return id;
     }
 
-    public Embarcacion getEmbarcacion() {
+    public int getEmbarcacion() {
         return embarcacion;
     }
 
-    public Socio getSocioTitular() {
+    public int getSocioTitular() {
         return socioTitular;
     }
 
-    public List<Socio> getParticipantes() {
+    public List<String> getParticipantes() {
         return participantes;
     }
 
@@ -62,15 +64,15 @@ public class Alquiler {
         this.id = id;
     }
 
-    public void setEmbarcacion(Embarcacion embarcacion) {
+    public void setEmbarcacion(int embarcacion) {
         this.embarcacion = embarcacion;
     }
 
-    public void setSocioTitular(Socio socioTitular) {
+    public void setSocioTitular(int socioTitular) {
         this.socioTitular = socioTitular;
     }
 
-    public void setParticipantes(List<Socio> participantes) {
+    public void setParticipantes(List<String> participantes) {
         this.participantes = participantes;
     }
 
