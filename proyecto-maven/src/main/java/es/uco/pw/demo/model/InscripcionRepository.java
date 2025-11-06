@@ -20,7 +20,7 @@ public class InscripcionRepository {
 
     private JdbcTemplate jdbcTemplate;
     private Properties sqlQueries;
-    private String sqlQueriesFileName;
+   private String sqlQueriesFileName = "src/main/resources/db/sql.properties";
 
     public InscripcionRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -46,6 +46,8 @@ public class InscripcionRepository {
 
     public List<Inscripcion> findAllInscripciones() {
         try {
+            if (sqlQueries == null) createProperties();
+
             String query = sqlQueries.getProperty("select-findAllInscripciones");
             if (query != null) {
                 return jdbcTemplate.query(query, new RowMapper<Inscripcion>() {
@@ -78,6 +80,8 @@ public class InscripcionRepository {
 
     public boolean addInscripcion(Inscripcion ins) {
         try {
+            if (sqlQueries == null) createProperties();
+            
             String query = sqlQueries.getProperty("insert-addInscripcion");
             if (query != null) {
                 int result = jdbcTemplate.update(

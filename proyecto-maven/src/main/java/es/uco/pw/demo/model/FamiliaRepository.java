@@ -19,7 +19,9 @@ public class FamiliaRepository {
 
     private JdbcTemplate jdbcTemplate;
     private Properties sqlQueries;
-    private String sqlQueriesFileName;
+
+    
+    private String sqlQueriesFileName = "src/main/resources/db/sql.properties";
 
     public FamiliaRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -38,14 +40,17 @@ public class FamiliaRepository {
             reader = new BufferedReader(new FileReader(f));
             sqlQueries.load(reader);
         } catch (IOException e) {
-            System.err.println("Error creating properties object for SQL Queries");
+            System.err.println("Error creating properties object for SQL Queries (" + sqlQueriesFileName + ")");
             e.printStackTrace();
         }
     }
 
     public List<Familia> findAllFamilias() {
         try {
-            String query = sqlQueries.getProperty("select-findAllFamilias");
+           
+            if (sqlQueries == null) createProperties();
+
+            String query = (sqlQueries != null) ? sqlQueries.getProperty("select-findAllFamilias") : null;
             if (query != null) {
                 return jdbcTemplate.query(query, new RowMapper<Familia>() {
                     @Override
@@ -69,7 +74,10 @@ public class FamiliaRepository {
 
     public boolean addFamilia(Familia f) {
         try {
-            String query = sqlQueries.getProperty("insert-addFamilia");
+         
+            if (sqlQueries == null) createProperties();
+
+            String query = (sqlQueries != null) ? sqlQueries.getProperty("insert-addFamilia") : null;
             if (query != null) {
                 int result = jdbcTemplate.update(
                     query,

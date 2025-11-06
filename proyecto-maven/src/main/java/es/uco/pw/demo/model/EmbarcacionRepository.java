@@ -19,7 +19,8 @@ public class EmbarcacionRepository {
 
     private JdbcTemplate jdbcTemplate;
     private Properties sqlQueries;
-    private String sqlQueriesFileName;
+    // ✅ Ruta por defecto para evitar NPE si no se llama al setter
+    private String sqlQueriesFileName = "src/main/resources/db/sql.properties";
 
     public EmbarcacionRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -38,14 +39,17 @@ public class EmbarcacionRepository {
             reader = new BufferedReader(new FileReader(f));
             sqlQueries.load(reader);
         } catch (IOException e) {
-            System.err.println("Error creating properties object for SQL Queries");
+            System.err.println("Error creating properties object for SQL Queries (" + sqlQueriesFileName + ")");
             e.printStackTrace();
         }
     }
 
     public List<Embarcacion> findAllEmbarcaciones() {
         try {
-            String query = sqlQueries.getProperty("select-findAllEmbarcaciones");
+            // ✅ Carga perezosa para evitar NullPointerException
+            if (sqlQueries == null) createProperties();
+
+            String query = (sqlQueries != null) ? sqlQueries.getProperty("select-findAllEmbarcaciones") : null;
             if (query != null) {
                 List<Embarcacion> embarcaciones = jdbcTemplate.query(query, new RowMapper<Embarcacion>() {
                     @Override
@@ -56,7 +60,7 @@ public class EmbarcacionRepository {
                             EmbarcacionType.valueOf(rs.getString("tipo")),
                             rs.getInt("plazas"),
                             rs.getString("dimensiones"),
-                            /* patronAsignado */ null 
+                            /* patronAsignado */ null
                         );
                     }
                 });
@@ -71,7 +75,10 @@ public class EmbarcacionRepository {
 
     public boolean addEmbarcacion(Embarcacion e) {
         try {
-            String query = sqlQueries.getProperty("insert-addEmbarcacion");
+            // ✅ Carga perezosa para evitar NullPointerException
+            if (sqlQueries == null) createProperties();
+
+            String query = (sqlQueries != null) ? sqlQueries.getProperty("insert-addEmbarcacion") : null;
             if (query != null) {
                 int result = jdbcTemplate.update(
                     query,
@@ -80,7 +87,6 @@ public class EmbarcacionRepository {
                     e.getTipo().toString(),
                     e.getPlazas(),
                     e.getDimensiones(),
-                    // Si la tabla tiene FK al patrón, enviamos su id; si no existe, se guarda null.
                     (e.getPatronAsignado() != null ? e.getPatronAsignado().getId() : null)
                 );
                 return result > 0;

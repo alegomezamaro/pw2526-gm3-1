@@ -20,8 +20,7 @@ public class ReservaRepository {
 
     private JdbcTemplate jdbcTemplate;
     private Properties sqlQueries;
-    private String sqlQueriesFileName;
-
+    private String sqlQueriesFileName = "src/main/resources/db/sql.properties";
     public ReservaRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -46,6 +45,8 @@ public class ReservaRepository {
 
     public List<Reserva> findAllReservas() {
         try {
+            if (sqlQueries == null) createProperties();
+
             String query = sqlQueries.getProperty("select-findAllReservas");
             if (query != null) {
                 return jdbcTemplate.query(query, new RowMapper<Reserva>() {
@@ -76,6 +77,7 @@ public class ReservaRepository {
 
     public boolean addReserva(Reserva r) {
         try {
+            if (sqlQueries == null) createProperties();
             String query = sqlQueries.getProperty("insert-addReserva");
             if (query != null) {
                 int result = jdbcTemplate.update(

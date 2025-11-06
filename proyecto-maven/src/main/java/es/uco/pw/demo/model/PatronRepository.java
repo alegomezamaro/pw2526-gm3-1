@@ -20,8 +20,7 @@ public class PatronRepository {
 
     private JdbcTemplate jdbcTemplate;
     private Properties sqlQueries;
-    private String sqlQueriesFileName;
-
+   private String sqlQueriesFileName = "src/main/resources/db/sql.properties";
     public PatronRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -46,6 +45,8 @@ public class PatronRepository {
 
     public List<Patron> findAllPatrones() {
         try {
+            if (sqlQueries == null) createProperties();
+
             String query = sqlQueries.getProperty("select-findAllPatrones");
             if (query != null) {
                 return jdbcTemplate.query(query, new RowMapper<Patron>() {
@@ -77,6 +78,9 @@ public class PatronRepository {
 
     public boolean addPatron(Patron p) {
         try {
+
+            if (sqlQueries == null) createProperties();
+
             String query = sqlQueries.getProperty("insert-addPatron");
             if (query != null) {
                 int result = jdbcTemplate.update(
