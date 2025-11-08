@@ -18,6 +18,8 @@ public class Embarcacion {
         this.patronAsignado = patronAsignado;
     }
 
+    public Embarcacion(){}
+
     public String getMatricula() {
         return matricula;
     }

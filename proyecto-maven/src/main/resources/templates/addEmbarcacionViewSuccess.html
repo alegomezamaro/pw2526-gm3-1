@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Embarcación Añadida</title>
+</head>
+<body>
+    <h1>¡Embarcación añadida con éxito!</h1>
+    
+    <div th:if="${embarcacion}">
+        <h2>Detalles de la embarcación:</h2>
+        <ul>
+            <li>Matrícula: <span th:text="${embarcacion.matricula}"></span></li>
+            <li>Nombre: <span th:text="${embarcacion.nombre}"></span></li>
+            <li>Tipo: <span th:text="${embarcacion.tipo}"></span></li>
+            <li>Plazas: <span th:text="${embarcacion.plazas}"></span></li>
+            <li>Dimensiones: <span th:text="${embarcacion.dimensiones}"></span></li>
+        </ul>
+    </div>
+
+    <p><a href="/addEmbarcacion">Añadir otra embarcación</a></p>
+    <p><a href="/">Volver al inicio</a></p>
+</body>
+</html>

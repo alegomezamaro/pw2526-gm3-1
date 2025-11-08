@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Añadir Embarcación</title>
+</head>
+<body>
+<h1>Añadir Embarcación</h1>
+
+<form method="POST" th:action="@{/addEmbarcacion}" th:object="${newEmbarcacion}">
+    <!-- ID oculto si el repo lo autogenera o lo asignamos en el controlador -->
+    <label for="matricula">Matricula de la embarcación:</label><br/>
+    <input type="text" th:field="*{matricula}" id="matricula" placeholder="6a-BA-1-1-12" pattern="[1-9]{1}[a]-[A-Z]{2}-[1-9]{1,2}-[0-9]{1,9}-[0-9]{2}" required/><br/><br/>
+
+    <label for="nombre">Nombre de la embarcación:</label><br/>
+    <input type="text" th:field="*{nombre}" id="nombre" placeholder="Altum Mare" required/><br/><br/>
+
+    <label for="tipo">Tipo de embarcación:</label><br/>
+    <input type="text" th:field="*{tipo}" id="tipo" placeholder="Velero,Yate,Catamaran,Lancha" required/><br/><br/>
+
+    <label for="plazas">Plazas disponibles en la embarcación :</label><br/>
+    <input type="number" th:field="*{plazas}" id="plazas" step="0.01" min="1" required/><br/><br/>
+
+    <label for="dimensiones">Dimensiones de la embarcación:</label><br/>
+    <input type="text" th:field="*{dimensiones}" id="dimensiones" required/><br/><br/>
+
+    <!-- <label for="patronAsignado">Patrón de la embarcación:</label><br/>
+    <input type="text" th:field="*{patronAsignado}" id="patronAsignado" required/><br/><br/> -->
+
+    <input type="submit" value="Enviar"/>
+</form>
+
+<!-- Mensaje opcional si envías algún atributo de error -->
+<div th:if="${errorMessage}">
+    <p th:text="${errorMessage}" style="color:red;"></p>
+</div>
+
+<p><a th:href="@{/}">Volver al menu</a></p>
+</body>
+</html>
