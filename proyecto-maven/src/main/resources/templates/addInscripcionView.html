@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Añadir Inscripción</title>
+</head>
+<body>
+<h1>Añadir Inscripción</h1>
+
+<form method="POST" th:action="@{/addInscripcion}" th:object="${newInscripcion}">
+    <label for="type">Tipo de inscripción:</label><br/>
+    <select th:field="*{type}" id="type" required>
+        <option value="INDIVIDUAL">Individual</option>
+        <option value="FAMILIAR">Familiar</option>
+    </select><br/><br/>
+
+    <label for="yearFee">Cuota anual:</label><br/>
+    <input type="number" th:field="*{yearFee}" id="yearFee" required/><br/><br/>
+
+    <label for="socioTitular">DNI del socio titular:</label><br/>
+    <input type="number" th:field="*{socioTitular}" id="socioTitular" required/><br/><br/>
+
+    <label for="date">Fecha de inscripción:</label><br/>
+    <input type="date" th:field="*{date}" id="date" required/><br/><br/>
+
+    <label for="familiaId">ID de familia (opcional):</label><br/>
+    <input type="number" th:field="*{familiaId}" id="familiaId"/><br/><br/>
+
+    <input type="submit" value="Guardar"/>
+</form>
+
+<!-- Mensaje de error si existe -->
+<div th:if="${errorMessage}" style="color: red;">
+    <p th:text="${errorMessage}"></p>
+</div>
+
+<p><a th:href="@{/}">Volver al inicio</a></p>
+</body>
+</html>

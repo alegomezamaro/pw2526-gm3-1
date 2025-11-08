@@ -1,62 +1,51 @@
 package es.uco.pw.demo.controller;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
+
 import es.uco.pw.demo.model.Inscripcion;
 import es.uco.pw.demo.model.InscripcionRepository;
-import es.uco.pw.demo.model.InscripcionType;
-import org.springframework.dao.DataAccessException;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.List;
 
-@RestController
-@RequestMapping("/inscripciones")
+@Controller
 public class InscripcionController {
 
     private final InscripcionRepository inscripcionRepository;
+    private final ModelAndView modelAndView = new ModelAndView();
 
-    public InscripcionController(InscripcionRepository inscripcionRepository) {
-        this.inscripcionRepository = inscripcionRepository;
+    public InscripcionController(InscripcionRepository InscripcionRepository) {
+        this.inscripcionRepository = InscripcionRepository;
+        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        this.inscripcionRepository.setSQLQueriesFileName(sqlQueriesFileName);
     }
 
-    // GET /inscripciones -> listar todas
-    @GetMapping
-    public ResponseEntity<List<Inscripcion>> listAll() {
-        List<Inscripcion> list = inscripcionRepository.findAllInscripciones();
-        return ResponseEntity.ok(list);
+    
+    @GetMapping("/addInscripcion")
+    public ModelAndView getAddInscripcionView() {
+        this.modelAndView.setViewName("addInscripcionView");
+        this.modelAndView.addObject("newInscripcion", new Inscripcion());
+        return this.modelAndView;
     }
+    
+    @PostMapping("/addInscripcion")
+    public ModelAndView addInscripcion(@ModelAttribute("newInscripcion") Inscripcion newInscripcion) {
+        String nextPage;
+            
+            int nextId = inscripcionRepository.findAllInscripciones().size() + 1;
+            newInscripcion.setId(nextId);
 
-    // POST /inscripciones/add -> alta de inscripción
-    @PostMapping("/add")
-    public ResponseEntity<String> addInscripcion(
-            @RequestParam(value = "id") int id,
-            @RequestParam(value = "type") String type,            // p.ej. ANUAL | MENSUAL...
-            @RequestParam(value = "yearFee") int yearFee,
-            @RequestParam(value = "socioTitular") int socioTitular,
-            @RequestParam(value = "date") String dateStr,         // yyyy-MM-dd
-            @RequestParam(value = "familiaId") int familiaId
-    ) {
-        try {
-            LocalDate date = LocalDate.parse(dateStr);
-            Inscripcion ins = new Inscripcion();
-            ins.setId(id);
-            ins.setType(InscripcionType.valueOf(type.toUpperCase()));
-            ins.setYearFee(yearFee);
-            ins.setSocioTitular(socioTitular);
-            ins.setDate(date);
-            ins.setFamiliaId(familiaId);
+            boolean ok = inscripcionRepository.addInscripcion(newInscripcion);
+            if (ok) {
+                nextPage = "addInscripcionViewSuccess";
+            } else {
+                nextPage = "addInscripcionViewFail";
+            }
 
-            boolean ok = inscripcionRepository.addInscripcion(ins);
-            if (ok) return ResponseEntity.ok("Inscripción creada correctamente");
-            return ResponseEntity.badRequest().body("No se pudo crear la inscripción");
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Tipo de inscripción inválido: " + type);
-        } catch (DataAccessException dae) {
-            return ResponseEntity.status(500).body("Error de base de datos al crear inscripción");
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().body("Parámetros inválidos: " + ex.getMessage());
-        }
+        this.modelAndView.setViewName(nextPage);
+        this.modelAndView.addObject("newInscripcion", newInscripcion);
+        return this.modelAndView;
     }
 }

@@ -16,8 +16,13 @@
     <label for="nombre">Nombre de la embarcación:</label><br/>
     <input type="text" th:field="*{nombre}" id="nombre" placeholder="Altum Mare" required/><br/><br/>
 
-    <label for="tipo">Tipo de embarcación:</label><br/>
-    <input type="text" th:field="*{tipo}" id="tipo" placeholder="Velero,Yate,Catamaran,Lancha" required/><br/><br/>
+    <label for="Tipo">Tipo de embarcación:</label><br/>
+    <select th:field="*{tipo}" id="tipo" required>
+        <option value="Velero">Velero</option>
+        <option value="Yate">Yate</option>
+        <option value="Catamaran">Catamaran</option>
+        <option value="Lancha">Lancha</option>
+    </select><br/><br/>
 
     <label for="plazas">Plazas disponibles en la embarcación :</label><br/>
     <input type="number" th:field="*{plazas}" id="plazas" step="0.01" min="1" required/><br/><br/>

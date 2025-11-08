@@ -13,6 +13,8 @@ public class Inscripcion {
 
   // Es yearFee un atributo calculado en caso de que type = Familiar, teniendo asi que sumar la cuota de todos los integrantes de la familia, iterando en los socios de la familia de familiaId y sumando sus cuotas?
 
+    public Inscripcion(){}
+
   public Integer getId() {
       return id;
   }
