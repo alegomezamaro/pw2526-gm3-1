@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Buscar Patrón por ID o DNI</title>
+</head>
+<body>
+<h1>Buscar Patrón por ID o DNI</h1>
+
+<form th:action="@{/findPatronById}" method="get" style="margin-bottom:1rem;">
+  <label for="id">ID:</label>
+  <input type="number" id="id" name="id" min="1" th:value="${param.id}"/>
+
+  <span style="margin:0 0.75rem;">o</span>
+
+  <label for="dni">DNI:</label>
+  <input type="text" id="dni" name="dni" th:value="${param.dni}" placeholder="12345678"/>
+
+  <button type="submit">Buscar</button>
+</form>
+
+<!-- Mensajes -->
+<div th:if="${errorMessage}" style="color:red;" th:text="${errorMessage}">Error</div>
+<div th:if="${infoMessage}" style="color:green;" th:text="${infoMessage}">Info</div>
+
+<!-- Resultado si existe -->
+<div th:if="${patron != null}">
+  <h2>Datos del patrón</h2>
+  <p><strong>DNI:</strong> <span th:text="${patron.dni}">-</span></p>
+  <p><strong>Nombre:</strong> <span th:text="${patron.name}">-</span></p>
+  <p><strong>Apellidos:</strong> <span th:text="${patron.surname}">-</span></p>
+  <p><strong>Licencia:</strong> <span th:text="${patron.license}">-</span></p>
+  <p><strong>Teléfono:</strong> <span th:text="${patron.phone}">-</span></p>
+  <p><strong>Email:</strong> <span th:text="${patron.email}">-</span></p>
+  <p><strong>Años de experiencia:</strong> <span th:text="${patron.experience}">-</span></p>
+  <p><strong>Matrícula embarcación:</strong> <span th:text="${patron.embarcacion}">-</span></p>
+</div>
+
+<!-- Si no hay resultado pero sí se buscó -->
+<div th:if="${patron == null and (param.id != null or param.dni != null)}" style="color:#b00;">
+  No se encontró ningún patrón con esos datos.
+</div>
+
+<p style="margin-top:1rem;"><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>

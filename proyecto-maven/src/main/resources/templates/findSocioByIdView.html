@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Buscar Socio por DNI</title>
+</head>
+<body>
+  <h1>Buscar Socio por DNI</h1>
+
+  <form th:action="@{/findSocioById}" method="get" style="margin-bottom:1rem;">
+    <label for="dni">DNI (numérico en BD):</label>
+    <input type="text" id="dni" name="dni" th:value="${param.dni}" placeholder="12345678" />
+    <button type="submit">Buscar</button>
+  </form>
+
+  <div th:if="${errorMessage}" style="color:red;" th:text="${errorMessage}">Error</div>
+
+  <div th:if="${socio != null}">
+    <h2>Datos del socio</h2>
+    <p><strong>DNI:</strong> <span th:text="${socio.dni}">-</span></p>
+    <p><strong>Nombre:</strong> <span th:text="${socio.name}">-</span></p>
+    <p><strong>Apellidos:</strong> <span th:text="${socio.surname}">-</span></p>
+    <p><strong>Dirección:</strong> <span th:text="${socio.address}">-</span></p>
+    <p><strong>Fecha de nacimiento:</strong> <span th:text="${socio.birthDate}">-</span></p>
+    <p><strong>Fecha de inscripción:</strong> <span th:text="${socio.inscriptionDate}">-</span></p>
+    <p><strong>¿Patrón de embarcación?</strong> <span th:text="${socio.patronEmbarcacion}">-</span></p>
+    <p><strong>ID de inscripción:</strong> <span th:text="${socio.inscriptionId}">-</span></p>
+    <p><strong>ID de familia:</strong> <span th:text="${socio.familiaId}">-</span></p>
+    <p><strong>Relación familiar:</strong> <span th:text="${socio.relacionFamiliar}">-</span></p>
+  </div>
+
+  <div th:if="${socio == null and param.dni != null}" style="color:#b00;">
+    No se encontró ningún socio con ese DNI.
+  </div>
+
+  <p style="margin-top:1rem;"><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Embarcación por Matrícula</title>
+</head>
+<body>
+<h1>Buscar Embarcación por Matrícula</h1>
+
+<form th:action="@{/findEmbarcacionById}" method="get" style="margin-bottom:1rem;">
+    <label for="matricula">Matrícula:</label>
+    <input type="text"
+           id="matricula"
+           name="matricula"
+           placeholder="6a-BA-1-1-12"
+           pattern="[1-9]{1}[a]-[A-Z]{2}-[1-9]{1,2}-[0-9]{1,9}-[0-9]{2}"
+           required
+           th:value="${param.matricula}" />
+    <button type="submit">Buscar</button>
+</form>
+
+<!-- Mensajes -->
+<div th:if="${errorMessage}" style="color:red;" th:text="${errorMessage}">Error</div>
+<div th:if="${infoMessage}" style="color:green;" th:text="${infoMessage}">Info</div>
+
+<!-- Resultado -->
+<div th:if="${embarcacion != null}">
+    <h2>Datos de la embarcación</h2>
+    <p><strong>Matrícula:</strong> <span th:text="${embarcacion.matricula}">-</span></p>
+    <p><strong>Nombre:</strong> <span th:text="${embarcacion.nombre}">-</span></p>
+    <p><strong>Tipo:</strong> <span th:text="${embarcacion.tipo}">-</span></p>
+    <p><strong>Plazas:</strong> <span th:text="${embarcacion.plazas}">-</span></p>
+    <p><strong>Dimensiones:</strong> <span th:text="${embarcacion.dimensiones}">-</span></p>
+</div>
+
+<!-- Si no hay embarcación pero sí se buscó -->
+<div th:if="${embarcacion == null and param.matricula != null}" style="color:#b00;">
+    No se encontró ninguna embarcación con matrícula&nbsp;<span th:text="${param.matricula}">MAT</span>.
+</div>
+
+<p style="margin-top:1rem;"><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>

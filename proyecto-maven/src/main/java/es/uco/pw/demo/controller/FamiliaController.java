@@ -2,8 +2,7 @@ package es.uco.pw.demo.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import es.uco.pw.demo.model.Familia;
@@ -13,39 +12,38 @@ import es.uco.pw.demo.model.FamiliaRepository;
 public class FamiliaController {
 
     private final FamiliaRepository familiaRepository;
-    private final ModelAndView modelAndView = new ModelAndView();
 
     public FamiliaController(FamiliaRepository familiaRepository) {
         this.familiaRepository = familiaRepository;
+        // Igual que en el resto del proyecto:
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         this.familiaRepository.setSQLQueriesFileName(sqlQueriesFileName);
     }
 
-    // ------- VISTA: Formulario alta de familia -------
-    @GetMapping("/addFamilia")
-    public ModelAndView getAddFamiliaView() {
-        this.modelAndView.setViewName("addFamiliaView");
-        this.modelAndView.addObject("newFamilia", new Familia());
-        return this.modelAndView;
-    }
+    // ------- VISTA/ACCIÓN: Buscar familia por ID -------
+    @GetMapping("/findFamiliaById")
+    public ModelAndView findFamiliaById(
+            @RequestParam(name = "id", required = false) Integer id) {
 
-    // ------- ACCIÓN: Procesar alta de familia -------
-    @PostMapping("/addFamilia")
-    public ModelAndView addFamilia(@ModelAttribute("newFamilia") Familia newFamilia) {
-        String nextPage;
+        ModelAndView mav = new ModelAndView("findFamiliaByIdView"); // sin .html
 
-        int nextId = familiaRepository.findAllFamilias().size() + 1;
-        newFamilia.setId(nextId);
+        if (id != null) {
+            // Si existe un método directo:
+            // Familia f = familiaRepository.findFamiliaById(id);
 
-        boolean ok = familiaRepository.addFamilia(newFamilia);
-        if (ok) {
-            nextPage = "addFamiliaViewSuccess";
-        } else {
-            nextPage = "addFamiliaViewFail";
+            // Alternativa si solo hay método de listado:
+            Familia f = familiaRepository.findAllFamilias()
+                                         .stream()
+                                         .filter(x -> x.getId() == id)
+                                         .findFirst()
+                                         .orElse(null);
+
+            if (f == null) {
+                mav.addObject("errorMessage", "No se encontró ninguna familia con ID " + id);
+            } else {
+                mav.addObject("familia", f);
+            }
         }
-
-        this.modelAndView.setViewName(nextPage);
-        this.modelAndView.addObject("familia", newFamilia);
-        return this.modelAndView;
+        return mav;
     }
 }

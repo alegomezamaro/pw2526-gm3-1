@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Buscar Reserva por ID</title>
+</head>
+<body>
+  <h1>Buscar Reserva por ID</h1>
+
+  <!-- Formulario (siempre visible) -->
+  <form th:action="@{/findReservaById}" method="get" style="margin-bottom:1rem;">
+    <label for="id">ID de la reserva:</label>
+    <input type="number" id="id" name="id" min="1" th:value="${param.id}" />
+    <button type="submit">Buscar</button>
+  </form>
+
+  <!-- Mensajes -->
+  <div th:if="${errorMessage}" style="color:red;" th:text="${errorMessage}">Error</div>
+  <div th:if="${infoMessage}" style="color:green;" th:text="${infoMessage}">Info</div>
+
+  <!-- Resultado si existe -->
+  <div th:if="${reserva != null}">
+    <h2>Datos de la reserva</h2>
+    <p><strong>ID:</strong> <span th:text="${reserva.id}">-</span></p>
+    <p><strong>Matrícula/ID de embarcación:</strong> <span th:text="${reserva.embarcacion}">-</span></p>
+    <p><strong>Descripción:</strong> <span th:text="${reserva.descripcion}">-</span></p>
+    <p><strong>DNI/ID socio solicitante:</strong> <span th:text="${reserva.socioSolicitante}">-</span></p>
+    <p><strong>Plazas reservadas:</strong> <span th:text="${reserva.plazasReserva}">-</span></p>
+    <p><strong>Fecha de reserva:</strong> <span th:text="${reserva.fechaReserva}">-</span></p>
+    <p><strong>Precio de la reserva:</strong> <span th:text="${reserva.precioReserva}">-</span></p>
+  </div>
+
+  <!-- Si no hay resultado pero sí se buscó -->
+  <div th:if="${reserva == null and param.id != null}" style="color:#b00;">
+    No se encontró ninguna reserva con ID&nbsp;<span th:text="${param.id}">ID</span>.
+  </div>
+
+  <p style="margin-top:1rem;"><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>

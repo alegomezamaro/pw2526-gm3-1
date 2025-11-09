@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Patrón añadido</title>
+</head>
+<body>
+  <h1>¡Patrón añadido!</h1>
+  <p th:if="${patron != null}">
+    Registrado: <span th:text="${patron.name}">Nombre</span>
+    <span th:text="${patron.surname}">Apellidos</span> (DNI:
+    <span th:text="${patron.dni}">DNI</span>)
+  </p>
+  <p><a th:href="@{/addPatron}">Volver al formulario</a></p>
+  <p><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>

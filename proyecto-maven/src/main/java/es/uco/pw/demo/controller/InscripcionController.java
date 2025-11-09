@@ -4,48 +4,75 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import es.uco.pw.demo.model.Inscripcion;
 import es.uco.pw.demo.model.InscripcionRepository;
 
-
 @Controller
 public class InscripcionController {
 
     private final InscripcionRepository inscripcionRepository;
-    private final ModelAndView modelAndView = new ModelAndView();
 
-    public InscripcionController(InscripcionRepository InscripcionRepository) {
-        this.inscripcionRepository = InscripcionRepository;
+    public InscripcionController(InscripcionRepository inscripcionRepository) {
+        this.inscripcionRepository = inscripcionRepository;
+        // Igual que en el resto del proyecto
         String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
         this.inscripcionRepository.setSQLQueriesFileName(sqlQueriesFileName);
     }
 
-    
+    // ------- VISTA: Formulario alta -------
     @GetMapping("/addInscripcion")
     public ModelAndView getAddInscripcionView() {
-        this.modelAndView.setViewName("addInscripcionView");
-        this.modelAndView.addObject("newInscripcion", new Inscripcion());
-        return this.modelAndView;
+        ModelAndView mav = new ModelAndView("addInscripcionView"); // sin .html
+        mav.addObject("newInscripcion", new Inscripcion());
+        return mav;
     }
-    
+
+    // ------- ACCIÓN: Procesar alta -------
     @PostMapping("/addInscripcion")
-    public ModelAndView addInscripcion(@ModelAttribute("newInscripcion") Inscripcion newInscripcion) {
-        String nextPage;
-            
-            int nextId = inscripcionRepository.findAllInscripciones().size() + 1;
-            newInscripcion.setId(nextId);
+    public ModelAndView addInscripcion(@ModelAttribute("newInscripcion") Inscripcion nueva) {
+        ModelAndView mav = new ModelAndView();
 
-            boolean ok = inscripcionRepository.addInscripcion(newInscripcion);
-            if (ok) {
-                nextPage = "addInscripcionViewSuccess";
+        // Generar ID si sigues el patrón size()+1
+        int nextId = inscripcionRepository.findAllInscripciones().size() + 1;
+        nueva.setId(nextId);
+
+        boolean ok = inscripcionRepository.addInscripcion(nueva);
+        if (ok) {
+            mav.setViewName("addInscripcionViewSuccess");
+        } else {
+            mav.setViewName("addInscripcionViewFail");
+        }
+        mav.addObject("inscripcion", nueva);
+        return mav;
+    }
+
+    // ------- VISTA/ACCIÓN: Buscar inscripción por ID -------
+    @GetMapping("/findInscripcionById")
+    public ModelAndView findInscripcionById(
+            @RequestParam(name = "id", required = false) Integer id) {
+
+        ModelAndView mav = new ModelAndView("findInscripcionByIdView"); // sin .html
+
+        if (id != null) {
+            // Si tienes método directo:
+            // Inscripcion i = inscripcionRepository.findInscripcionById(id);
+
+            // Alternativa desde el listado:
+            Inscripcion i = inscripcionRepository.findAllInscripciones()
+                                                 .stream()
+                                                 .filter(x -> x.getId() == id)
+                                                 .findFirst()
+                                                 .orElse(null);
+
+            if (i == null) {
+                mav.addObject("errorMessage", "No se encontró ninguna inscripción con ID " + id);
             } else {
-                nextPage = "addInscripcionViewFail";
+                mav.addObject("inscripcion", i);
             }
-
-        this.modelAndView.setViewName(nextPage);
-        this.modelAndView.addObject("newInscripcion", newInscripcion);
-        return this.modelAndView;
+        }
+        return mav;
     }
 }

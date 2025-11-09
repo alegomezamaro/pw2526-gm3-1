@@ -2,8 +2,7 @@ package es.uco.pw.demo.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import es.uco.pw.demo.model.Socio;
@@ -13,7 +12,6 @@ import es.uco.pw.demo.model.SocioRepository;
 public class SocioController {
 
     private final SocioRepository socioRepository;
-    private final ModelAndView modelAndView = new ModelAndView();
 
     public SocioController(SocioRepository socioRepository) {
         this.socioRepository = socioRepository;
@@ -21,24 +19,32 @@ public class SocioController {
         this.socioRepository.setSQLQueriesFileName(sqlQueriesFileName);
     }
 
-    // ------- VISTA: Formulario alta de socio -------
-    @GetMapping("/addSocio")
-    public ModelAndView getAddSocioView() {
-        this.modelAndView.setViewName("addSocioView");
-        this.modelAndView.addObject("newSocio", new Socio()); // requiere constructor vacío
-        return this.modelAndView;
-    }
+    // --- GET: Buscar socio SOLO por DNI (en tu modelo el DNI es numérico)
+    @GetMapping("/findSocioById")
+    public ModelAndView findSocioByDni(
+            @RequestParam(name = "dni", required = false) String dni) {
 
-    // ------- ACCIÓN: Procesar alta de socio -------
-    @PostMapping("/addSocio")
-    public ModelAndView addSocio(@ModelAttribute("newSocio") Socio newSocio) {
-        String nextPage;
+        ModelAndView mav = new ModelAndView("findSocioByIdView"); // sin .html
 
-        boolean ok = socioRepository.addSocio(newSocio);
-        nextPage = ok ? "addSocioViewSuccess" : "addSocioViewFail";
+        if (dni != null && !dni.isBlank()) {
+            String dniQuery = dni.trim();
 
-        this.modelAndView.setViewName(nextPage);
-        this.modelAndView.addObject("socio", newSocio);
-        return this.modelAndView;
+            Socio socio = socioRepository.findAllSocios()
+                    .stream()
+                    .filter(s -> {
+                        // getDni() es Integer/int en tu modelo → comparamos como String
+                        Integer dniModel = s.getDni();
+                        return dniModel != null && dniQuery.equals(String.valueOf(dniModel));
+                    })
+                    .findFirst()
+                    .orElse(null);
+
+            if (socio == null) {
+                mav.addObject("errorMessage", "No se encontró ningún socio con DNI " + dniQuery);
+            } else {
+                mav.addObject("socio", socio);
+            }
+        }
+        return mav;
     }
 }

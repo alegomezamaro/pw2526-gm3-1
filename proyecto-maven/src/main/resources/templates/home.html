@@ -1,49 +1,57 @@
 <!DOCTYPE html>
-<html   xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Club NautiUCO</title>
-        <body>
-            <h1>Bienvenido al {Club NautiUCO}</h1>
-            <h2>Funciones</h2>
-            <h3>Alquiler</h3>
-            <ol>
-                <li><a href="/addAlquiler">Añadir un alquiler</a></li>
-                <li><a href="/findAlquilerById"></a>Encuentra un alquiler (Working On)</li>
-            </ol>
-            <h3>Embarcaciones</h3>
-            <ol>
-                <li><a href="/addEmbarcacion">Añadir una embarcación</a></li>
-                <li><a href="/findEmbarcacionById"></a>Encuentra una embarcación (Working On)</li>
-            </ol>
-            <h3>Familias</h3>
-            <ol>
-                <li><a href="/addFamilia">Añadir una familia</a></li>
-                <li><a href="/findFamiliaById"></a>Encuentra una familia (Working on)</li>
-            </ol>
-            <h3>Inscripciones</h3>
-            <ol>
-                <li><a href="/addInscripcion">Añadir una inscripción</a></li>
-                <li><a href="/findInscripcionById"></a>Encuentra una inscripción (Working on)</li>
-            </ol>
-            <h3>Patrones</h3>
-            <ol>
-                <li><a href="/addPatron">Añadir un patrón (Working on)</a></li>
-                <li><a href="/findPatronById"></a>Encuentra un patrón (Working on)</li>
-            </ol>
-            <h3>Reservas</h3>
-            <ol>
-                <li><a href="/addReserva">Añadir una reserva</a></li>
-                <li><a href="/findReservaById"></a>Encuentra una reserva (Working on)</li>
-            </ol>
-            <h3>Socios</h3>
-            <ol>
-                <li><a href="/addSocio">Añadir un socio</a></li>
-                <li><a href="/findSocioById"></a>Encuentra un socio (Working on)</li>
-            </ol>
-            <img th:src="@{/images/UCO.png}" style="height: 350px"/>
-        </body>
-    </head>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Club NautiUCO</title>
+</head>
+<body>
+    <h1>Bienvenido al menú del Club NautiUCO</h1>
+    <h2>Funciones</h2>
+
+    <h3>Alquiler</h3>
+    <ol>
+        <li><a th:href="@{/addAlquiler}">Añadir un alquiler</a></li>
+        <li><a th:href="@{/findAlquilerById}">Busca un alquiler</a></li>
+    </ol>
+
+    <h3>Embarcaciones</h3>
+    <ol>
+        <li><a th:href="@{/addEmbarcacion}">Añadir una embarcación</a></li>
+        <li><a th:href="@{/findEmbarcacionById}">Busca una embarcación</a></li>
+    </ol>
+
+    <h3>Familias</h3>
+    <ol>
+        <li><a th:href="@{/addFamilia}">Añadir una familia</a></li>
+        <li><a th:href="@{/findFamiliaById}">Busca una familia</a></li>
+    </ol>
+
+    <h3>Inscripciones</h3>
+    <ol>
+        <li><a th:href="@{/addInscripcion}">Añadir una inscripción</a></li>
+        <li><a th:href="@{/findInscripcionById}">Busca una inscripción</a></li>
+    </ol>
+
+    <h3>Patrones</h3>
+    <ol>
+        <li><a th:href="@{/addPatron}">Añadir un patrón</a></li>
+        <li><a th:href="@{/findPatronById}">Busca un patrón</a></li>
+    </ol>
+
+    <h3>Reservas</h3>
+    <ol>
+        <li><a th:href="@{/addReserva}">Añadir una reserva</a></li>
+        <li><a th:href="@{/findReservaById}">Busca una reserva</a></li>
+    </ol>
+
+    <h3>Socios</h3>
+    <ol>
+        <li><a th:href="@{/addSocio}">Añadir un socio</a></li>
+        <li><a th:href="@{/findSocioById}">Busca un socio</a></li>
+    </ol>
+
+    <!-- Imagen ubicada en src/main/resources/static/images/UCO.png -->
+    <img th:src="@{/images/UCO.png}" alt="UCO" style="height: 350px"/>
+</body>
 </html>
-
-
