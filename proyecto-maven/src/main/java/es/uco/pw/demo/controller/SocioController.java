@@ -24,7 +24,7 @@ public class SocioController {
     // ------- VISTA: Formulario alta de socio -------
     @GetMapping("/addSocio")
     public ModelAndView getAddSocioView() {
-        this.modelAndView.setViewName("addSocioView.html");
+        this.modelAndView.setViewName("addSocioView");
         this.modelAndView.addObject("newSocio", new Socio()); // requiere constructor vacío
         return this.modelAndView;
     }
@@ -35,7 +35,7 @@ public class SocioController {
         String nextPage;
 
         boolean ok = socioRepository.addSocio(newSocio);
-        nextPage = ok ? "addSocioViewSuccess.html" : "addSocioViewFail.html";
+        nextPage = ok ? "addSocioViewSuccess" : "addSocioViewFail";
 
         this.modelAndView.setViewName(nextPage);
         this.modelAndView.addObject("socio", newSocio);

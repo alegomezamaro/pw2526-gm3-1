@@ -24,7 +24,7 @@ public class FamiliaController {
     // ------- VISTA: Formulario alta de familia -------
     @GetMapping("/addFamilia")
     public ModelAndView getAddFamiliaView() {
-        this.modelAndView.setViewName("addFamiliaView.html");
+        this.modelAndView.setViewName("addFamiliaView");
         this.modelAndView.addObject("newFamilia", new Familia());
         return this.modelAndView;
     }
@@ -39,9 +39,9 @@ public class FamiliaController {
 
         boolean ok = familiaRepository.addFamilia(newFamilia);
         if (ok) {
-            nextPage = "addFamiliaViewSuccess.html";
+            nextPage = "addFamiliaViewSuccess";
         } else {
-            nextPage = "addFamiliaViewFail.html";
+            nextPage = "addFamiliaViewFail";
         }
 
         this.modelAndView.setViewName(nextPage);

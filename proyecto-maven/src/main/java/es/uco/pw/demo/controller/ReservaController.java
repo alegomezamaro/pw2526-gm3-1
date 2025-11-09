@@ -24,7 +24,7 @@ public class ReservaController {
     // ------- VISTA: Formulario alta de reserva -------
     @GetMapping("/addReserva")
     public ModelAndView getAddReservaView() {
-        this.modelAndView.setViewName("addReservaView.html");
+        this.modelAndView.setViewName("addReservaView");
         this.modelAndView.addObject("newReserva", new Reserva());
         return this.modelAndView;
     }
@@ -38,7 +38,7 @@ public class ReservaController {
         newReserva.setId(nextId);
 
         boolean ok = reservaRepository.addReserva(newReserva);
-        nextPage = ok ? "addReservaViewSuccess.html" : "addReservaViewFail.html";
+        nextPage = ok ? "addReservaViewSuccess" : "addReservaViewFail";
 
         this.modelAndView.setViewName(nextPage);
         this.modelAndView.addObject("reserva", newReserva);
