@@ -1,70 +1,44 @@
 package es.uco.pw.demo.controller;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
+
 import es.uco.pw.demo.model.Socio;
-import es.uco.pw.demo.model.FamiliaType;
 import es.uco.pw.demo.model.SocioRepository;
-import org.springframework.dao.DataAccessException;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.List;
-
-@RestController
-@RequestMapping("/socios")
+@Controller
 public class SocioController {
 
     private final SocioRepository socioRepository;
+    private final ModelAndView modelAndView = new ModelAndView();
 
     public SocioController(SocioRepository socioRepository) {
         this.socioRepository = socioRepository;
+        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        this.socioRepository.setSQLQueriesFileName(sqlQueriesFileName);
     }
 
-    // GET /socios -> listar todos
-    @GetMapping
-    public ResponseEntity<List<Socio>> listAll() {
-        List<Socio> socios = socioRepository.findAllSocios();
-        return ResponseEntity.ok(socios);
+    // ------- VISTA: Formulario alta de socio -------
+    @GetMapping("/addSocio")
+    public ModelAndView getAddSocioView() {
+        this.modelAndView.setViewName("addSocioView.html");
+        this.modelAndView.addObject("newSocio", new Socio()); // requiere constructor vacío
+        return this.modelAndView;
     }
 
-    // POST /socios/add -> crear socio
-    @PostMapping("/add")
-    public ResponseEntity<String> addSocio(
-            @RequestParam(value = "dni") Integer dni,
-            @RequestParam(value = "name") String name,
-            @RequestParam(value = "surname") String surname,
-            @RequestParam(value = "birthDate") String birthDateStr,          // yyyy-MM-dd
-            @RequestParam(value = "inscriptionDate") String inscriptionDateStr, // yyyy-MM-dd
-            @RequestParam(value = "address") String address,
-            @RequestParam(value = "patronEmbarcacion", defaultValue = "false") boolean patronEmbarcacion,
-            @RequestParam(value = "inscriptionId") Integer inscriptionId,
-            // Familia (opcionales esta semana)
-            @RequestParam(value = "familiaId", required = false) Integer familiaId,
-            @RequestParam(value = "relacionFamiliar", required = false) String relacionFamiliar // p.ej. "PADRE", "MADRE"...
-    ) {
-        try {
-            LocalDate birthDate = LocalDate.parse(birthDateStr);
-            LocalDate inscriptionDate = LocalDate.parse(inscriptionDateStr);
+    // ------- ACCIÓN: Procesar alta de socio -------
+    @PostMapping("/addSocio")
+    public ModelAndView addSocio(@ModelAttribute("newSocio") Socio newSocio) {
+        String nextPage;
 
-            Socio s;
-            if (familiaId == null || relacionFamiliar == null || relacionFamiliar.isBlank()) {
-                
-                s = new Socio(dni, name, surname, birthDate, inscriptionDate, address, patronEmbarcacion, inscriptionId);
-            } else {
-                
-                s = new Socio(dni, name, surname, birthDate, inscriptionDate, address, patronEmbarcacion, inscriptionId);
-                s.setFamiliaId(familiaId);
-                s.setRelacionFamiliar(FamiliaType.valueOf(relacionFamiliar.toUpperCase()));
-            }
+        boolean ok = socioRepository.addSocio(newSocio);
+        nextPage = ok ? "addSocioViewSuccess.html" : "addSocioViewFail.html";
 
-            boolean ok = socioRepository.addSocio(s);
-            if (ok) return ResponseEntity.ok("Socio creado correctamente");
-            return ResponseEntity.badRequest().body("No se pudo crear el socio");
-
-        } catch (DataAccessException ex) {
-            return ResponseEntity.status(500).body("Error de base de datos al crear socio");
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().body("Parámetros inválidos: " + ex.getMessage());
-        }
+        this.modelAndView.setViewName(nextPage);
+        this.modelAndView.addObject("socio", newSocio);
+        return this.modelAndView;
     }
 }

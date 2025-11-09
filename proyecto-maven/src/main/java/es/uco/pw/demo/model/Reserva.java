@@ -12,6 +12,9 @@ public class Reserva {
     private LocalDate fechaReserva;
     private double precioReserva;
 
+    public Reserva() {
+    }
+
 
     public Reserva(int id,Embarcacion embarcacion,String descripcion,Socio socioSolicitante,int plazasReserva,LocalDate fechaReserva,double precioReserva){
         this.id = id;

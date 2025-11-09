@@ -1,51 +1,51 @@
 package es.uco.pw.demo.controller;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
+
 import es.uco.pw.demo.model.Familia;
 import es.uco.pw.demo.model.FamiliaRepository;
-import org.springframework.dao.DataAccessException;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@RestController
-@RequestMapping("/familias")
+@Controller
 public class FamiliaController {
 
     private final FamiliaRepository familiaRepository;
+    private final ModelAndView modelAndView = new ModelAndView();
 
     public FamiliaController(FamiliaRepository familiaRepository) {
         this.familiaRepository = familiaRepository;
+        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        this.familiaRepository.setSQLQueriesFileName(sqlQueriesFileName);
     }
 
-    // GET /familias -> listar todas
-    @GetMapping
-    public ResponseEntity<List<Familia>> listAll() {
-        List<Familia> list = familiaRepository.findAllFamilias();
-        return ResponseEntity.ok(list);
+    // ------- VISTA: Formulario alta de familia -------
+    @GetMapping("/addFamilia")
+    public ModelAndView getAddFamiliaView() {
+        this.modelAndView.setViewName("addFamiliaView.html");
+        this.modelAndView.addObject("newFamilia", new Familia());
+        return this.modelAndView;
     }
 
-    // POST /familias/add -> alta de familia (simple: id + mainDni)
-    @PostMapping("/add")
-    public ResponseEntity<String> addFamilia(
-            @RequestParam(value = "id") int id,
-            @RequestParam(value = "mainDni") int mainDni
-    ) {
-        try {
-            Familia f = new Familia();
-            f.setId(id);
-            f.setMainDni(mainDni);
-            // Lista familiaDnis se gestionará en otra fase
-            f.setFamiliaDnis(null);
+    // ------- ACCIÓN: Procesar alta de familia -------
+    @PostMapping("/addFamilia")
+    public ModelAndView addFamilia(@ModelAttribute("newFamilia") Familia newFamilia) {
+        String nextPage;
 
-            boolean ok = familiaRepository.addFamilia(f);
-            if (ok) return ResponseEntity.ok("Familia creada correctamente");
-            return ResponseEntity.badRequest().body("No se pudo crear la familia");
+        int nextId = familiaRepository.findAllFamilias().size() + 1;
+        newFamilia.setId(nextId);
 
-        } catch (DataAccessException dae) {
-            return ResponseEntity.status(500).body("Error de base de datos al crear familia");
-        } catch (Exception ex) {
-            return ResponseEntity.badRequest().body("Parámetros inválidos: " + ex.getMessage());
+        boolean ok = familiaRepository.addFamilia(newFamilia);
+        if (ok) {
+            nextPage = "addFamiliaViewSuccess.html";
+        } else {
+            nextPage = "addFamiliaViewFail.html";
         }
+
+        this.modelAndView.setViewName(nextPage);
+        this.modelAndView.addObject("familia", newFamilia);
+        return this.modelAndView;
     }
 }

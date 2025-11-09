@@ -15,6 +15,9 @@ public class Socio {
     private Integer familiaId;
     private FamiliaType relacionFamiliar;
 
+    public Socio() {
+    }
+
     public Socio(Integer dni, String name, String surname, LocalDate birthDate, LocalDate inscriptionDate, String address, boolean patronEmbarcacion, Integer inscriptionId, Integer familiaId, FamiliaType relacionFamiliar) {
         this.dni = dni;
         this.name = name;

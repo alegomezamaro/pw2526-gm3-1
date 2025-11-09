@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Socio Añadido</title>
+</head>
+<body>
+    <h1>¡Socio añadido con éxito!</h1>
+    
+    <div th:if="${socio}">
+        <h2>Detalles del socio:</h2>
+        <ul>
+            <li>DNI: <span th:text="${socio.dni}"></span></li>
+            <li>Nombre: <span th:text="${socio.name}"></span></li>
+            <li>Apellidos: <span th:text="${socio.surname}"></span></li>
+            <li>Dirección: <span th:text="${socio.address}"></span></li>
+            <li>Fecha de nacimiento: <span th:text="${socio.birthDate}"></span></li>
+            <li>Fecha de inscripción: <span th:text="${socio.inscriptionDate}"></span></li>
+            <li>Patrón de embarcación: <span th:text="${socio.patronEmbarcacion}"></span></li>
+            <li>ID de inscripción: <span th:text="${socio.inscriptionId}"></span></li>
+            <li>ID de familia: <span th:text="${socio.familiaId}"></span></li>
+            <li>Relación familiar: <span th:text="${socio.relacionFamiliar}"></span></li>
+        </ul>
+    </div>
+
+    <p><a href="/addSocio">Añadir otro socio</a></p>
+    <p><a href="/">Volver al inicio</a></p>
+</body>
+</html>
