@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
+import java.util.Collections;
 
 @Repository
 public class InscripcionRepository {
@@ -45,38 +46,32 @@ public class InscripcionRepository {
     }
 
     public List<Inscripcion> findAllInscripciones() {
-        try {
-            if (sqlQueries == null) createProperties();
-
-            String query = sqlQueries.getProperty("select-findAllInscripciones");
-            if (query != null) {
-                return jdbcTemplate.query(query, new RowMapper<Inscripcion>() {
-                    @Override
-                    public Inscripcion mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        Inscripcion ins = new Inscripcion(); 
-                        ins.setId(rs.getInt("id"));
-                        String typeStr = rs.getString("type");
-                        if (typeStr != null) {
-                            ins.setType(InscripcionType.valueOf(typeStr));
-                        }
-                        ins.setYearFee(rs.getInt("yearfee"));
-                        ins.setSocioTitular(rs.getInt("sociotitular"));
-                        if (rs.getDate("date") != null) {
-                            ins.setDate(rs.getDate("date").toLocalDate());
-                        }
-                        ins.setFamiliaId(rs.getInt("familiaid"));
-                        return ins;
-                    }
-                });
-            } else {
-                return null;
-            }
-        } catch (DataAccessException e) {
-            System.err.println("Unable to find inscripciones");
-            e.printStackTrace();
-            return null;
+    try {
+        String query = sqlQueries.getProperty("select-findAllInscripciones");
+        if (query != null) {
+            return jdbcTemplate.query(query, new RowMapper<Inscripcion>() {
+                @Override
+                public Inscripcion mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Inscripcion ins = new Inscripcion();
+                    ins.setId(rs.getInt("id"));
+                    String typeStr = rs.getString("type");
+                    if (typeStr != null) ins.setType(InscripcionType.valueOf(typeStr));
+                    ins.setYearFee(rs.getInt("yearfee"));
+                    ins.setSocioTitular(rs.getInt("sociotitular"));
+                    if (rs.getDate("date") != null) ins.setDate(rs.getDate("date").toLocalDate());
+                    ins.setFamiliaId(rs.getInt("familiaid"));
+                    return ins;
+                }
+            });
+        } else {
+            return Collections.emptyList();   // <— antes devolvía null
         }
+    } catch (DataAccessException e) {
+        System.err.println("Unable to find inscripciones");
+        e.printStackTrace();
+        return Collections.emptyList();       // <— antes devolvía null
     }
+}
 
     public boolean addInscripcion(Inscripcion ins) {
         try {
