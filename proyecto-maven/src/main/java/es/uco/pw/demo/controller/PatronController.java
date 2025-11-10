@@ -2,10 +2,13 @@ package es.uco.pw.demo.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import es.uco.pw.demo.model.Alquiler;
 import es.uco.pw.demo.model.Patron;
 import es.uco.pw.demo.model.PatronRepository;
 
@@ -23,39 +26,28 @@ public class PatronController {
     // ------- VISTA: Formulario alta de patrón -------
     @GetMapping("/addPatron")
     public ModelAndView getAddPatronView() {
-        // No creamos new Patron() porque tu modelo no tiene constructor vacío
-        return new ModelAndView("addPatronView"); // sin .html
+        ModelAndView mav = new ModelAndView("/addPatronView");
+        mav.addObject("patron", new Patron (0, "", "", "", null, null)
+        );
+        return mav;
     }
 
     // ------- ACCIÓN: Procesar alta de patrón -------
-    @PostMapping("/addPatron")
-    public ModelAndView addPatron(
-            @RequestParam("dni") String dni,
-            @RequestParam("name") String name,
-            @RequestParam("surname") String surname,
-            @RequestParam("license") String license,
-            @RequestParam(value = "phone", required = false) String phone,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "experience", required = false) Integer experience,
-            @RequestParam(value = "embarcacion", required = false) String embarcacion
-    ) {
-        ModelAndView mav = new ModelAndView();
+        @PostMapping("/addPatron")
+        public ModelAndView addPatron(@ModelAttribute("patron") Patron patron, SessionStatus status) {
+            ModelAndView mav;
+            boolean success = patronRepository.addPatron(patron);
 
-        // TODO: AJUSTA ESTE CONSTRUCTOR al que tenga tu clase Patron
-        // Ejemplo típico si tu constructor es "completo":
-        Patron nuevo = new Patron(
-                dni, name, surname, license, phone, email, experience, embarcacion
-        );
+            if (success) {
+                mav = new ModelAndView("/addPatronViewSuccess");
+                mav.addObject("patron", patron);
+            } else {
+                mav = new ModelAndView("/addPatronViewFail");
+            }
 
-        boolean ok = patronRepository.addPatron(nuevo);
-        if (ok) {
-            mav.setViewName("addPatronViewSuccess");
-        } else {
-            mav.setViewName("addPatronViewFail");
+            status.setComplete();
+            return mav;
         }
-        mav.addObject("patron", nuevo);
-        return mav;
-    }
 
     // ------- VISTA/ACCIÓN: Buscar patrón por DNI -------
     @GetMapping("/findPatronById")
