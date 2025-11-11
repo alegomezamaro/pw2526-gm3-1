@@ -1,12 +1,13 @@
 package es.uco.pw.demo.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
-
 import es.uco.pw.demo.model.Socio;
 import es.uco.pw.demo.model.SocioRepository;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+import java.time.LocalDate;
 
 @Controller
 public class SocioController {
@@ -15,36 +16,106 @@ public class SocioController {
 
     public SocioController(SocioRepository socioRepository) {
         this.socioRepository = socioRepository;
-        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
-        this.socioRepository.setSQLQueriesFileName(sqlQueriesFileName);
     }
 
-    // --- GET: Buscar socio SOLO por DNI (en tu modelo el DNI es numérico)
-    @GetMapping("/findSocioById")
-    public ModelAndView findSocioByDni(
-            @RequestParam(name = "dni", required = false) String dni) {
+    // ------- VISTA: Formulario alta de socio -------
+    @GetMapping("/addSocio")
+    public ModelAndView getAddSocioView() {
+        return new ModelAndView("addSocioView"); // nombre de la plantilla sin .html
+    }
 
-        ModelAndView mav = new ModelAndView("findSocioByIdView"); // sin .html
+    // ------- ACCIÓN: Procesar alta de socio -------
+    @PostMapping("/addSocio")
+    public ModelAndView addSocio(
+            @RequestParam("dni") String dni,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("apellidos") String apellidos,
+            @RequestParam("direccion") String direccion,
+            @RequestParam("fechaNacimiento") String fechaNacimiento) {
 
-        if (dni != null && !dni.isBlank()) {
-            String dniQuery = dni.trim();
+        ModelAndView mav = new ModelAndView();
 
-            Socio socio = socioRepository.findAllSocios()
-                    .stream()
-                    .filter(s -> {
-                        // getDni() es Integer/int en tu modelo → comparamos como String
-                        Integer dniModel = s.getDni();
-                        return dniModel != null && dniQuery.equals(String.valueOf(dniModel));
-                    })
-                    .findFirst()
-                    .orElse(null);
-
-            if (socio == null) {
-                mav.addObject("errorMessage", "No se encontró ningún socio con DNI " + dniQuery);
-            } else {
-                mav.addObject("socio", socio);
-            }
+        // Verificar si el DNI ya existe en la base de datos
+        Socio existingSocio = socioRepository.findSocioByDni(dni);
+        if (existingSocio != null) {
+            mav.addObject("errorMessage", "El DNI ya está registrado en otro socio: " + dni);
+            mav.setViewName("addSocioViewFail");
+            return mav;
         }
+
+        // Convertir la fechaNacimiento de String a LocalDate
+        LocalDate fechaNac = LocalDate.parse(fechaNacimiento);  // Convierte String a LocalDate
+
+        // Creamos el nuevo socio (por defecto patronEmbarcacion = NO)
+        Socio nuevoSocio = new Socio(dni, nombre, apellidos, fechaNac, direccion, false);
+
+        boolean ok = socioRepository.addSocio(nuevoSocio);
+
+        if (ok) {
+            mav.setViewName("addSocioViewSuccess");
+        } else {
+            mav.setViewName("addSocioViewFail");
+        }
+        mav.addObject("socio", nuevoSocio);
+        return mav;
+    }
+
+    // ------- VISTA/ACCIÓN: Añadir título de patrón a un socio -------
+    @GetMapping("/addTituloPatronASocio")
+    public ModelAndView getAddTituloPatronView() {
+        return new ModelAndView("addTituloPatronASocio"); // nombre de la plantilla sin .html
+    }
+
+    @PostMapping("/addTituloPatronASocio")
+    public ModelAndView addTituloPatronASocio(
+            @RequestParam("dni") String dni,
+            @RequestParam(name = "tituloPatron", defaultValue = "false") boolean tituloPatron) {  // Usar defaultValue para manejar el caso de checkbox no seleccionado
+
+        ModelAndView mav = new ModelAndView();
+
+        // Buscar al socio por su DNI
+        Socio socio = socioRepository.findSocioByDni(dni);
+
+        // Verificar si el socio existe
+        if (socio == null) {
+            mav.addObject("errorMessage", "No se encontró socio con el DNI: " + dni);
+            mav.setViewName("addTituloPatronASocioFail"); // Vista de error
+            return mav;
+        }
+
+        // Si no se seleccionó el título de patrón, mostrar que no se realizó ningún cambio
+        if (!tituloPatron) {
+            mav.addObject("errorMessage", "El socio no tiene el título de patrón, por lo que no se realizó ningún cambio.");
+            mav.setViewName("addTituloPatronASocioFail"); // Vista de error
+            return mav;
+        }
+
+        // Verificar si el socio ya tiene el título de patrón
+        if (socio.esPatronEmbarcacion()) {
+            mav.addObject("errorMessage", "El socio ya tiene el título de patrón.");
+            mav.setViewName("addTituloPatronASocioFail"); // Mostrar vista de error si ya tiene el título
+            return mav;
+        }
+
+        // Actualizar el título de patrón
+        socio.setPatronEmbarcacion(tituloPatron);
+
+        boolean ok = socioRepository.updateSocio(socio);
+        if (ok) {
+            mav.setViewName("addTituloPatronASocioSuccess"); // Vista de éxito
+        } else {
+            mav.addObject("errorMessage", "Hubo un problema al actualizar el título de patrón.");
+            mav.setViewName("addTituloPatronASocioFail"); // Vista de error
+        }
+        mav.addObject("socio", socio);
+        return mav;
+    }
+
+    // ------- VISTA: Listar socios -------
+    @GetMapping("/listSocios")
+    public ModelAndView listSocios() {
+        ModelAndView mav = new ModelAndView("listSocios"); // nombre de la plantilla sin .html
+        mav.addObject("socios", socioRepository.findAllSocios());
         return mav;
     }
 }

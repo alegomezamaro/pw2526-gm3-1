@@ -4,6 +4,7 @@ Socio
         String apellidos
         String dni
         LocalDate fechaNacimiento
+        LocalDate fechaAlta <<<<<<<<<<<<<<<<<<<<<
         String direccion
         Bool patron
     -VISTAS
@@ -30,6 +31,7 @@ Familia
     -VARIABLES
         Int idFamilia
         String dniTitular
+        List<String> dniSecundarios <<<<<<<<<<<<<<<<<<<<<<<<
         Int numeroAdultos (1-2)
         Int numeroNiños
 
@@ -63,13 +65,13 @@ Patron
 
 Alquiler
     -VARIABLES
-        Int idAlquiler x
-        String socioTitular x
-        String matricula x
-        Int plazasNecesarias x
-        Int precio (20€pp) x
-        Date fechaInicio x
-        Date fechaFin x
+        Int idAlquiler
+        String socioTitular
+        String matricula
+        Int plazasNecesarias
+        Int precio (20€pp)
+        Date fechaInicio
+        Date fechaFin
     -VISTAS
         Buscar embarcacion disponible (FECHA INICIO-FIN)
         Alquilar embarcación (EMBARCACION DISPONIBLE)

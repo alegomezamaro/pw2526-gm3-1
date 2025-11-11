@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Añadir título de patrón a un socio</title>
+</head>
+<body>
+  <h1>Añadir título de patrón a un socio</h1>
+
+  <form method="POST" th:action="@{/addTituloPatronASocio}">
+    <label for="dni">DNI del socio:</label><br/>
+    <input type="text" id="dni" name="dni" placeholder="12345678A" required/><br/><br/>
+
+    <label for="tituloPatron">¿Este socio tiene el título de patrón?</label><br/>
+    <input type="checkbox" id="tituloPatron" name="tituloPatron"/><br/><br/>
+
+    <input type="submit" value="Enviar"/>
+  </form>
+
+  <p><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>

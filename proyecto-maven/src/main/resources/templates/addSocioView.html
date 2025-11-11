@@ -2,51 +2,31 @@
 <html lang="es" xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Añadir Socio</title>
+  <meta charset="UTF-8">
+  <title>Añadir Socio</title>
 </head>
 <body>
-<h1>Añadir Socio</h1>
+  <h1>Añadir Socio</h1>
 
-<form method="POST" th:action="@{/addSocio}" th:object="${newSocio}">
+  <form method="POST" th:action="@{/addSocio}">
     <label for="dni">DNI:</label><br/>
-    <input type="text" th:field="*{dni}" id="dni" placeholder="12345678A" required/><br/><br/>
+    <input type="text" id="dni" name="dni" placeholder="12345678A" required/><br/><br/>
 
-    <label for="name">Nombre:</label><br/>
-    <input type="text" th:field="*{name}" id="name" required/><br/><br/>
+    <label for="nombre">Nombre:</label><br/>
+    <input type="text" id="nombre" name="nombre" required/><br/><br/>
 
-    <label for="surname">Apellidos:</label><br/>
-    <input type="text" th:field="*{surname}" id="surname" required/><br/><br/>
+    <label for="apellidos">Apellidos:</label><br/>
+    <input type="text" id="apellidos" name="apellidos" required/><br/><br/>
 
-    <label for="address">Dirección:</label><br/>
-    <input type="text" th:field="*{address}" id="address" required/><br/><br/>
+    <label for="direccion">Dirección:</label><br/>
+    <input type="text" id="direccion" name="direccion" required/><br/><br/>
 
-    <label for="birthDate">Fecha de nacimiento:</label><br/>
-    <input type="date" th:field="*{birthDate}" id="birthDate" required/><br/><br/>
-
-    <label for="inscriptionDate">Fecha de inscripción:</label><br/>
-    <input type="date" th:field="*{inscriptionDate}" id="inscriptionDate" required/><br/><br/>
-
-    <label for="patronEmbarcacion">¿Patrón de embarcación?</label>
-    <input type="checkbox" th:field="*{patronEmbarcacion}" id="patronEmbarcacion"/><br/><br/>
-
-    <label for="inscriptionId">ID de inscripción:</label><br/>
-    <input type="number" th:field="*{inscriptionId}" id="inscriptionId" min="0"/><br/><br/>
-
-    <label for="familiaId">ID de familia:</label><br/>
-    <input type="number" th:field="*{familiaId}" id="familiaId" min="0"/><br/><br/>
-
-    <label for="relacionFamiliar">Relación familiar (si aplica):</label><br/>
-    <input type="text" th:field="*{relacionFamiliar}" id="relacionFamiliar"/><br/><br/>
+    <label for="fechaNacimiento">Fecha de nacimiento:</label><br/>
+    <input type="date" id="fechaNacimiento" name="fechaNacimiento" required/><br/><br/>
 
     <input type="submit" value="Enviar"/>
-</form>
+  </form>
 
-<!-- Mensaje opcional si envías algún atributo de error -->
-<div th:if="${errorMessage}">
-    <p th:text="${errorMessage}" style="color:red;"></p>
-</div>
-
-<p><a th:href="@{/}">Volver al menu</a></p>
+  <p><a th:href="@{/}">Volver al menú</a></p>
 </body>
 </html>

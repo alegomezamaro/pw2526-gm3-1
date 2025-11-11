@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Éxito - Título de Patrón</title>
+</head>
+<body>
+    <h1>¡Título de patrón añadido correctamente!</h1>
+
+    <p th:if="${socio != null}">
+        El socio <span th:text="${socio.nombre}">Nombre</span> <span th:text="${socio.apellidos}">Apellido</span> 
+        ha sido actualizado con el título de patrón.
+    </p>
+    
+    <p th:if="${socio == null}">
+        El socio no tenía título de patrón, pero ahora se le ha asignado.
+    </p>
+
+    <p><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>

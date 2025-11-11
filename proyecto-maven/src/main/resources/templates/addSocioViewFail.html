@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html
-      xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="Free Web tutorials">
-  <meta name="keywords" content="HTML,CSS,XML,JavaScript">
-  <meta name="author" content="UCO">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Template for views</title>
+  <title>Error al añadir socio</title>
 </head>
 <body>
-  <!-- Ejemplo Thymeleaf -->
   <h1>Error al añadir el socio</h1>
+  <p th:if="${errorMessage}">
+    <span th:text="${errorMessage}" style="color:red;"></span>
+  </p>
+  <p><a th:href="@{/addSocio}">Volver al formulario</a></p>
+  <p><a th:href="@{/}">Volver al menú</a></p>
 </body>
 </html>

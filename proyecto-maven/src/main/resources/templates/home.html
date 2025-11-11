@@ -9,49 +9,59 @@
     <h1>Bienvenido al menú del Club NautiUCO</h1>
     <h2>Funciones</h2>
 
+    <!-- SOCIO -->
+    <h3>Socio</h3>
+    <ol>
+        <li><a th:href="@{/addSocio}">Añadir socio</a></li>
+        <li><a th:href="@{/addTituloPatronASocio}">Añadir título de patrón a un socio</a></li>
+        <li><a th:href="@{/listSocios}">Listar socios</a></li>
+    </ol>
+
+    <!-- INSCRIPCIÓN -->
+    <h3>Inscripción</h3>
+    <ol>
+        <li><a th:href="@{/ampliarInscripcion}">Ampliación inscripción</a></li>
+        <li><a th:href="@{/listInscripciones}">Listar inscripciones por tipo</a></li>
+    </ol>
+
+    <!-- FAMILIA (no pediste vistas nuevas; si las tienes, añade aquí sus enlaces) -->
+    <!--
+    <h3>Familia</h3>
+    <ol>
+        <li><a th:href="@{/addFamilia}">Añadir familia</a></li>
+        <li><a th:href="@{/findFamiliaById}">Buscar familia por ID</a></li>
+    </ol>
+    -->
+
+    <!-- EMBARCACIÓN -->
+    <h3>Embarcación</h3>
+    <ol>
+        <li><a th:href="@{/addEmbarcacion}">Dar alta embarcación</a></li>
+        <li><a th:href="@{/asignarPatronEmbarcacion}">Asignar un patrón</a></li>
+        <li><a th:href="@{/consultarEmbarcacionesPorTipo}">Consultar por tipo de embarcación</a></li>
+    </ol>
+
+    <!-- PATRÓN -->
+    <h3>Patrón</h3>
+    <ol>
+        <li><a th:href="@{/addPatron}">Dar de alta patrón</a></li>
+    </ol>
+
+    <!-- ALQUILER -->
     <h3>Alquiler</h3>
     <ol>
-        <li><a th:href="@{/addAlquiler}">Añadir un alquiler</a></li>
-        <li><a th:href="@{/findAlquilerById}">Busca un alquiler</a></li>
+        <li><a th:href="@{/buscarEmbarcacionDisponible}">Buscar embarcación disponible</a></li>
+        <li><a th:href="@{/addAlquiler}">Alquilar embarcación</a></li>
+        <li><a th:href="@{/listAlquileres}">Listar alquileres</a></li>
     </ol>
 
-    <h3>Embarcaciones</h3>
+    <!-- RESERVA -->
+    <h3>Eventos</h3>
     <ol>
-        <li><a th:href="@{/addEmbarcacion}">Añadir una embarcación</a></li>
-        <li><a th:href="@{/findEmbarcacionById}">Busca una embarcación</a></li>
+        <li><a th:href="@{/addReserva}">Reservar embarcación para un evento</a></li>
     </ol>
 
-    <h3>Familias</h3>
-    <ol>
-        <li><a th:href="@{/addFamilia}">Añadir una familia</a></li>
-        <li><a th:href="@{/findFamiliaById}">Busca una familia</a></li>
-    </ol>
-
-    <h3>Inscripciones</h3>
-    <ol>
-        <li><a th:href="@{/addInscripcion}">Añadir una inscripción</a></li>
-        <li><a th:href="@{/findInscripcionById}">Busca una inscripción</a></li>
-    </ol>
-
-    <h3>Patrones</h3>
-    <ol>
-        <li><a th:href="@{/addPatron}">Añadir un patrón</a></li>
-        <li><a th:href="@{/findPatronById}">Busca un patrón</a></li>
-    </ol>
-
-    <h3>Reservas</h3>
-    <ol>
-        <li><a th:href="@{/addReserva}">Añadir una reserva</a></li>
-        <li><a th:href="@{/findReservaById}">Busca una reserva</a></li>
-    </ol>
-
-    <h3>Socios</h3>
-    <ol>
-        <li><a th:href="@{/addSocio}">Añadir un socio</a></li>
-        <li><a th:href="@{/findSocioById}">Busca un socio</a></li>
-    </ol>
-
-    <!-- Imagen ubicada en src/main/resources/static/images/UCO.png -->
+    <!-- Imagen -->
     <img th:src="@{/images/UCO.png}" alt="UCO" style="height: 350px"/>
-</body>
-</html>
+    </body>
+    </html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Socios</title>
+</head>
+<body>
+    <h1>Lista de Socios</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>DNI</th>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>Dirección</th>
+                <th>Fecha de Nacimiento</th>
+                <th>Patrón de Embarcación</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="socio : ${socios}">
+                <td th:text="${socio.dni}">DNI</td>
+                <td th:text="${socio.nombre}">Nombre</td>
+                <td th:text="${socio.apellidos}">Apellidos</td>
+                <td th:text="${socio.direccion}">Dirección</td>
+                <td th:text="${socio.fechaNacimiento}">Fecha Nacimiento</td>
+                <td th:text="${socio.esPatronEmbarcacion() ? 'Sí' : 'No'}">Patrón</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>
