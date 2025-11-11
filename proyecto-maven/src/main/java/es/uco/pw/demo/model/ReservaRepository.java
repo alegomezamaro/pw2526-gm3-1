@@ -54,9 +54,7 @@ public class ReservaRepository {
                     public Reserva mapRow(ResultSet rs, int rowNum) throws SQLException {
                         return new Reserva(
                             rs.getInt("id"),
-                            /* embarcacion */ null,            // relación no hidratada
-                            rs.getString("descripcion"),
-                            /* socioSolicitante */ null,       // relación no hidratada
+                            rs.getString("matriculaEmbarcacion"),
                             rs.getInt("plazasreserva"),
                             rs.getDate("fechareserva") != null
                                 ? rs.getDate("fechareserva").toLocalDate()
@@ -83,10 +81,7 @@ public class ReservaRepository {
                 int result = jdbcTemplate.update(
                     query,
                     r.getId(),
-                    // FK simples por ID/clave natural:
-                    (r.getEmbarcacion() != null ? r.getEmbarcacion().getMatricula() : null),
-                    r.getDescripcion(),
-                    (r.getSocioSolicitante() != null ? r.getSocioSolicitante().getDni() : null),
+                    (r.getMatriculaEmbarcacion() != null ? r.getMatriculaEmbarcacion(): null),
                     r.getPlazasReserva(),
                     r.getFechaReserva() != null ? Date.valueOf(r.getFechaReserva()) : null,
                     r.getPrecioReserva()

@@ -5,31 +5,41 @@ import java.util.List;
 public class Familia {
   
   private Integer id;
-  private Integer mainDni;
-  private List<Integer> familiaDnis;
+  private String dniTitular;
+  private Integer numAdultos;
+  private Integer numNiños;
 
   public Integer getId() {
       return id;
   }
 
-  public Integer getMainDni() {
-      return mainDni;
+  public String getDniTitular() {
+      return dniTitular;
   }
 
-  public List<Integer> getFamiliaDnis() {
-      return familiaDnis;
+  public Integer getNumAdultos() {
+      return numAdultos;
   }
+
+  public Integer getNumNiños() {
+      return numNiños;
+  }
+
   
   public void setId(Integer id) {
       this.id = id;
   }
 
-  public void setMainDni(Integer mainDni) {
-      this.mainDni = mainDni;
+  public void setDniTitular(String dniTitular) {
+      this.dniTitular = dniTitular;
   }
 
-  public void setFamiliaDnis(List<Integer> familiaDnis) {
-      this.familiaDnis = familiaDnis;
+  public void setNumAdultos(Integer numAdultos) {
+      this.numAdultos = numAdultos;
+  }
+
+  public void setNumNiños(Integer numNiños) {
+      this.numNiños = numNiños;
   }
 
 

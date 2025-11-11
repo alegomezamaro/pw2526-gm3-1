@@ -54,12 +54,12 @@ public class InscripcionRepository {
                 public Inscripcion mapRow(ResultSet rs, int rowNum) throws SQLException {
                     Inscripcion ins = new Inscripcion();
                     ins.setId(rs.getInt("id"));
-                    String typeStr = rs.getString("type");
-                    if (typeStr != null) ins.setType(InscripcionType.valueOf(typeStr));
-                    ins.setYearFee(rs.getInt("yearfee"));
-                    ins.setSocioTitular(rs.getInt("sociotitular"));
-                    if (rs.getDate("date") != null) ins.setDate(rs.getDate("date").toLocalDate());
-                    ins.setFamiliaId(rs.getInt("familiaid"));
+                    String typeStr = rs.getString("tipoCuota");
+                    if (typeStr != null) ins.setTipoCuota(InscripcionType.valueOf(typeStr));
+                    ins.setCuotaAnual(rs.getInt("cuotaAnual"));
+                    ins.setDniTitular(rs.getString("dniTitular"));
+                    if (rs.getDate("fechaInscripcion") != null) ins.setFechaInscripcion(rs.getDate("fechaInscripcion").toLocalDate());
+                    ins.setFamiliaId(rs.getInt("familiaId"));
                     return ins;
                 }
             });
@@ -82,10 +82,10 @@ public class InscripcionRepository {
                 int result = jdbcTemplate.update(
                     query,
                     ins.getId(),
-                    ins.getType() != null ? ins.getType().toString() : null,
-                    ins.getYearFee(),
-                    ins.getSocioTitular(),
-                    ins.getDate() != null ? Date.valueOf(ins.getDate()) : null,
+                    ins.getTipoCuota() != null ? ins.getTipoCuota().toString() : null,
+                    ins.getCuotaAnual(),
+                    ins.getDniTitular(),
+                    ins.getFechaInscripcion() != null ? Date.valueOf(ins.getFechaInscripcion()) : null,
                     ins.getFamiliaId()
                 );
                 return result > 0;

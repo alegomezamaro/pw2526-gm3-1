@@ -53,17 +53,12 @@ public class SocioRepository{
           List<Socio> socios = jdbcTemplate.query(query, new RowMapper<Socio>(){
             public Socio mapRow(ResultSet rs, int rowNumber) throws SQLException{
               return new Socio(
-                rs.getInt("id"),
-                rs.getString("name"),
-                rs.getString("surname"),
+                rs.getString("id"),
+                rs.getString("nombre"),
+                rs.getString("apellidos"),
                 Date.valueOf(rs.getString("birthdate")).toLocalDate(),
-                Date.valueOf(rs.getString("inscriptiondate")).toLocalDate(),
-                rs.getString("address"),
-                rs.getBoolean("patronembarcacion"),
-                rs.getInt("inscriptionid"),
-                rs.getInt("familiaid"),
-                // maybe tenemos que hacer algo si familiaID es null?
-                FamiliaType.valueOf(rs.getString("relacionfamiliar"))
+                rs.getString("direccion"),
+                rs.getBoolean("patronembarcacion")
                 );
               };
             });
@@ -85,15 +80,11 @@ public class SocioRepository{
 
           int result = jdbcTemplate.update(query,
             socio.getDni(),
-            socio.getName(),
-            socio.getSurname(),
-            socio.getBirthDate().toString(),
-            socio.getInscriptionDate().toString(),
-            socio.getAddress(),
-            socio.isPatronEmbarcacion(),
-            socio.getInscriptionId(),
-            socio.getFamiliaId(),
-            socio.getRelacionFamiliar()
+            socio.getNombre(),
+            socio.getApellidos(),
+            socio.getFechaNacimiento().toString(),
+            socio.getDireccion(),
+            socio.esPatronEmbarcacion()
           );
           if(result>0) return true;
           else return false;

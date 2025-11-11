@@ -57,8 +57,9 @@ public class FamiliaRepository {
                     public Familia mapRow(ResultSet rs, int rowNum) throws SQLException {
                         Familia f = new Familia();
                         f.setId(rs.getInt("id"));
-                        f.setMainDni(rs.getInt("maindni"));
-                        f.setFamiliaDnis(null);
+                        f.setDniTitular(rs.getString("dniTitular"));
+                        f.setNumAdultos(rs.getInt("numAdultos"));
+                        f.setNumNiños(rs.getInt("numNiños"));
                         return f;
                     }
                 });
@@ -82,7 +83,9 @@ public class FamiliaRepository {
                 int result = jdbcTemplate.update(
                     query,
                     f.getId(),
-                    f.getMainDni()
+                    f.getDniTitular(),
+                    f.getNumAdultos(),
+                    f.getNumNiños()
                 );
                 return result > 0;
             } else {

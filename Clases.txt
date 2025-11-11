@@ -63,15 +63,13 @@ Patron
 
 Alquiler
     -VARIABLES
-        Int idAlquiler
-        String socioTitular
-        Lista<String> socios
-        String matricula
-        Int plazasNecesarias
-        Int precio (20€pp)
-        Date fechaInicio
-        Date fechaFin
-        Bool socioPatron
+        Int idAlquiler x
+        String socioTitular x
+        String matricula x
+        Int plazasNecesarias x
+        Int precio (20€pp) x
+        Date fechaInicio x
+        Date fechaFin x
     -VISTAS
         Buscar embarcacion disponible (FECHA INICIO-FIN)
         Alquilar embarcación (EMBARCACION DISPONIBLE)

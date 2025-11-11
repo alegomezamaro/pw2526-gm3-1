@@ -19,7 +19,6 @@ public class EmbarcacionRepository {
 
     private JdbcTemplate jdbcTemplate;
     private Properties sqlQueries;
-    // ✅ Ruta por defecto para evitar NPE si no se llama al setter
     private String sqlQueriesFileName = "src/main/resources/db/sql.properties";
 
     public EmbarcacionRepository(JdbcTemplate jdbcTemplate) {

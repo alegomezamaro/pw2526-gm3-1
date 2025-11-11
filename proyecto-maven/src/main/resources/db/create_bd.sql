@@ -1,149 +1,164 @@
 -- =========================================================
--- Club Náutico - Script de creación de base de datos
--- Solo creación de tablas e inserción de datos
--- =========================================================
+-- Club Náutico - BD generada a partir de las clases (columnas = nombres de variables)
+-- Motor: MySQL/MariaDB
+-- Fecha: 2025-11-11
 
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS Alquiler;
+DROP TABLE IF EXISTS Reserva;
+DROP TABLE IF EXISTS Embarcacion;
+DROP TABLE IF EXISTS Patron;
+DROP TABLE IF EXISTS Inscripcion;
+DROP TABLE IF EXISTS Familia;
+DROP TABLE IF EXISTS Socio;
+
+SET FOREIGN_KEY_CHECKS = 1;
+-- =========================================================
 -- =========================================================
 -- Tabla: Socio
+-- Campos: dni (PK), nombre, apellidos, direccion, fechaNacimiento, patronEmbarcacion
 -- =========================================================
-DROP TABLE IF EXISTS Socio;
 CREATE TABLE Socio (
-  dni INT NOT NULL,
-  name VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-  surname VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-  address VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  birthDate DATE DEFAULT NULL,
-  inscriptionDate DATE DEFAULT NULL,
-  patronEmbarcacion TINYINT(1) NOT NULL DEFAULT 0,
-  inscriptionId INT DEFAULT NULL,
+  dni                 VARCHAR(20)   NOT NULL,
+  nombre              VARCHAR(120)  NOT NULL,
+  apellidos           VARCHAR(160)  NOT NULL,
+  direccion           VARCHAR(255),
+  fechaNacimiento     DATE          NOT NULL,
+  patronEmbarcacion   TINYINT(1)    NOT NULL DEFAULT 0,
   PRIMARY KEY (dni)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ADD FOREIGN KEY (inscriptionId) REFERENCES Inscripcion(id);
-
-INSERT INTO Socio VALUES
-(12345678, 'Ana', 'López García', 'Av. del Puerto 12, Cádiz', '1999-03-21', '2023-06-15', 1, NULL),
-(87654321, 'Javier', 'Martín Ruiz', 'C/ Cruz Conde 7, Córdoba', '2001-11-02', '2024-01-10', 0, NULL),
-(70890123, 'Lucía', 'Serrano Torres', 'Gran Vía 101, Madrid', '2000-08-14', '2022-09-01', 1, NULL),
-(22446688, 'Carlos', 'Castillo Romero', 'Rambla Catalunya 45, Barcelona', '1998-05-05', '2021-04-20', 0, NULL),
-(33445566, 'Beatriz', 'Navarro Fernández', 'C/ Larios 3, Málaga', '2002-12-30', '2024-07-01', 0, NULL),
-(44556677, 'Sergio', 'Pérez Domínguez', 'Av. de la Constitución 8, Sevilla', '1997-01-17', '2020-03-12', 1, NULL);
+-- =========================================================
+-- Tabla: Familia (ACTUALIZADA)
+-- Campos: id (PK), dniTitular (FK a Socio.dni), numAdultos, numNiños
+-- ¡OJO! Se respeta la tilde en el nombre de columna `numNiños`.
+-- =========================================================
+CREATE TABLE Familia (
+  id          INT          NOT NULL AUTO_INCREMENT,
+  dniTitular  VARCHAR(20)  NOT NULL,
+  numAdultos  INT          NOT NULL,
+  `numNiños`  INT          NOT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_familia_titular FOREIGN KEY (dniTitular) REFERENCES Socio(dni)
+    ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- =========================================================
 -- Tabla: Inscripcion
+-- Campos: id (PK), tipoCuota (ENUM), cuotaAnual, fechaInscripcion, dniTitular (FK Socio), familiaId (FK Familia)
 -- =========================================================
-DROP TABLE IF EXISTS Inscripcion;
 CREATE TABLE Inscripcion (
-  id INT NOT NULL AUTO_INCREMENT,
-  tipo ENUM('INDIVIDUAL','FAMILIAR') NOT NULL,
-  cuota DECIMAL(10,2) NOT NULL,
-  fecha_creacion DATE NOT NULL,
-  titular_dni INT NOT NULL,
-  PRIMARY KEY (id)
+  id                 INT          NOT NULL AUTO_INCREMENT,
+  tipoCuota          ENUM('INDIVIDUAL','FAMILIAR') NOT NULL,
+  cuotaAnual         INT          NOT NULL,
+  fechaInscripcion   DATE         NOT NULL,
+  dniTitular         VARCHAR(20)  NOT NULL,
+  familiaId          INT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_inscripcion_titular FOREIGN KEY (dniTitular) REFERENCES Socio(dni)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT fk_inscripcion_familia FOREIGN KEY (familiaId) REFERENCES Familia(id)
+    ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ADD FOREIGN KEY (titular_dni) REFERENCES Socio(dni);
-
-INSERT INTO Inscripcion (tipo, cuota, fecha_creacion, titular_dni) VALUES
-('INDIVIDUAL', 300.00, '2023-06-15', 12345678),
-('FAMILIAR',   650.00, '2024-01-10', 87654321);
-
--- =========================================================
--- Tabla: Familia
--- =========================================================
-DROP TABLE IF EXISTS Familia;
-CREATE TABLE Familia (
-  inscripcion_id INT NOT NULL,
-  socio_dni INT NOT NULL,
-  rol ENUM('TITULAR','ADULTO','HIJO') NOT NULL,
-  PRIMARY KEY (inscripcion_id, socio_dni)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ADD FOREIGN KEY (inscripcion_id) REFERENCES Inscripcion(id);
-ADD FOREIGN KEY (socio_dni) REFERENCES Socio(dni);
-
-INSERT INTO Familia VALUES
-(1, 12345678, 'TITULAR'),
-(2, 87654321, 'TITULAR'),
-(2, 33445566, 'ADULTO'),
-(2, 70890123, 'HIJO');
 
 -- =========================================================
 -- Tabla: Patron
+-- Campos: id (PK), dni (UNIQUE), nombre, apellidos, fechaNacimiento, fechaTituloPatron
 -- =========================================================
-DROP TABLE IF EXISTS Patron;
 CREATE TABLE Patron (
-  dni INT NOT NULL,
-  name VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-  surname VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-  birthDate DATE DEFAULT NULL,
-  fechaExpedicion DATE DEFAULT NULL,
-  PRIMARY KEY (dni)
+  id                 INT          NOT NULL,
+  dni                VARCHAR(20)  NOT NULL,
+  nombre             VARCHAR(120) NOT NULL,
+  apellidos          VARCHAR(160) NOT NULL,
+  fechaNacimiento    DATE         NOT NULL,
+  fechaTituloPatron  DATE         NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uk_patron_dni (dni)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-INSERT INTO Patron VALUES
-(11112222, 'María', 'Gómez', '1985-04-11', '2010-06-01'),
-(22223333, 'Pedro', 'Santos', '1979-12-09', '2005-09-15');
 
 -- =========================================================
 -- Tabla: Embarcacion
+-- Campos: matricula (PK), nombre (UNIQUE), tipo (ENUM), plazas, dimensiones, patronAsignado (FK Patron.id)
 -- =========================================================
-DROP TABLE IF EXISTS Embarcacion;
 CREATE TABLE Embarcacion (
-  matricula VARCHAR(20) COLLATE utf8_unicode_ci NOT NULL,
-  nombre VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
-  tipo ENUM('VELERO','YATE','LANCHA','CATAMARAN','MOTO_ACUATICA') NOT NULL,
-  plazas INT NOT NULL,
-  eslora_m DECIMAL(6,2) DEFAULT NULL,
-  manga_m DECIMAL(6,2) DEFAULT NULL,
-  calado_m DECIMAL(6,2) DEFAULT NULL,
-  patron_dni INT DEFAULT NULL,
-  PRIMARY KEY (matricula)
+  matricula        VARCHAR(32)   NOT NULL,
+  nombre           VARCHAR(120)  NOT NULL,
+  tipo             ENUM('VELERO','YATE','CATAMARAN','LANCHA') NOT NULL,
+  plazas           INT           NOT NULL,
+  dimensiones      VARCHAR(80)   NOT NULL,
+  patronAsignado   INT NULL,
+  PRIMARY KEY (matricula),
+  UNIQUE KEY uk_embarcacion_nombre (nombre),
+  CONSTRAINT fk_embarcacion_patron FOREIGN KEY (patronAsignado) REFERENCES Patron(id)
+    ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ADD FOREIGN KEY (patron_dni) REFERENCES Patron(dni);
-
-INSERT INTO Embarcacion VALUES
-('CAD-0001', 'Luna de Mar', 'VELERO', 8, 10.50, 3.50, 1.80, 11112222),
-('CAD-0002', 'Brisa Azul', 'LANCHA', 6, 7.20, 2.50, 0.90, 22223333),
-('CAD-0003', 'Costa Dorada', 'YATE', 12, 14.00, 4.20, 2.10, NULL);
 
 -- =========================================================
 -- Tabla: Alquiler
+-- Campos: id (PK), matriculaEmbarcacion (FK), dniTitular (FK), fechaInicio, fechaFin, plazasSolicitadas, precioTotal
 -- =========================================================
-DROP TABLE IF EXISTS Alquiler;
 CREATE TABLE Alquiler (
-  id BIGINT NOT NULL AUTO_INCREMENT,
-  socio_titular_dni INT NOT NULL,
-  matricula VARCHAR(20) COLLATE utf8_unicode_ci NOT NULL,
-  fecha_inicio DATE NOT NULL,
-  fecha_fin DATE NOT NULL,
-  plazas_solicitadas INT NOT NULL,
-  num_personas INT NOT NULL,
-  PRIMARY KEY (id)
+  id                     INT          NOT NULL AUTO_INCREMENT,
+  matriculaEmbarcacion   VARCHAR(32)  NOT NULL,
+  dniTitular             VARCHAR(20)  NOT NULL,
+  fechaInicio            DATE         NOT NULL,
+  fechaFin               DATE         NOT NULL,
+  plazasSolicitadas      INT          NOT NULL,
+  precioTotal            DOUBLE       NOT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_alquiler_embarcacion FOREIGN KEY (matriculaEmbarcacion) REFERENCES Embarcacion(matricula)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+  CONSTRAINT fk_alquiler_titular FOREIGN KEY (dniTitular) REFERENCES Socio(dni)
+    ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-ADD FOREIGN KEY (socio_titular_dni) REFERENCES Socio(dni);
-ADD FOREIGN KEY (matricula) REFERENCES Embarcacion(matricula);
-
-INSERT INTO Alquiler (socio_titular_dni, matricula, fecha_inicio, fecha_fin, plazas_solicitadas, num_personas) VALUES
-(12345678, 'CAD-0001', '2025-05-05', '2025-05-11', 6, 4);
 
 -- =========================================================
 -- Tabla: Reserva
+-- Campos: id (PK), matriculaEmbarcacion (FK), plazasReserva, fechaReserva, precioReserva
 -- =========================================================
-DROP TABLE IF EXISTS Reserva;
 CREATE TABLE Reserva (
-  id BIGINT NOT NULL AUTO_INCREMENT,
-  socio_dni INT NOT NULL,
-  matricula VARCHAR(20) COLLATE utf8_unicode_ci NOT NULL,
-  fecha_evento DATE NOT NULL,
-  plazas_solicitadas INT NOT NULL,
-  PRIMARY KEY (id)
+  id                   INT          NOT NULL,
+  matriculaEmbarcacion VARCHAR(32)  NOT NULL,
+  plazasReserva        INT          NOT NULL,
+  fechaReserva         DATE         NOT NULL,
+  precioReserva        DOUBLE       NOT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT fk_reserva_embarcacion FOREIGN KEY (matriculaEmbarcacion) REFERENCES Embarcacion(matricula)
+    ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ADD FOREIGN KEY (socio_dni) REFERENCES Socio(dni);
-ADD FOREIGN KEY (matricula) REFERENCES Embarcacion(matricula);
+-- =========================================================
+-- INSERTS: 2 instancias por tabla, respetando FKs
+-- =========================================================
 
-INSERT INTO Reserva (socio_dni, matricula, fecha_evento, plazas_solicitadas) VALUES
-(87654321, 'CAD-0002', '2025-06-20', 5);
+INSERT INTO Socio (dni, nombre, apellidos, direccion, fechaNacimiento, patronEmbarcacion) VALUES
+('11111111A','Ana','López García','Av. del Puerto 12, Cádiz','1999-03-21',1),
+('22222222B','Javier','Martín Ruiz','C/ Cruz Conde 7, Córdoba','2001-11-02',0);
+
+-- Familias ejemplo (titulares son socios existentes)
+INSERT INTO Familia (dniTitular, numAdultos, `numNiños`) VALUES
+('11111111A', 2, 2),
+('22222222B', 2, 0);
+
+INSERT INTO Patron (id, dni, nombre, apellidos, fechaNacimiento, fechaTituloPatron) VALUES
+(1,'33333333C','Lucía','Serrano Torres','1990-08-10','2015-06-01'),
+(2,'44444444D','Carlos','Navarro Páez','1987-01-22','2012-04-15');
+
+INSERT INTO Embarcacion (matricula, nombre, tipo, plazas, dimensiones, patronAsignado) VALUES
+('ABC-123','Tramontana','VELERO',8,'10x3m',1),
+('XYZ-789','Levante','LANCHA',6,'7x2m',NULL);
+
+INSERT INTO Inscripcion (tipoCuota, cuotaAnual, fechaInscripcion, dniTitular, familiaId) VALUES
+('INDIVIDUAL',300,'2023-06-15','11111111A',NULL),
+('FAMILIAR',650,'2024-01-10','22222222B',2);
+
+INSERT INTO Alquiler (matriculaEmbarcacion, dniTitular, fechaInicio, fechaFin, plazasSolicitadas, precioTotal) VALUES
+('ABC-123','11111111A','2025-05-10','2025-05-17',4, 640.00),
+('XYZ-789','11111111A','2025-10-01','2025-10-03',3, 180.00);
+
+INSERT INTO Reserva (id, matriculaEmbarcacion, plazasReserva, fechaReserva, precioReserva) VALUES
+(1,'ABC-123',5,'2025-06-20',200.00),
+(2,'XYZ-789',4,'2025-07-05',160.00);
+
+-- FIN

@@ -1,25 +1,21 @@
 package es.uco.pw.demo.model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Alquiler {
 
-    private int id;
-    private int embarcacion;
-    private int socioTitular;
-    private List<String> participantes;
+    private Integer id;
+    private String matriculaEmbarcacion;
+    private String dniTitular;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
-    private int plazasSolicitadas;
+    private Integer plazasSolicitadas;
     private double precioTotal;
 
-    public Alquiler(int id, int embarcacion, int socioTitular, List<String> participantes, LocalDate fechaInicio, LocalDate fechaFin, int plazasSolicitadas, double precioTotal) {
+    public Alquiler(Integer id, String matriculaEmbarcacion, String dniTitular, LocalDate fechaInicio, LocalDate fechaFin, Integer plazasSolicitadas, double precioTotal) {
         this.id = id;
-        this.embarcacion = embarcacion;
-        this.socioTitular = socioTitular;
-        this.participantes = (participantes != null) ? participantes : new ArrayList<>();
+        this.matriculaEmbarcacion = matriculaEmbarcacion;
+        this.dniTitular = dniTitular;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.plazasSolicitadas = plazasSolicitadas;
@@ -28,20 +24,16 @@ public class Alquiler {
 
     public Alquiler(){}
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public int getEmbarcacion() {
-        return embarcacion;
+    public String getMatriculaEmbarcacion() {
+        return matriculaEmbarcacion;
     }
 
-    public int getSocioTitular() {
-        return socioTitular;
-    }
-
-    public List<String> getParticipantes() {
-        return participantes;
+    public String getDniTitular() {
+        return dniTitular;
     }
 
     public LocalDate getFechaInicio() {
@@ -52,7 +44,7 @@ public class Alquiler {
         return fechaFin;
     }
 
-    public int getPlazasSolicitadas() {
+    public Integer getPlazasSolicitadas() {
         return plazasSolicitadas;
     }
 
@@ -60,20 +52,16 @@ public class Alquiler {
         return precioTotal;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public void setEmbarcacion(int embarcacion) {
-        this.embarcacion = embarcacion;
+    public void setMatriculaEmbarcacion(String matriculaEmbarcacion) {
+        this.matriculaEmbarcacion = matriculaEmbarcacion;
     }
 
-    public void setSocioTitular(int socioTitular) {
-        this.socioTitular = socioTitular;
-    }
-
-    public void setParticipantes(List<String> participantes) {
-        this.participantes = participantes;
+    public void setDniTitular(String dniTitular) {
+        this.dniTitular = dniTitular;
     }
 
     public void setFechaInicio(LocalDate fechaInicio) {
@@ -84,7 +72,7 @@ public class Alquiler {
         this.fechaFin = fechaFin;
     }
 
-    public void setPlazasSolicitadas(int plazasSolicitadas) {
+    public void setPlazasSolicitadas(Integer plazasSolicitadas) {
         this.plazasSolicitadas = plazasSolicitadas;
     }
 
