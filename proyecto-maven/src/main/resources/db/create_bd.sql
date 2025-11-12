@@ -26,6 +26,7 @@ CREATE TABLE Socio (
   direccion           VARCHAR(255),
   fechaNacimiento     DATE          NOT NULL,
   patronEmbarcacion   TINYINT(1)    NOT NULL DEFAULT 0,
+  fechaAlta           DATE          NOT NULL,
   PRIMARY KEY (dni)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

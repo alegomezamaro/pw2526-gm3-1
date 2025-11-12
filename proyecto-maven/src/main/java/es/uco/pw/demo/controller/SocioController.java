@@ -1,13 +1,15 @@
 package es.uco.pw.demo.controller;
 
-import es.uco.pw.demo.model.Socio;
-import es.uco.pw.demo.model.SocioRepository;
+import java.time.LocalDate;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import java.time.LocalDate;
+
+import es.uco.pw.demo.model.Socio;
+import es.uco.pw.demo.model.SocioRepository;
 
 @Controller
 public class SocioController {
@@ -31,7 +33,8 @@ public class SocioController {
             @RequestParam("nombre") String nombre,
             @RequestParam("apellidos") String apellidos,
             @RequestParam("direccion") String direccion,
-            @RequestParam("fechaNacimiento") String fechaNacimiento) {
+            @RequestParam("fechaNacimiento") String fechaNacimiento
+            ) {
 
         ModelAndView mav = new ModelAndView();
 
@@ -45,9 +48,10 @@ public class SocioController {
 
         // Convertir la fechaNacimiento de String a LocalDate
         LocalDate fechaNac = LocalDate.parse(fechaNacimiento);  // Convierte String a LocalDate
+        LocalDate fechaAlta = LocalDate.now();
 
         // Creamos el nuevo socio (por defecto patronEmbarcacion = NO)
-        Socio nuevoSocio = new Socio(dni, nombre, apellidos, fechaNac, direccion, false);
+        Socio nuevoSocio = new Socio(dni, nombre, apellidos, fechaNac,direccion, false, fechaAlta);
 
         boolean ok = socioRepository.addSocio(nuevoSocio);
 

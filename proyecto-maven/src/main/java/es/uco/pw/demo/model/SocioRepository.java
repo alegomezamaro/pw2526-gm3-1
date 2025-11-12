@@ -19,16 +19,17 @@ public class SocioRepository {
 
     // Método para añadir un socio
     public boolean addSocio(Socio socio) {
-        String query = "INSERT INTO Socio (dni, nombre, apellidos, direccion, fechaNacimiento, patronEmbarcacion) " +
-                       "VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Socio (dni, nombre, apellidos, direccion, fechaNacimiento, patronEmbarcacion, fechaAlta) " +
+                       "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
             jdbcTemplate.update(query, 
                 socio.getDni(), 
                 socio.getNombre(),
-                socio.getApellidos(),  // Usamos 'apellidos' en lugar de 'surname'
+                socio.getApellidos(), 
                 socio.getDireccion(),
                 socio.getFechaNacimiento(),
-                socio.esPatronEmbarcacion()
+                socio.esPatronEmbarcacion(),
+                socio.getFechaAlta()
             );
             return true;
         } catch (DataAccessException e) {
@@ -51,7 +52,8 @@ public class SocioRepository {
                     rs.getString("apellidos"),  // Usamos 'apellidos' en lugar de 'surname'
                     LocalDate.parse(rs.getString("fechaNacimiento")), // Convertir a LocalDate
                     rs.getString("direccion"),
-                    rs.getBoolean("patronEmbarcacion")
+                    rs.getBoolean("patronEmbarcacion"),
+                    LocalDate.parse(rs.getString("fechaAlta")) // Convertir a LocalDate
                 );
             }
         });
@@ -73,7 +75,8 @@ public class SocioRepository {
                     rs.getString("apellidos"),  // Usamos 'apellidos' en lugar de 'surname'
                     LocalDate.parse(rs.getString("fechaNacimiento")), // Convertir a LocalDate
                     rs.getString("direccion"),
-                    rs.getBoolean("patronEmbarcacion")
+                    rs.getBoolean("patronEmbarcacion"),
+                    LocalDate.parse(rs.getString("fechaAlta"))
                 );
             }
         });
@@ -89,7 +92,8 @@ public class SocioRepository {
                 socio.getDireccion(),
                 socio.getFechaNacimiento(),
                 socio.esPatronEmbarcacion(),
-                socio.getDni()
+                socio.getDni(),
+                socio.getFechaAlta()
             );
             return true;
         } catch (DataAccessException e) {
