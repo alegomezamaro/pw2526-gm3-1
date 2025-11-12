@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Añadir Familia</title>
+</head>
+<body>
+<h1>Añadir Familia</h1>
+
+<form method="POST" th:action="@{/addFamilia}" th:object="${newFamilia}">
+    <!-- ID oculto si el repo lo autogenera o lo asignamos en el controlador -->
+    <input type="hidden" th:field="*{id}"/>
+
+    <label for="dniTitular">DNI del Titular:</label><br/>
+    <input type="text" th:field="*{dniTitular}" id="dniTitular" placeholder="12345678A" required/><br/><br/>
+
+    <label for="numAdultos">Número de Adultos:</label><br/>
+    <input type="text" th:field="*{numAdultos}" id="numAdultos" min="1" step="1" required/><br/><br/>
+
+    <label for="numNiños">Número de Niños:</label><br/>
+    <input type="date" th:field="*{numNiños}" id="numNiños" min="1" step="1" required/><br/><br/>
+
+    <input type="submit" value="Enviar"/>
+</form>
+
+<!-- Mensaje opcional si envías algún atributo de error -->
+<div th:if="${errorMessage}">
+    <p th:text="${errorMessage}" style="color:red;"></p>
+</div>
+
+<p><a th:href="@{/Familias}">Volver al listado</a></p>
+<p><a th:href="@{/}">Volver al menu</a></p>
+</body>
+</html>

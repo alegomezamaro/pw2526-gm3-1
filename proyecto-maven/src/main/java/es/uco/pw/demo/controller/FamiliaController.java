@@ -2,6 +2,8 @@ package es.uco.pw.demo.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -34,7 +36,7 @@ public class FamiliaController {
             // Alternativa si solo hay método de listado:
             Familia f = familiaRepository.findAllFamilias()
                                          .stream()
-                                         .filter(x -> x.getId() == id)
+                                         .filter(x -> x.getId().equals(id))
                                          .findFirst()
                                          .orElse(null);
 
@@ -46,4 +48,29 @@ public class FamiliaController {
         }
         return mav;
     }
+
+        // ------- VISTA: Formulario alta -------
+    @GetMapping("/addFamilia")
+    public ModelAndView getAddFamiliaView() {
+        ModelAndView mav = new ModelAndView("addFamiliaView");
+        mav.addObject("newFamilia", new Familia());
+        return mav;
+    }
+
+    // ------- ACCIÓN: Procesar alta -------
+    @PostMapping("/addFamilia")
+    public ModelAndView addFamilia(@ModelAttribute("newFamilia") Familia nueva) {
+        ModelAndView mav = new ModelAndView();
+
+        boolean ok = familiaRepository.addFamilia(nueva);
+
+        if (ok) {
+            mav.setViewName("addFamiliaViewSuccess");
+        } else {
+            mav.setViewName("addFamiliaViewFail");
+        }
+        mav.addObject("Familia", nueva);
+        return mav;
+    }
+
 }

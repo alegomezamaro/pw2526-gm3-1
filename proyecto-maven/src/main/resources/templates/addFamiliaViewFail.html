@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Error al añadir la familia</title>
+</head>
+<body>
+  <h1>Error al añadir la familia</h1>
+  <p th:if="${errorMessage}">
+    <span th:text="${errorMessage}" style="color:red;"></span>
+  </p>
+  <p><a th:href="@{/addSocio}">Volver al formulario</a></p>
+  <p><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>
