@@ -16,10 +16,10 @@
     <input type="text" th:field="*{dniTitular}" id="dniTitular" placeholder="12345678A" required/><br/><br/>
 
     <label for="numAdultos">Número de Adultos:</label><br/>
-    <input type="text" th:field="*{numAdultos}" id="numAdultos" min="1" step="1" required/><br/><br/>
+    <input type="number" th:field="*{numAdultos}" id="numAdultos" min="1" step="1" required/><br/><br/>
 
     <label for="numNiños">Número de Niños:</label><br/>
-    <input type="date" th:field="*{numNiños}" id="numNiños" min="1" step="1" required/><br/><br/>
+    <input type="number" th:field="*{numNiños}" id="numNiños" min="1" step="1" required/><br/><br/>
 
     <input type="submit" value="Enviar"/>
 </form>
