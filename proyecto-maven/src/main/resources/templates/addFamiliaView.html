@@ -9,8 +9,6 @@
 <h1>Añadir Familia</h1>
 
 <form method="POST" th:action="@{/addFamilia}" th:object="${newFamilia}">
-    <!-- ID oculto si el repo lo autogenera o lo asignamos en el controlador -->
-    <input type="hidden" th:field="*{id}"/>
 
     <label for="dniTitular">DNI del Titular:</label><br/>
     <input type="text" th:field="*{dniTitular}" id="dniTitular" placeholder="12345678A" required/><br/><br/>

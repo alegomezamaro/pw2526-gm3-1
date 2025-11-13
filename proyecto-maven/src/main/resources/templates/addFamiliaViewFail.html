@@ -6,11 +6,11 @@
   <title>Error al añadir la familia</title>
 </head>
 <body>
-  <h1>Error al añadir la familia</h1>
-  <p th:if="${errorMessage}">
-    <span th:text="${errorMessage}" style="color:red;"></span>
+  <h1>Ha ocurrido un error al intentar añadir la familia</h1>
+  <p th:if="${error}">
+    <span th:text="${error}" style="color:red;"></span>
   </p>
-  <p><a th:href="@{/addSocio}">Volver al formulario</a></p>
+  <p><a th:href="@{/addFamilia}">Volver al formulario</a></p>
   <p><a th:href="@{/}">Volver al menú</a></p>
 </body>
 </html>

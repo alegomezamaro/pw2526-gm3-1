@@ -1,18 +1,19 @@
 package es.uco.pw.demo.model;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class FamiliaRepository {
@@ -51,21 +52,20 @@ public class FamiliaRepository {
             if (sqlQueries == null) createProperties();
 
             String query = (sqlQueries != null) ? sqlQueries.getProperty("select-findAllFamilias") : null;
-            if (query != null) {
-                return jdbcTemplate.query(query, new RowMapper<Familia>() {
-                    @Override
-                    public Familia mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        Familia f = new Familia();
-                        f.setId(rs.getInt("id"));
-                        f.setDniTitular(rs.getString("dniTitular"));
-                        f.setNumAdultos(rs.getInt("numAdultos"));
-                        f.setNumNiños(rs.getInt("numNiños"));
-                        return f;
-                    }
-                });
-            } else {
-                return null;
+            if( query == null ){
+                return Collections.emptyList();
             }
+            return jdbcTemplate.query(query, new RowMapper<Familia>() {
+                @Override
+                public Familia mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    Familia f = new Familia();
+                    f.setId(rs.getInt("id"));
+                    f.setDniTitular(rs.getString("dniTitular"));
+                    f.setNumAdultos(rs.getInt("numAdultos"));
+                    f.setNumNiños(rs.getInt("numNiños"));
+                    return f;
+                }
+            });
         } catch (DataAccessException e) {
             System.err.println("Unable to find familias");
             e.printStackTrace();
@@ -73,28 +73,14 @@ public class FamiliaRepository {
         }
     }
 
-    public boolean addFamilia(Familia f) {
-        try {
-         
-            if (sqlQueries == null) createProperties();
-
-            String query = (sqlQueries != null) ? sqlQueries.getProperty("insert-addFamilia") : null;
-            if (query != null) {
-                int result = jdbcTemplate.update(
-                    query,
-                    f.getId(),
-                    f.getDniTitular(),
-                    f.getNumAdultos(),
-                    f.getNumNiños()
-                );
-                return result > 0;
-            } else {
-                return false;
-            }
-        } catch (DataAccessException ex) {
-            System.err.println("Unable to insert familia into the db");
-            ex.printStackTrace();
-            return false;
-        }
+    public void addFamilia(Familia familia) {
+        String query = "INSERT INTO Familia (dniTitular, numAdultos, numNiños)" +
+                       "VALUES ( ?, ?, ?)";
+ 
+            jdbcTemplate.update(query, 
+                familia.getDniTitular(),
+                familia.getNumAdultos(), 
+                familia.getNumNiños()
+            );
     }
 }

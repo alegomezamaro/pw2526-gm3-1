@@ -1,5 +1,6 @@
 package es.uco.pw.demo.controller;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -59,17 +60,25 @@ public class FamiliaController {
 
     // ------- ACCIÓN: Procesar alta -------
     @PostMapping("/addFamilia")
-    public ModelAndView addFamilia(@ModelAttribute("newFamilia") Familia nueva) {
+    public ModelAndView addFamilia(@ModelAttribute("newFamilia") Familia newFamilia) {
         ModelAndView mav = new ModelAndView();
 
-        boolean ok = familiaRepository.addFamilia(nueva);
 
-        if (ok) {
+        try {
+
+            familiaRepository.addFamilia(newFamilia);
             mav.setViewName("addFamiliaViewSuccess");
-        } else {
+
+        }catch(DataIntegrityViolationException e){
+
+            mav.setViewName("addFamiliaViewFail");
+            mav.addObject("error", "El DNI introducido no esta asociado con ningún socio actual.");
+        } 
+        catch (Exception e) {
             mav.setViewName("addFamiliaViewFail");
         }
-        mav.addObject("Familia", nueva);
+
+        mav.addObject("Familia", newFamilia);
         return mav;
     }
 
