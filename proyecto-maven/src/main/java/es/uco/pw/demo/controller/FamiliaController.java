@@ -31,15 +31,8 @@ public class FamiliaController {
         ModelAndView mav = new ModelAndView("findFamiliaByIdView"); // sin .html
 
         if (id != null) {
-            // Si existe un método directo:
-            // Familia f = familiaRepository.findFamiliaById(id);
 
-            // Alternativa si solo hay método de listado:
-            Familia f = familiaRepository.findAllFamilias()
-                                         .stream()
-                                         .filter(x -> x.getId().equals(id))
-                                         .findFirst()
-                                         .orElse(null);
+            Familia f = familiaRepository.findFamiliaById(id);
 
             if (f == null) {
                 mav.addObject("errorMessage", "No se encontró ninguna familia con ID " + id);

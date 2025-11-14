@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de Familias</title>
+</head>
+<body>
+<h1>Buscar Familias por ID</h1>
+
+<form method="GET" th:action="@{/findFamiliaById}">
+    <label for="id">Introduzca el ID de la Famlia: </label><br/>
+    <input type="text" name="id" id="id" required/><br/><br/>
+    <input type="submit" value="Buscar"/>
+</form>
+
+<div th:if="${familia != null}">
+    <h2>Familia Encontrada:</h2>
+    <p><strong>ID:</strong> <span th:text="${familia.id}"></span></p>
+    <p><strong>DNI Titular:</strong> <span th:text="${familia.dniTitular}"></span></p>
+    <p><strong>Adultos:</strong> <span th:text="${familia.numAdultos}"></span></p>
+    <p><strong>Niños:</strong> <span th:text="${familia.numNiños}"></span></p>
+</div>
+
+<div th:if="${errorMessage != null}">
+    <h2 style="color: red;" th:text="${errorMessage}"></h2>
+</div>
+
+</body>
+</html>

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -82,5 +83,27 @@ public class FamiliaRepository {
                 familia.getNumAdultos(), 
                 familia.getNumNiños()
             );
+    }
+
+    public Familia findFamiliaById(int id) {
+        try {
+            if (sqlQueries == null) createProperties();
+            String query = (sqlQueries != null) ? sqlQueries.getProperty("select-findFamiliaById") : null;
+            if (query == null) {
+                query = "SELECT id, dniTitular, numAdultos, `numNiños` FROM Familia WHERE id = ?";
+            }
+            return jdbcTemplate.queryForObject(query, (rs, rowNum) -> {
+                Familia f = new Familia();
+                f.setId(rs.getInt("id"));
+                f.setDniTitular(rs.getString("dniTitular"));
+                f.setNumAdultos(rs.getInt("numAdultos"));
+                f.setNumNiños(rs.getInt("numNiños"));
+                return f;
+            }, id);
+        } catch (DataAccessException e) {
+            System.err.println("No se ha encontrado a la Familia con ID: " + id);
+            e.printStackTrace();
+            return null;
+        }
     }
 }
