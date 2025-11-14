@@ -4,14 +4,14 @@ import java.time.LocalDate;
 
 public class Patron {
 
-    private int id;
+    private Integer id;
     private String dni;
     private String nombre;
     private String apellidos;
     private LocalDate fechaNacimiento;
     private LocalDate fechaTituloPatron;
 
-    public Patron(int id, String dni, String nombre, String apellidos, LocalDate fechaNacimiento, LocalDate fechaTituloPatron) {
+    public Patron(Integer id, String dni, String nombre, String apellidos, LocalDate fechaNacimiento, LocalDate fechaTituloPatron) {
         this.id = id;
         this.dni = dni;
         this.nombre = nombre;
@@ -20,7 +20,7 @@ public class Patron {
         this.fechaTituloPatron = fechaTituloPatron;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -44,7 +44,7 @@ public class Patron {
         return fechaTituloPatron;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Alquileres</title>
+</head>
+<body>
+    <h1>Lista de Alquileres</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Matrícula de la Embarcación</th>
+                <th>DNI del Titular</th>
+                <th>Fecha de Inicio</th>
+                <th>Fecha de Fin</th>
+                <th>Plazas Solicitadas</th>
+                <th>Precio Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- alquileres debe venir en el modelo como atributo "alquileres" -->
+            <tr th:each="alquiler : ${alquileres}">
+                <td th:text="${alquiler.id}">1</td>
+                <td th:text="${alquiler.matriculaEmbarcacion}">ABC-1234</td>
+                <td th:text="${alquiler.dniTitular}">12345678A</td>
+                <td th:text="${alquiler.fechaInicio}">2025-01-01</td>
+                <td th:text="${alquiler.fechaFin}">2025-01-07</td>
+                <td th:text="${alquiler.plazasSolicitadas}">4</td>
+                <td th:text="${alquiler.precioTotal}">200.0</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>

@@ -50,36 +50,14 @@ public class AlquilerController {
     }
 
     // ------- VISTA/ACCIÓN: Buscar alquiler por ID -------
-    @GetMapping("/findAlquilerById")
-    public ModelAndView findAlquilerById(
-            @RequestParam(name = "id", required = false) Integer id) {
+    @GetMapping("/findAlquileres")
+    public ModelAndView findAlquileres() {
 
-        ModelAndView mav = new ModelAndView("findAlquilerByIdView"); // sin .html
+        ModelAndView mav = new ModelAndView("listAlquileresView"); 
 
-        if (id != null) {
-            // Si tienes método específico:
-            // Alquiler alquiler = alquilerRepository.findAlquilerById(id);
-            // Si no lo tienes, puedes resolverlo desde el listado:
-            Alquiler alquiler = alquilerRepository.findAllAlquileres()
-                                                  .stream()
-                                                  .filter(a -> a.getId() == id)
-                                                  .findFirst()
-                                                  .orElse(null);
+        mav.addObject("alquileres", alquilerRepository.findAllAlquileres());
 
-            if (alquiler == null) {
-                mav.addObject("errorMessage", "No se encontró ningún alquiler con ID " + id);
-            } else {
-                mav.addObject("alquiler", alquiler);
-            }
-        }
         return mav;
     }
 
-    // // (Opcional) Listado
-    // @GetMapping("/alquileres")
-    // public ModelAndView listAlquileres() {
-    //     ModelAndView mav = new ModelAndView("listAlquileresView");
-    //     mav.addObject("alquileres", alquilerRepository.findAllAlquileres());
-    //     return mav;
-    // }
 }

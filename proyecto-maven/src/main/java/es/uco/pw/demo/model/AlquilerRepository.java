@@ -47,14 +47,14 @@ public class AlquilerRepository {
     public List<Alquiler> findAllAlquileres() {
         try {
             String query = sqlQueries.getProperty("select-findAllAlquileres");
-            if (query != null) {
                 return jdbcTemplate.query(query, new RowMapper<Alquiler>() {
                     @Override
                     public Alquiler mapRow(ResultSet rs, int rowNum) throws SQLException {
                         return new Alquiler(
                             rs.getInt("id"),
                             rs.getString("matriculaEmbarcacion"),             
-                            rs.getString("dniTitular"),rs.getDate("fechainicio") != null
+                            rs.getString("dniTitular"),
+                            rs.getDate("fechaInicio") != null
                                 ? rs.getDate("fechaInicio").toLocalDate()
                                 : null,
                             rs.getDate("fechaFin") != null
@@ -65,9 +65,6 @@ public class AlquilerRepository {
                         );
                     }
                 });
-            } else{
-                return null;
-            }
         } catch (DataAccessException e) {
             System.err.println("Unable to find alquileres");
             e.printStackTrace();

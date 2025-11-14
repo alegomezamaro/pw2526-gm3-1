@@ -10,31 +10,22 @@
 
 <form method="POST" th:action="@{/addPatron}">
   <!-- ID (si lo asigna el controlador/repositorio, lo dejamos oculto) -->
-  <input type="hidden" name="id"/>
+  <input type="hidden" id="id" name="id"/>
 
   <label for="dni">DNI:</label><br/>
-  <input type="text" id="dni" name="dni" placeholder="12345678" required/><br/><br/>
+  <input type="text" id="dni" name="dni" placeholder="12345678A" required/><br/><br/>
 
-  <label for="name">Nombre:</label><br/>
-  <input type="text" id="name" name="name" required/><br/><br/>
+  <label for="nombre">Nombre:</label><br/>
+  <input type="text" id="nombre" name="nombre" required/><br/><br/>
 
-  <label for="surname">Apellidos:</label><br/>
-  <input type="text" id="surname" name="surname" required/><br/><br/>
+  <label for="apellidos">Apellidos:</label><br/>
+  <input type="text" id="apellidos" name="apellidos" required/><br/><br/>
 
-  <label for="license">Licencia / Título náutico:</label><br/>
-  <input type="text" id="license" name="license" placeholder="PNB / PER / PY / CY" required/><br/><br/>
+  <label for="fechaNacimiento">Fecha de nacimiento:</label><br/>
+  <input type="date" id="fechaNacimiento" name="fechaNacimiento" required/><br/><br/>
 
-  <label for="phone">Teléfono:</label><br/>
-  <input type="tel" id="phone" name="phone"/><br/><br/>
-
-  <label for="email">Email:</label><br/>
-  <input type="email" id="email" name="email"/><br/><br/>
-
-  <label for="experience">Años de experiencia:</label><br/>
-  <input type="number" id="experience" name="experience" min="0"/><br/><br/>
-
-  <label for="embarcacion">Matrícula embarcación (opcional):</label><br/>
-  <input type="text" id="embarcacion" name="embarcacion"/><br/><br/>
+  <label for="fechaTituloPatron">Fecha título de patrón:</label><br/>
+  <input type="date" id="fechaTituloPatron" name="fechaTituloPatron" required/><br/><br/>
 
   <input type="submit" value="Enviar"/>
 </form>

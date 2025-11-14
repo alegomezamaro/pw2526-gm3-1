@@ -79,10 +79,10 @@ public class EmbarcacionController {
     // ------- VISTA: Buscar embarcaciones disponibles -------
     @GetMapping("/buscarEmbarcacionDisponible")
     public ModelAndView buscarEmbarcacionDisponible() {
-        ModelAndView mav = new ModelAndView("buscarEmbarcacionDisponible"); // nombre de la plantilla, sin .html
+        ModelAndView mav = new ModelAndView("buscarEmbarcacionDisponible");
         mav.addObject("embarcaciones", embarcacionRepository.findEmbarcacionesDisponibles());
         return mav;
-}
+    }
 
     @GetMapping("/consultarEmbarcacionesPorTipo")
     public ModelAndView consultarPorTipo(@RequestParam(name = "tipo", required = false) String tipo) {
