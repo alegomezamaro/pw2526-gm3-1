@@ -1,5 +1,7 @@
 package es.uco.pw.demo.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -73,4 +75,31 @@ public class EmbarcacionController {
         }
         return mav;
     }
+
+    // ------- VISTA: Buscar embarcaciones disponibles -------
+    @GetMapping("/buscarEmbarcacionDisponible")
+    public ModelAndView buscarEmbarcacionDisponible() {
+        ModelAndView mav = new ModelAndView("buscarEmbarcacionDisponible"); // nombre de la plantilla, sin .html
+        mav.addObject("embarcaciones", embarcacionRepository.findEmbarcacionesDisponibles());
+        return mav;
+}
+
+    @GetMapping("/consultarEmbarcacionesPorTipo")
+    public ModelAndView consultarPorTipo(@RequestParam(name = "tipo", required = false) String tipo) {
+        ModelAndView mav = new ModelAndView("consultarEmbarcacionesPorTipo");
+
+        if (tipo != null && !tipo.isBlank()) {
+            List<Embarcacion> embarcaciones = embarcacionRepository
+                    .findAllEmbarcaciones()
+                    .stream()
+                    .filter(e -> e.getTipo().toString().equalsIgnoreCase(tipo))
+                    .toList();
+            mav.addObject("embarcaciones", embarcaciones);
+            mav.addObject("tipoSeleccionado", tipo);
+        }
+
+        return mav;
+    }
+
+
 }

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Inscripción ampliada</title>
+</head>
+<body>
+<h1>¡Inscripción ampliada a FAMILIAR con éxito!</h1>
+
+<div th:if="${inscripcion}">
+    <h2>Datos de la inscripción:</h2>
+    <ul>
+        <li>ID: <span th:text="${inscripcion.id}">1</span></li>
+        <li>Tipo de cuota: <span th:text="${inscripcion.tipoCuota}">FAMILIAR</span></li>
+        <li>Cuota anual: <span th:text="${inscripcion.cuotaAnual}">0</span></li>
+        <li>DNI titular: <span th:text="${inscripcion.dniTitular}">00000000X</span></li>
+        <li>Fecha inscripción: <span th:text="${inscripcion.fechaInscripcion}">2025-01-01</span></li>
+        <li>ID familia: <span th:text="${inscripcion.familiaId}">1</span></li>
+    </ul>
+</div>
+
+<p><a th:href="@{/ampliarInscripcion}">Ampliar otra inscripción</a></p>
+<p><a th:href="@{/listInscripciones}">Volver a la lista de inscripciones</a></p>
+<p><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>

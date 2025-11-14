@@ -96,4 +96,41 @@ public class EmbarcacionRepository {
             return false;
         }
     }
+
+    public List<Embarcacion> findEmbarcacionesDisponibles() {
+    try {
+        if (sqlQueries == null) {
+            createProperties();
+        }
+
+        String query = (sqlQueries != null)
+                ? sqlQueries.getProperty("select-findEmbarcacionesDisponibles")
+                : null;
+
+        if (query == null) {
+            System.err.println("SQL query 'select-findEmbarcacionesDisponibles' not found.");
+            return List.of();
+        }
+
+        return jdbcTemplate.query(query, new RowMapper<Embarcacion>() {
+            @Override
+            public Embarcacion mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return new Embarcacion(
+                    rs.getString("matricula"),
+                    rs.getString("nombre"),
+                    EmbarcacionType.valueOf(rs.getString("tipo")),
+                    rs.getInt("plazas"),
+                    rs.getString("dimensiones"),
+                    null   // patronAsignado (si lo necesitáis ya lo rellenaréis)
+                );
+            }
+        });
+
+    } catch (DataAccessException e) {
+        System.err.println("Unable to find available embarcaciones");
+        e.printStackTrace();
+        return List.of();
+    }
+}
+
 }

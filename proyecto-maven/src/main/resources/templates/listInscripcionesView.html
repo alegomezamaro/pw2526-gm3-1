@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Inscripciones</title>
+</head>
+<body>
+<h1>Lista de Inscripciones</h1>
+
+<!-- Filtro por tipo -->
+<form th:action="@{/listInscripciones}" method="get">
+    <label for="tipo">Filtrar por tipo de cuota:</label>
+    <select id="tipo" name="tipo">
+        <option value=""
+                th:selected="${tipoSeleccionado == null or tipoSeleccionado == ''}">
+            -- Todos --
+        </option>
+        <option th:each="t : ${tipos}"
+                th:value="${t}"
+                th:text="${t}"
+                th:selected="${tipoSeleccionado == t.name()}">
+        </option>
+    </select>
+    <button type="submit">Filtrar</button>
+</form>
+
+<br/>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Tipo de cuota</th>
+        <th>Cuota anual</th>
+        <th>DNI titular</th>
+        <th>Fecha inscripción</th>
+        <th>ID familia</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="ins : ${inscripciones}">
+        <td th:text="${ins.id}">1</td>
+        <td th:text="${ins.tipoCuota}">TIPO</td>
+        <td th:text="${ins.cuotaAnual}">0</td>
+        <td th:text="${ins.dniTitular}">00000000X</td>
+        <td th:text="${ins.fechaInscripcion}">2025-01-01</td>
+        <td th:text="${ins.familiaId}">0</td>
+    </tr>
+    </tbody>
+</table>
+
+<div th:if="${errorMessage}">
+    <p th:text="${errorMessage}" style="color:red;"></p>
+</div>
+
+<p><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>

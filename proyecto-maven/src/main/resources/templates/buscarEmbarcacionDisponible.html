@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Embarcaciones disponibles</title>
+</head>
+<body>
+<h1>Embarcaciones disponibles</h1>
+
+<!-- Si no hay ninguna embarcación, mensaje -->
+<div th:if="${#lists.isEmpty(embarcaciones)}">
+    <p>No hay embarcaciones disponibles en este momento.</p>
+</div>
+
+<!-- Si hay embarcaciones, tabla -->
+<table th:if="${!#lists.isEmpty(embarcaciones)}" border="1" cellpadding="5">
+    <thead>
+    <tr>
+        <th>Matrícula</th>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Plazas</th>
+        <th>Dimensiones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="emb : ${embarcaciones}">
+        <td th:text="${emb.matricula}">Matrícula</td>
+        <td th:text="${emb.nombre}">Nombre</td>
+        <td th:text="${emb.tipo}">Tipo</td>
+        <td th:text="${emb.plazas}">Plazas</td>
+        <td th:text="${emb.dimensiones}">Dimensiones</td>
+    </tr>
+    </tbody>
+</table>
+
+<p><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>

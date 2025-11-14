@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ampliar inscripción a familiar</title>
+</head>
+<body>
+<h1>Ampliar inscripción a familiar</h1>
+
+<form th:action="@{/ampliarInscripcion}" method="post">
+    <label for="id">ID de la inscripción:</label><br/>
+    <input type="number" id="id" name="id" required/><br/><br/>
+
+    <label for="familiaId">ID de la familia:</label><br/>
+    <input type="number" id="familiaId" name="familiaId" required/><br/><br/>
+
+    <input type="submit" value="Ampliar a familiar"/>
+</form>
+
+<div th:if="${errorMessage}">
+    <p th:text="${errorMessage}" style="color:red;"></p>
+</div>
+
+<p><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>

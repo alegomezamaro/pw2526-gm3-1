@@ -14,7 +14,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import java.util.Collections;
+import es.uco.pw.demo.model.InscripcionType;
 
 @Repository
 public class InscripcionRepository {
@@ -73,6 +75,18 @@ public class InscripcionRepository {
     }
 }
 
+    public List<Inscripcion> findInscripcionesByTipo(InscripcionType tipo) {
+        // Si no se pasa tipo, devolvemos todas
+        if (tipo == null) {
+            return findAllInscripciones();
+        }
+
+        return findAllInscripciones()
+                .stream()
+                .filter(i -> tipo.equals(i.getTipoCuota()))
+                .collect(Collectors.toList());
+    }
+
     public boolean addInscripcion(Inscripcion ins) {
         try {
             if (sqlQueries == null) createProperties();
@@ -98,4 +112,55 @@ public class InscripcionRepository {
             return false;
         }
     }
+
+    // ===  buscar una inscripción por id ===
+    public Inscripcion findInscripcionById(Integer id) {
+        String sql = "SELECT * FROM Inscripcion WHERE id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, new Object[]{id}, (rs, rowNum) -> {
+                Inscripcion ins = new Inscripcion();
+                ins.setId(rs.getInt("id"));
+                String typeStr = rs.getString("tipoCuota");
+                if (typeStr != null) {
+                    ins.setTipoCuota(InscripcionType.valueOf(typeStr));
+                }
+                ins.setCuotaAnual(rs.getInt("cuotaAnual"));
+                ins.setDniTitular(rs.getString("dniTitular"));
+                if (rs.getDate("fechaInscripcion") != null) {
+                    ins.setFechaInscripcion(rs.getDate("fechaInscripcion").toLocalDate());
+                }
+                ins.setFamiliaId(rs.getInt("familiaId"));
+                return ins;
+            });
+        } catch (DataAccessException e) {
+            System.err.println("Unable to find inscripcion with id " + id);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    // ===  actualizar inscripción completa ===
+    public boolean updateInscripcion(Inscripcion ins) {
+        String sql = "UPDATE Inscripcion " +
+                     "SET tipoCuota = ?, cuotaAnual = ?, dniTitular = ?, " +
+                     "    fechaInscripcion = ?, familiaId = ? " +
+                     "WHERE id = ?";
+        try {
+            int rows = jdbcTemplate.update(
+                sql,
+                ins.getTipoCuota() != null ? ins.getTipoCuota().toString() : null,
+                ins.getCuotaAnual(),
+                ins.getDniTitular(),
+                ins.getFechaInscripcion() != null ? Date.valueOf(ins.getFechaInscripcion()) : null,
+                ins.getFamiliaId(),
+                ins.getId()
+            );
+            return rows > 0;
+        } catch (DataAccessException e) {
+            System.err.println("Unable to update inscripcion in the db");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

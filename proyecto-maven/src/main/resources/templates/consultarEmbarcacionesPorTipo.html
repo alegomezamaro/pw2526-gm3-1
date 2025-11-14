@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Consultar embarcaciones por tipo</title>
+</head>
+<body>
+    <h1>Consultar embarcaciones por tipo</h1>
+
+    <!-- Formulario para elegir el tipo -->
+    <form method="get" th:action="@{/consultarEmbarcacionesPorTipo}">
+        <label for="tipo">Tipo de embarcación:</label>
+        <select id="tipo" name="tipo" required>
+            <option value="">-- Selecciona un tipo --</option>
+            <option value="Velero"
+                    th:selected="${tipoSeleccionado == 'Velero'}">Velero</option>
+            <option value="Yate"
+                    th:selected="${tipoSeleccionado == 'Yate'}">Yate</option>
+            <option value="Catamaran"
+                    th:selected="${tipoSeleccionado == 'Catamaran'}">Catamarán</option>
+            <option value="Lancha"
+                    th:selected="${tipoSeleccionado == 'Lancha'}">Lancha</option>
+        </select>
+
+        <button type="submit">Buscar</button>
+    </form>
+
+    <hr/>
+
+    <!-- Mensaje si no hay resultados -->
+    <div th:if="${embarcaciones != null and #lists.isEmpty(embarcaciones)}">
+        <p>No se han encontrado embarcaciones para ese tipo.</p>
+    </div>
+
+    <!-- Tabla de resultados -->
+    <table th:if="${embarcaciones != null and !#lists.isEmpty(embarcaciones)}" border="1">
+        <thead>
+            <tr>
+                <th>Matrícula</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Plazas</th>
+                <th>Dimensiones</th>
+                <th>Patrón asignado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="embarcacion : ${embarcaciones}">
+                <td th:text="${embarcacion.matricula}">Matricula</td>
+                <td th:text="${embarcacion.nombre}">Nombre</td>
+                <td th:text="${embarcacion.tipo}">Tipo</td>
+                <td th:text="${embarcacion.plazas}">Plazas</td>
+                <td th:text="${embarcacion.dimensiones}">Dimensiones</td>
+                <td th:text="${embarcacion.patronAsignado != null ? embarcacion.patronAsignado.id : 'Sin patrón'}">
+                    Patrón
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><a th:href="@{/}">Volver al menú</a></p>
+</body>
+</html>

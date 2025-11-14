@@ -9,6 +9,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import es.uco.pw.demo.model.Inscripcion;
 import es.uco.pw.demo.model.InscripcionRepository;
+import java.util.List;
+import es.uco.pw.demo.model.InscripcionType;
 
 @Controller
 public class InscripcionController {
@@ -75,4 +77,79 @@ public class InscripcionController {
         }
         return mav;
     }
+
+    // ------- VISTA: Listar inscripciones por tipo -------
+    @GetMapping("/listInscripciones")
+public ModelAndView listInscripciones(
+        @RequestParam(name = "tipo", required = false) String tipo) {
+
+    ModelAndView mav = new ModelAndView("listInscripcionesView");
+
+    var todas = inscripcionRepository.findAllInscripciones();
+
+    if (tipo != null && !tipo.isEmpty()) {
+        var filtradas = todas.stream()
+                .filter(i -> i.getTipoCuota() != null &&
+                             i.getTipoCuota().name().equals(tipo))
+                .toList();
+        mav.addObject("inscripciones", filtradas);
+        mav.addObject("tipoSeleccionado", tipo);
+    } else {
+        mav.addObject("inscripciones", todas);
+        mav.addObject("tipoSeleccionado", "");
+    }
+
+    mav.addObject("tipos", InscripcionType.values());
+    return mav;
+}
+
+// ------- VISTA: formulario para ampliar a familiar -------
+    @GetMapping("/ampliarInscripcion")
+    public ModelAndView getAmpliarInscripcionView() {
+        return new ModelAndView("ampliarInscripcionView");
+    }
+
+    // ------- ACCIÓN: procesar ampliación a familiar -------
+    @PostMapping("/ampliarInscripcion")
+    public ModelAndView ampliarInscripcion(
+            @RequestParam("id") Integer id,
+            @RequestParam("familiaId") Integer familiaId) {
+
+        ModelAndView mav = new ModelAndView();
+
+        // 1) Buscar inscripción
+        Inscripcion ins = inscripcionRepository.findInscripcionById(id);
+        if (ins == null) {
+            mav.setViewName("ampliarInscripcionViewFail");
+            mav.addObject("errorMessage", "No se encontró ninguna inscripción con ID " + id);
+            return mav;
+        }
+
+        // 2) Comprobar si ya es familiar
+        if (ins.getTipoCuota() == InscripcionType.FAMILIAR) {
+            mav.setViewName("ampliarInscripcionViewFail");
+            mav.addObject("errorMessage", "La inscripción ya es de tipo FAMILIAR.");
+            mav.addObject("inscripcion", ins);
+            return mav;
+        }
+
+        // 3) Cambiar a FAMILIAR y asignar familia
+        ins.setTipoCuota(InscripcionType.FAMILIAR);
+        ins.setFamiliaId(familiaId);
+        // Si queréis cambiar cuotaAnual aquí, lo hacéis también
+
+        boolean ok = inscripcionRepository.updateInscripcion(ins);
+
+        if (ok) {
+            mav.setViewName("ampliarInscripcionViewSuccess");
+        } else {
+            mav.setViewName("ampliarInscripcionViewFail");
+            mav.addObject("errorMessage", "No se pudo actualizar la inscripción.");
+        }
+
+        mav.addObject("inscripcion", ins);
+        return mav;
+    }
+
+
 }
