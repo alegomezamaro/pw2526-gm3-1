@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Asignación de Patrones</title>
+</head>
+<body>
+<h1>Asignación de Patrones</h1>
+
+<div th:if="${successMessage}" style="color: green;" th:text="${successMessage}"></div>
+<div th:if="${errorMessage}" style="color: red;" th:text="${errorMessage}"></div>
+
+
+<div th:if="${!#lists.isEmpty(embarcaciones) && !#lists.isEmpty(patrones)}">
+    <h2>Asignar nuevo patrón</h2>
+    <form th:action="@{/asignarPatron}" method="post">
+        <label for="matricula">Embarcación:</label>
+        <select id="matricula" name="matricula">
+            <tr th:each="emb : ${embarcaciones}">
+                <option th:value="${emb.matricula}" 
+                        th:text="${emb.nombre} + ' (' + ${emb.matricula} + ')'">
+                    Barco (Matrícula)
+                </option>
+            </tr>
+        </select>
+
+        <label for="idPatron">Asignar Patrón:</label>
+        <select id="idPatron" name="idPatron">
+            <option value="">-- Sin Patrón --</option>
+            <tr th:each="patron : ${patrones}">
+                <option th:value="${patron.id}" 
+                        th:text="${patron.nombre} + ' ' + ${patron.apellidos} + ' (' + ${patron.dni} + ')'">
+                    Nombre Apellidos (DNI)
+                </option>
+            </tr>
+        </select>
+
+        <button type="submit">Guardar Asignación</button>
+    </form>
+</div>
+<div th:if="${#lists.isEmpty(patrones)}">
+    <p>No hay patrones registrados. No se puede asignar.</p>
+</div>
+
+
+<hr>
+
+<h2>Estado Actual de Embarcaciones</h2>
+<div th:if="${#lists.isEmpty(embarcaciones)}">
+    <p>No hay embarcaciones disponibles en este momento.</p>
+</div>
+
+<div th:if="${!#lists.isEmpty(embarcaciones)}">
+    <p>Estas son las embarcaciones y sus patrones asignados:</p>
+    <table border="1" cellpadding="5">
+    <thead>
+    <tr>
+        <th>Matrícula</th>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Plazas</th>
+        <th>Dimensiones</th>
+        <th>Patrón Asignado</th> </tr>
+    </thead>
+    <tbody>
+    <tr th:each="emb : ${embarcaciones}">
+        <td th:text="${emb.matricula}">Matrícula</td>
+        <td th:text="${emb.nombre}">Nombre</td>
+        <td th:text="${emb.tipo}">Tipo</td>
+        <td th:text="${emb.plazas}">Plazas</td>
+        <td th:text="${emb.dimensiones}">Dimensiones</td>
+        
+        <td th:text="${emb.patronAsignado != null ? emb.patronAsignado.nombre + ' ' + emb.patronAsignado.apellidos : 'Sin Asignar'}">
+            Datos del Patrón
+        </td>
+    </tr>
+    </tbody>
+</table>
+</div>
+
+
+</body>
+</html>

@@ -9,6 +9,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -19,7 +22,7 @@ public class EmbarcacionRepository {
 
     private JdbcTemplate jdbcTemplate;
     private Properties sqlQueries;
-    private String sqlQueriesFileName = "src/main/resources/db/sql.properties";
+    private String sqlQueriesFileName = "db/sql.properties";
 
     public EmbarcacionRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -33,12 +36,20 @@ public class EmbarcacionRepository {
     private void createProperties() {
         sqlQueries = new Properties();
         try {
-            BufferedReader reader;
-            File f = new File(sqlQueriesFileName);
-            reader = new BufferedReader(new FileReader(f));
-            sqlQueries.load(reader);
+            
+            InputStream is = getClass().getClassLoader().getResourceAsStream(sqlQueriesFileName);
+
+            if (is == null) {
+                System.err.println("ERROR: El fichero de properties NO se encontró en el classpath: " + sqlQueriesFileName);
+                return;
+            }
+
+            
+            sqlQueries.load(new InputStreamReader(is, StandardCharsets.UTF_8));
+            is.close();
+            
         } catch (IOException e) {
-            System.err.println("Error creating properties object for SQL Queries (" + sqlQueriesFileName + ")");
+            System.err.println("Error creating properties object for SQL Queries");
             e.printStackTrace();
         }
     }
@@ -53,13 +64,26 @@ public class EmbarcacionRepository {
                 List<Embarcacion> embarcaciones = jdbcTemplate.query(query, new RowMapper<Embarcacion>() {
                     @Override
                     public Embarcacion mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        Patron patron = null;
+                        Integer patronId = rs.getObject("p_id", Integer.class);
+
+                        if (patronId != null) {
+                            patron = new Patron(
+                                patronId,
+                                rs.getString("p_dni"),
+                                rs.getString("p_nombre"),
+                                rs.getString("p_apellidos"),
+                                rs.getDate("p_fechanac") != null ? rs.getDate("p_fechanac").toLocalDate() : null,
+                                rs.getDate("p_fechatitulo") != null ? rs.getDate("p_fechatitulo").toLocalDate() : null
+                            );
+                        }
                         return new Embarcacion(
                             rs.getString("matricula"),
                             rs.getString("nombre"),
                             EmbarcacionType.valueOf(rs.getString("tipo")),
                             rs.getInt("plazas"),
                             rs.getString("dimensiones"),
-                            /* patronAsignado */ null
+                            patron
                         );
                     }
                 });
@@ -98,39 +122,57 @@ public class EmbarcacionRepository {
     }
 
     public List<Embarcacion> findEmbarcacionesDisponibles() {
-    try {
-        if (sqlQueries == null) {
-            createProperties();
-        }
+        try {
+            if (sqlQueries == null) {
+                createProperties();
+            }
 
-        String query = (sqlQueries != null)
-                ? sqlQueries.getProperty("select-findEmbarcacionesDisponibles")
-                : null;
+            String query = (sqlQueries != null)
+                    ? sqlQueries.getProperty("select-findEmbarcacionesDisponibles")
+                    : null;
 
-        if (query == null) {
-            System.err.println("SQL query 'select-findEmbarcacionesDisponibles' not found.");
+            if (query == null) {
+                System.err.println("SQL query 'select-findEmbarcacionesDisponibles' not found.");
+                return List.of();
+            }
+
+            return jdbcTemplate.query(query, new RowMapper<Embarcacion>() {
+                @Override
+                public Embarcacion mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return new Embarcacion(
+                        rs.getString("matricula"),
+                        rs.getString("nombre"),
+                        EmbarcacionType.valueOf(rs.getString("tipo")),
+                        rs.getInt("plazas"),
+                        rs.getString("dimensiones"),
+                        null   // patronAsignado (si lo necesitáis ya lo rellenaréis)
+                    );
+                }
+            });
+
+        } catch (DataAccessException e) {
+            System.err.println("Unable to find available embarcaciones");
+            e.printStackTrace();
             return List.of();
         }
-
-        return jdbcTemplate.query(query, new RowMapper<Embarcacion>() {
-            @Override
-            public Embarcacion mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new Embarcacion(
-                    rs.getString("matricula"),
-                    rs.getString("nombre"),
-                    EmbarcacionType.valueOf(rs.getString("tipo")),
-                    rs.getInt("plazas"),
-                    rs.getString("dimensiones"),
-                    null   // patronAsignado (si lo necesitáis ya lo rellenaréis)
-                );
-            }
-        });
-
-    } catch (DataAccessException e) {
-        System.err.println("Unable to find available embarcaciones");
-        e.printStackTrace();
-        return List.of();
     }
-}
 
+    public boolean updatePatronAsignado(String matricula, Integer patronId) {
+        try {
+            if (sqlQueries == null) createProperties();
+
+            String query = sqlQueries.getProperty("update-patronEmbarcacion");
+            if (query != null) {
+                // El patronId puede ser null (para desasignar)
+                int result = jdbcTemplate.update(query, patronId, matricula);
+                return result > 0;
+            } else {
+                return false;
+            }
+        } catch (DataAccessException ex) {
+            System.err.println("Unable to update patron for embarcacion " + matricula);
+            ex.printStackTrace();
+            return false;
+        }
+    }
 }

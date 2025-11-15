@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
-import es.uco.pw.demo.model.Alquiler;
 import es.uco.pw.demo.model.Patron;
 import es.uco.pw.demo.model.PatronRepository;
 
@@ -19,7 +18,7 @@ public class PatronController {
 
     public PatronController(PatronRepository patronRepository) {
         this.patronRepository = patronRepository;
-        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        String sqlQueriesFileName = "db/sql.properties";
         this.patronRepository.setSQLQueriesFileName(sqlQueriesFileName);
     }
 
@@ -50,7 +49,7 @@ public class PatronController {
         }
 
     // ------- VISTA/ACCIÓN: Buscar patrón por DNI -------
-    @GetMapping("/findPatronById")
+    @GetMapping("/findPatronByDNI")
     public ModelAndView findPatronById(@RequestParam(name = "dni", required = false) String dni) {
         ModelAndView mav = new ModelAndView("findPatronByIdView"); // sin .html
 

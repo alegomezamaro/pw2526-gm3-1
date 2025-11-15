@@ -8,20 +8,27 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import es.uco.pw.demo.model.Embarcacion;
 import es.uco.pw.demo.model.EmbarcacionRepository;
+import es.uco.pw.demo.model.PatronRepository;
+
 
 @Controller
 public class EmbarcacionController {
 
     private final EmbarcacionRepository embarcacionRepository;
+    private final PatronRepository patronRepository;
 
-    public EmbarcacionController(EmbarcacionRepository embarcacionRepository) {
+    public EmbarcacionController(EmbarcacionRepository embarcacionRepository, PatronRepository patronRepository) {
         this.embarcacionRepository = embarcacionRepository;
+        this.patronRepository = patronRepository;
         // Igual que en otros controladores del proyecto
-        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        String sqlQueriesFileName = "db/sql.properties";
         this.embarcacionRepository.setSQLQueriesFileName(sqlQueriesFileName);
+        this.patronRepository.setSQLQueriesFileName(sqlQueriesFileName);
+        
     }
 
     // ------- VISTA: Formulario alta -------
@@ -99,7 +106,34 @@ public class EmbarcacionController {
         }
 
         return mav;
+    }  
+
+    @GetMapping("/asignarPatron")
+    public ModelAndView getAsignarPatronView() {
+        ModelAndView mav = new ModelAndView("asignarPatronEmbarcacionView");
+        mav.addObject("embarcaciones",embarcacionRepository.findAllEmbarcaciones());
+        mav.addObject("patrones",patronRepository.findAllPatrones());
+        return mav;
     }
+
+    @PostMapping("/asignarPatron")
+    public ModelAndView asignarPatron(
+        @RequestParam("matricula") String matricula,
+        @RequestParam(name = "idPatron", required = false) Integer idPatron,
+        RedirectAttributes redirectAttrs) {
+
+            boolean ok = embarcacionRepository.updatePatronAsignado(matricula, idPatron);
+
+            if(ok){
+                redirectAttrs.addFlashAttribute("successMessage", "Patrón asignado con éxito");
+            }else{
+                redirectAttrs.addFlashAttribute("errorMessage", "Ha ocurrido un error y no se pudo asignar el patrón");
+            }
+
+            return new ModelAndView("redirect:/asignarPatron");
+    }
+    
+    
 
 
 }
