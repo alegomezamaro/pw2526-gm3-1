@@ -9,19 +9,12 @@
 <h1>Añadir Reserva</h1>
 
 <form method="POST" th:action="@{/addReserva}" th:object="${newReserva}">
-    <!-- id se genera en el controlador -->
 
-    <label for="embarcacion">Matrícula/ID de embarcación:</label><br/>
-    <input type="text" th:field="*{embarcacion}" id="embarcacion" required/><br/><br/>
-
-    <label for="descripcion">Descripción:</label><br/>
-    <input type="text" th:field="*{descripcion}" id="descripcion" required/><br/><br/>
-
-    <label for="socioSolicitante">DNI/ID socio solicitante:</label><br/>
-    <input type="number" th:field="*{socioSolicitante}" id="socioSolicitante" required/><br/><br/>
+    <label for="matriculaEmbarcacion">Matrícula de embarcación:</label><br/>
+    <input type="text" th:field="*{matriculaEmbarcacion}" id="matriculaEmbarcacion" required/><br/><br/>
 
     <label for="plazasReserva">Plazas reservadas:</label><br/>
-    <input type="number" th:field="*{plazasReserva}" id="plazasReserva" min="1" required/><br/><br/>
+    <input type="number" th:field="*{plazasReserva}" id="plazasReserva" step="1" min="1" required/><br/><br/>
 
     <label for="fechaReserva">Fecha de reserva:</label><br/>
     <input type="date" th:field="*{fechaReserva}" id="fechaReserva" required/><br/><br/>

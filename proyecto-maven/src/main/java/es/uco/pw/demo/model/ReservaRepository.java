@@ -91,7 +91,6 @@ public class ReservaRepository {
             if (query != null) {
                 int result = jdbcTemplate.update(
                     query,
-                    r.getId(),
                     (r.getMatriculaEmbarcacion() != null ? r.getMatriculaEmbarcacion(): null),
                     r.getPlazasReserva(),
                     r.getFechaReserva() != null ? Date.valueOf(r.getFechaReserva()) : null,

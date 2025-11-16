@@ -86,8 +86,7 @@ public class FamiliaRepository {
     }
 
     public void addFamilia(Familia familia) {
-        String query = "INSERT INTO Familia (dniTitular, numAdultos, numNiños)" +
-                       "VALUES ( ?, ?, ?)";
+        String query = sqlQueries.getProperty("insert-addFamilia");
  
             jdbcTemplate.update(query, 
                 familia.getDniTitular(),

@@ -34,10 +34,6 @@ public class ReservaController {
     public ModelAndView addReserva(@ModelAttribute("newReserva") Reserva nueva) {
         ModelAndView mav = new ModelAndView();
 
-        // ID sencillo tipo size()+1 (igual que en el resto del proyecto)
-        int nextId = reservaRepository.findAllReservas().size() + 1;
-        nueva.setId(nextId);
-
         boolean ok = reservaRepository.addReserva(nueva);
         if (ok) {
             mav.setViewName("addReservaViewSuccess");

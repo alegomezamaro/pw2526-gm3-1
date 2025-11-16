@@ -11,9 +11,7 @@
     <div th:if="${reserva}">
         <h2>Detalles de la reserva:</h2>
         <ul>
-            <li>Embarcación: <span th:text="${reserva.embarcacion}"></span></li>
-            <li>Descripción: <span th:text="${reserva.descripcion}"></span></li>
-            <li>Socio solicitante: <span th:text="${reserva.socioSolicitante}"></span></li>
+            <li>Embarcación: <span th:text="${reserva.matriculaEmbarcacion}"></span></li>
             <li>Plazas: <span th:text="${reserva.plazasReserva}"></span></li>
             <li>Fecha: <span th:text="${reserva.fechaReserva}"></span></li>
             <li>Precio: <span th:text="${reserva.precioReserva}"></span></li>
