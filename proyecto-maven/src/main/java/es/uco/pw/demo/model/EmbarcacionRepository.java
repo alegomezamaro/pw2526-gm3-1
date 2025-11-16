@@ -161,7 +161,7 @@ public class EmbarcacionRepository {
         try {
             if (sqlQueries == null) createProperties();
 
-            String query = sqlQueries.getProperty("update-patronEmbarcacion");
+            String query = sqlQueries.getProperty("update-updatePatron");
             if (query != null) {
                 // El patronId puede ser null (para desasignar)
                 int result = jdbcTemplate.update(query, patronId, matricula);
