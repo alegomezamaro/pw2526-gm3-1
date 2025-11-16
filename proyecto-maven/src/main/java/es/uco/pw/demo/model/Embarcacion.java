@@ -7,9 +7,9 @@ public class Embarcacion {
     private EmbarcacionType tipo;
     private int plazas;
     private String dimensiones;
-    private Patron patronAsignado;
+    private Integer patronAsignado;
 
-    public Embarcacion(String matricula, String nombre, EmbarcacionType tipo, int plazas, String dimensiones, Patron patronAsignado) {
+    public Embarcacion(String matricula, String nombre, EmbarcacionType tipo, int plazas, String dimensiones, Integer patronAsignado) {
         this.matricula = matricula;
         this.nombre = nombre;
         this.tipo = tipo;
@@ -40,7 +40,7 @@ public class Embarcacion {
         return dimensiones;
     }
 
-    public Patron getPatronAsignado() {
+    public Integer getPatronAsignado() {
         return patronAsignado;
     }
 
@@ -64,7 +64,7 @@ public class Embarcacion {
         this.dimensiones = dimensiones;
     }
 
-    public void setPatronAsignado(Patron patronAsignado) {
+    public void setPatronAsignado(Integer patronAsignado) {
         this.patronAsignado = patronAsignado;
     }
 

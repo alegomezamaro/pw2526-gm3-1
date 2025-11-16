@@ -14,8 +14,10 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Properties;
+import java.sql.Date; 
 
 @Repository
 public class EmbarcacionRepository {
@@ -83,7 +85,7 @@ public class EmbarcacionRepository {
                             EmbarcacionType.valueOf(rs.getString("tipo")),
                             rs.getInt("plazas"),
                             rs.getString("dimensiones"),
-                            patron
+                            rs.getInt("patronAsignado")
                         );
                     }
                 });
@@ -110,7 +112,7 @@ public class EmbarcacionRepository {
                     e.getTipo().toString(),
                     e.getPlazas(),
                     e.getDimensiones(),
-                    (e.getPatronAsignado() != null ? e.getPatronAsignado().getId() : null)
+                    e.getPatronAsignado()
                 );
                 return result > 0;
             } else return false;
@@ -121,34 +123,38 @@ public class EmbarcacionRepository {
         }
     }
 
-    public List<Embarcacion> findEmbarcacionesDisponibles() {
+    public List<Embarcacion> findEmbarcacionesDisponibles(LocalDate fecha, int plazasNecesarias) {
         try {
             if (sqlQueries == null) {
                 createProperties();
             }
 
-            String query = (sqlQueries != null)
-                    ? sqlQueries.getProperty("select-findEmbarcacionesDisponibles")
-                    : null;
+            String query = sqlQueries.getProperty("select-findEmbarcacionesDisponibles");
 
             if (query == null) {
                 System.err.println("SQL query 'select-findEmbarcacionesDisponibles' not found.");
                 return List.of();
             }
 
-            return jdbcTemplate.query(query, new RowMapper<Embarcacion>() {
-                @Override
-                public Embarcacion mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return new Embarcacion(
-                        rs.getString("matricula"),
-                        rs.getString("nombre"),
-                        EmbarcacionType.valueOf(rs.getString("tipo")),
-                        rs.getInt("plazas"),
-                        rs.getString("dimensiones"),
-                        null   // patronAsignado (si lo necesitáis ya lo rellenaréis)
-                    );
-                }
-            });
+            Date sqlDate = Date.valueOf(fecha);
+
+            return jdbcTemplate.query(
+                    query,
+                    new Object[]{plazasNecesarias, sqlDate, sqlDate},
+                    new RowMapper<Embarcacion>() {
+                        @Override
+                        public Embarcacion mapRow(ResultSet rs, int rowNum) throws SQLException {
+                            return new Embarcacion(
+                                    rs.getString("matricula"),
+                                    rs.getString("nombre"),
+                                    EmbarcacionType.valueOf(rs.getString("tipo")),
+                                    rs.getInt("plazas"),
+                                    rs.getString("dimensiones"),
+                                    rs.getInt("patronAsignado")
+                            );
+                        }
+                    }
+            );
 
         } catch (DataAccessException e) {
             System.err.println("Unable to find available embarcaciones");
@@ -156,6 +162,7 @@ public class EmbarcacionRepository {
             return List.of();
         }
     }
+
 
     public boolean updatePatronAsignado(String matricula, Integer patronId) {
         try {

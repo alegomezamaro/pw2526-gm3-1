@@ -4,63 +4,67 @@
 <head>
     <meta charset="UTF-8">
     <title>Club NautiUCO</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
 </head>
 <body>
-    <h1>Bienvenido al menú del Club NautiUCO</h1>
-    <h2>Funciones</h2>
+<div class="page page--home">
+
+    <!-- CABECERA CON LOGO + TÍTULOS -->
+    <div class="home-header">
+        <img th:src="@{/images/UCO.png}" alt="UCO"/>
+
+        <div class="home-header-titles">
+            <h1>Club NautiUCO</h1>
+            <h2>Funciones</h2>
+        </div>
+    </div>
 
     <!-- SOCIO -->
-    <h3>Socio</h3>
-    <ol>
-        <li><a th:href="@{/addSocio}">Añadir socio</a></li>
-        <li><a th:href="@{/addTituloPatronASocio}">Añadir título de patrón a un socio</a></li>
-        <li><a th:href="@{/listSocios}">Listar socios</a></li>
-    </ol>
+    <section class="cosas">
 
-    <!-- INSCRIPCIÓN -->
-    <h3>Inscripción</h3>
-    <ol>
-        <li><a th:href="@{/ampliarInscripcion}">Ampliación inscripción</a></li>
-        <li><a th:href="@{/listInscripciones}">Listar inscripciones por tipo</a></li>
-    </ol>
+        <div class="item">
+            <h3>Socio</h3>
+            <ol>
+                <li><a th:href="@{/addSocio}">Añadir socio</a></li>
+                <li><a th:href="@{/addTituloPatronASocio}">Añadir título de patrón a un socio</a></li>
+                <li><a th:href="@{/listSocios}">Listar socios</a></li>
+            </ol>
+        </div>
 
-    <!-- EMBARCACIÓN -->
-    <h3>Embarcación</h3>
-    <ol>
-        <li><a th:href="@{/addEmbarcacion}">Dar alta embarcación</a></li>
-        <li><a th:href="@{/asignarPatron}">Asignar un patrón</a></li>
-        <li><a th:href="@{/consultarEmbarcacionesPorTipo}">Consultar por tipo de embarcación</a></li>
-    </ol>
+        <div class="item"><h3>Inscripción</h3>
+        <ol>
+            <li><a th:href="@{/ampliarInscripcion}">Ampliación inscripción</a></li>
+            <li><a th:href="@{/listInscripciones}">Listar inscripciones por tipo</a></li>
+        </ol></div>
+        <div class="item"><h3>Embarcación</h3>
+        <ol>
+            <li><a th:href="@{/addEmbarcacion}">Dar alta embarcación</a></li>
+            <li><a th:href="@{/asignarPatron}">Asignar un patrón</a></li>
+            <li><a th:href="@{/consultarEmbarcacionesPorTipo}">Consultar por tipo de embarcación</a></li>
+        </ol></div>
+        <div class="item"><h3>Patrón</h3>
+        <ol>
+            <li><a th:href="@{/addPatron}">Dar de alta patrón</a></li>
+        </ol></div>
+        <div class="item"><h3>Alquiler</h3>
+        <ol>
+            <li><a th:href="@{/buscarEmbarcacionDisponible}">Buscar embarcación disponible</a></li>
+            <li><a th:href="@{/addAlquiler}">Alquilar embarcación</a></li>
+            <li><a th:href="@{/findAlquileres}">Listar alquileres</a></li>
+        </ol></div>
+        <div class="item"><h3>Eventos</h3>
+        <ol>
+            <li><a th:href="@{/addReserva}">Reservar embarcación para un evento</a></li>
+        </ol></div>
+        <div class="item"><h3>Familias</h3>
+        <ol>
+            <li><a th:href="@{/addFamilia}">Añadir una familia</a></li>
+            <li><a th:href="@{/findFamiliaById}">Buscar Familia por ID</a></li>
+        </ol></div>
+        
+    </section>
+    
 
-    <!-- PATRÓN -->
-    <h3>Patrón</h3>
-    <ol>
-        <li><a th:href="@{/addPatron}">Dar de alta patrón</a></li>
-    </ol>
-
-    <!-- ALQUILER -->
-    <h3>Alquiler</h3>
-    <ol>
-        <li><a th:href="@{/buscarEmbarcacionDisponible}">Buscar embarcación disponible</a></li>
-        <li><a th:href="@{/addAlquiler}">Alquilar embarcación</a></li>
-        <li><a th:href="@{/findAlquileres}">Listar alquileres</a></li>
-    </ol>
-
-    <!-- RESERVA -->
-    <h3>Eventos</h3>
-    <ol>
-        <li><a th:href="@{/addReserva}">Reservar embarcación para un evento</a></li>
-    </ol>
-
-
-    <!-- FAMILIA -->
-    <h3>Familias</h3>
-    <ol>
-        <li><a th:href="@{/addFamilia}">Añadir una familia</a></li>
-        <li><a th:href="@{/findFamiliaById}">Buscar Familia por ID</a></li>
-    </ol>
-
-    <!-- Imagen -->
-    <img th:src="@{/images/UCO.png}" alt="UCO" style="height: 350px"/>
-    </body>
-    </html>
+</div>
+</body>
+</html>

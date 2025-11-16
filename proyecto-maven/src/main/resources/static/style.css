@@ -1,0 +1,252 @@
+/* ========== RESET BÁSICO ========== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f4f6fb;
+    color: #222;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100dvh;
+}
+
+/* ========== CONTENEDOR GENERAL ========== */
+
+.page {
+    max-width: 960px;
+    padding: 24px 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+}
+
+.page--home {
+    max-width: 1400px;
+}
+
+.cosas{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+/* ========== TITULOS ========== */
+
+h1 {
+    font-size: 1.8rem;
+    margin-bottom: 18px;
+    color: #163a5a;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.4rem;
+    margin: 18px 0 10px;
+    color: #1f4f7b;
+}
+
+h3 {
+    font-size: 1.1rem;
+    margin: 14px 0 6px;
+    color: #2a5f8c;
+}
+
+/* ========== LISTAS (home y menús) ========== */
+
+ol {
+    margin-left: 24px;
+    margin-bottom: 12px;
+}
+
+ol li {
+    margin: 4px 0;
+}
+
+/* ========== ENLACES ========== */
+
+a {
+    color: #1f4f7b;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+p{
+    padding: 5px;
+}
+
+/* Contenedor típico para enlaces tipo "volver" */
+.links-footer {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+/* ========== FORMULARIOS ========== */
+
+form {
+    flex-direction: column;
+    margin-top: 10px;
+    max-width: 500px;
+}
+
+label {
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+select {
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccd3e0;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="number"]:focus,
+select:focus {
+    outline: none;
+    border-color: #1f4f7b;
+    box-shadow: 0 0 0 2px rgba(31, 79, 123, 0.15);
+}
+
+/* Botones y submits */
+input[type="submit"],
+button {
+    display: flex;
+    justify-self: center;
+    cursor: pointer;
+    margin: 8px 0px;
+    padding: 8px 16px;
+    background: #1f4f7b;
+    color: #ffffff;
+    border: none;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background 0.15s, transform 0.1s, box-shadow 0.1s;
+}
+
+input[type="submit"]:hover,
+button:hover {
+    background: #163a5a;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+    transform: scale(1.05);
+}
+
+input[type="submit"]:active,
+button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* ========== TABLAS (listas) ========== */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    font-size: 0.95rem;
+}
+
+thead {
+    background: #1f4f7b;
+    color: #ffffff;
+}
+
+th,
+td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid #e0e4ed;
+}
+
+tbody tr:nth-child(even) {
+    background: #f7f9fc;
+}
+
+tbody tr:hover {
+    background: #e9f1ff;
+}
+
+/* ========== MENSAJES (success / error) ========== */
+
+.alert {
+    margin-top: 12px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.alert-success {
+    background: #e6f7e9;
+    color: #1e7e34;
+    border: 1px solid #b7e0c0;
+}
+
+.alert-error {
+    background: #fde8e8;
+    color: #b71c1c;
+    border: 1px solid #f5b5b5;
+}
+
+/* ========== IMÁGENES ========== */
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-top: 20px;
+}
+
+/* ========== UTILIDADES PEQUEÑAS ========== */
+
+.text-center {
+    text-align: center;
+}
+
+.mt-1 { margin-top: 6px; }
+.mt-2 { margin-top: 12px; }
+.mt-3 { margin-top: 18px; }
+
+.mb-1 { margin-bottom: 6px; }
+.mb-2 { margin-bottom: 12px; }
+.mb-3 { margin-bottom: 18px; }
+
+/* ========== CABECERA HOME ========== */
+
+.home-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.home-header img {
+    max-height: 80px;
+    width: auto;
+}
+
+.home-header-titles h1 {
+    text-align: left; /* Sobrescribe el centrado general de h1 */
+    margin-bottom: 6px;
+}
+
+.home-header-titles h2 {
+    margin-top: 0;
+}

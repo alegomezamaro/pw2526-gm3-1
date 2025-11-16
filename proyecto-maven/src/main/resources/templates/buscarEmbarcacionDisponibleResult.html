@@ -11,24 +11,9 @@
 <body>
 <h1>Embarcaciones disponibles</h1>
 
-<form th:action="@{/buscarEmbarcacionDisponible}" method="post">
-    <label for="fecha">Fecha de la reserva / alquiler:</label><br/>
-    <input type="date" id="fecha" name="fecha"
-           th:value="${fecha}"/><br/><br/>
-
-    <label for="plazasNecesarias">Plazas necesarias (personas a bordo):</label><br/>
-    <input type="number" id="plazasNecesarias" name="plazasNecesarias"
-           min="1" step="1"
-           th:value="${plazasNecesarias}"/><br/><br/>
-
-    <input type="submit" value="Buscar embarcaciones"/>
-</form>
-
-<hr/>
-
 <!-- Si no hay ninguna embarcación, mensaje -->
 <div th:if="${#lists.isEmpty(embarcaciones)}">
-    <p>No hay embarcaciones disponibles para esos criterios.</p>
+    <p>No hay embarcaciones disponibles en este momento.</p>
 </div>
 
 <!-- Si hay embarcaciones, tabla -->

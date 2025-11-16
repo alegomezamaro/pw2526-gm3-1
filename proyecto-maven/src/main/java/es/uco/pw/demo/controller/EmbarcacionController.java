@@ -1,7 +1,9 @@
 package es.uco.pw.demo.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -84,10 +86,32 @@ public class EmbarcacionController {
     }
 
     // ------- VISTA: Buscar embarcaciones disponibles -------
+    // @GetMapping("/buscarEmbarcacionDisponible")
+    // public ModelAndView buscarEmbarcacionDisponible() {
+    //     ModelAndView mav = new ModelAndView("buscarEmbarcacionDisponible");
+    //     mav.addObject("embarcaciones", embarcacionRepository.findEmbarcacionesDisponibles());
+    //     return mav;
+    // }
+
     @GetMapping("/buscarEmbarcacionDisponible")
-    public ModelAndView buscarEmbarcacionDisponible() {
+    public ModelAndView mostrarFormularioBuscarEmbarcacionDisponible() {
         ModelAndView mav = new ModelAndView("buscarEmbarcacionDisponible");
-        mav.addObject("embarcaciones", embarcacionRepository.findEmbarcacionesDisponibles());
+        mav.addObject("embarcaciones", List.of()); // lista vacía al entrar
+        return mav;
+    }
+
+    @PostMapping("/buscarEmbarcacionDisponible")
+    public ModelAndView procesarBusquedaEmbarcacionDisponible(
+            @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @RequestParam("plazasNecesarias") int plazasNecesarias
+    ) {
+        List<Embarcacion> embarcaciones = embarcacionRepository
+                .findEmbarcacionesDisponibles(fecha, plazasNecesarias);
+
+        ModelAndView mav = new ModelAndView("buscarEmbarcacionDisponible");
+        mav.addObject("embarcaciones", embarcaciones);
+        mav.addObject("fecha", fecha);
+        mav.addObject("plazasNecesarias", plazasNecesarias);
         return mav;
     }
 
