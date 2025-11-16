@@ -17,7 +17,7 @@ public class ReservaController {
 
     public ReservaController(ReservaRepository reservaRepository) {
         this.reservaRepository = reservaRepository;
-        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        String sqlQueriesFileName = "db/sql.properties";
         this.reservaRepository.setSQLQueriesFileName(sqlQueriesFileName);
     }
 

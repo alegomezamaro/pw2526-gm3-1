@@ -9,7 +9,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import es.uco.pw.demo.model.Inscripcion;
 import es.uco.pw.demo.model.InscripcionRepository;
-import java.util.List;
 import es.uco.pw.demo.model.InscripcionType;
 
 @Controller
@@ -20,7 +19,7 @@ public class InscripcionController {
     public InscripcionController(InscripcionRepository inscripcionRepository) {
         this.inscripcionRepository = inscripcionRepository;
         // Igual que en el resto del proyecto
-        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        String sqlQueriesFileName = "db/sql.properties";
         this.inscripcionRepository.setSQLQueriesFileName(sqlQueriesFileName);
     }
 

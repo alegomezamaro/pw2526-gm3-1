@@ -9,6 +9,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,10 +37,18 @@ public class AlquilerRepository {
     private void createProperties() {
         sqlQueries = new Properties();
         try {
-            BufferedReader reader;
-            File f = new File(sqlQueriesFileName);
-            reader = new BufferedReader(new FileReader(f));
-            sqlQueries.load(reader);
+            
+            InputStream is = getClass().getClassLoader().getResourceAsStream(sqlQueriesFileName);
+
+            if (is == null) {
+                System.err.println("ERROR: El fichero de properties NO se encontró en el classpath: " + sqlQueriesFileName);
+                return;
+            }
+
+            
+            sqlQueries.load(new InputStreamReader(is, StandardCharsets.UTF_8));
+            is.close();
+            
         } catch (IOException e) {
             System.err.println("Error creating properties object for SQL Queries");
             e.printStackTrace();

@@ -19,7 +19,7 @@ public class FamiliaController {
     public FamiliaController(FamiliaRepository familiaRepository) {
         this.familiaRepository = familiaRepository;
         // Igual que en el resto del proyecto:
-        String sqlQueriesFileName = "./src/main/resources/db/sql.properties";
+        String sqlQueriesFileName = "db/sql.properties";
         this.familiaRepository.setSQLQueriesFileName(sqlQueriesFileName);
     }
 
