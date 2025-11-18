@@ -28,6 +28,7 @@
             </tr>
         </select>
 
+        <div style="margin-top: 10px;">
         <label for="idPatron">Asignar Patrón:</label>
         <select id="idPatron" name="idPatron">
             <option value="">-- Sin Patrón --</option>
@@ -38,7 +39,7 @@
                 </option>
             </tr>
         </select>
-
+        </div>
         <button type="submit">Guardar Asignación</button>
     </form>
 </div>
@@ -74,9 +75,6 @@
         <td th:text="${emb.plazas}">Plazas</td>
         <td th:text="${emb.dimensiones}">Dimensiones</td>
         
-        <td th:text="${emb.patronAsignado != null ? emb.patronAsignado.nombre + ' ' + emb.patronAsignado.apellidos : 'Sin Asignar'}">
-            Datos del Patrón
-        </td>
     </tr>
     </tbody>
 </table>

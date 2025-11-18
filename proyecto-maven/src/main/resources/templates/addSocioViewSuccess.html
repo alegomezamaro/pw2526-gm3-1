@@ -12,6 +12,8 @@
     <p>Socio: <span th:text="${socio.nombre}">Nombre</span> 
         <span th:text="${socio.apellidos}">Apellidos</span> (DNI: <span th:text="${socio.dni}">DNI</span>)</p>
 
+    <p th:if="${familiaIdCreada}">¡Felicidades! Se ha creado la Familia con ID: <span th:text="${familiaIdCreada}"></span></p>
+
     <p><a th:href="@{/addSocio}">Volver al formulario</a></p>
     <p><a th:href="@{/}">Volver al menú</a></p>
 </body>

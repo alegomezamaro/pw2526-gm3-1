@@ -27,8 +27,29 @@
     <input type="date" id="fechaNacimiento" name="fechaNacimiento" required/><br/><br/>
 
     <label for="inscripcion">Tipo de Inscripcion</label><br/>
-    <input type="inscripcion" id="inscripcion" name="inscripcion" required/><br/><br/>
+    <select type="inscripcion" id="inscripcion" name="inscripcion" required>
+      <option value="INDIVIDUAL">INDIVIDUAL</option>
+      <option value="FAMILIAR">FAMILIAR</option> 
+    </select>
 
+        <div id="familyOptions" style="background-color: #f7f9fc; margin-top: 15;">
+        <h3 style="margin-top: 0;">Opciones para la Inscripción Familiar</h3>
+
+        <!-- Elegir Crear o Unirse -->
+        <input type="radio" id="crearFamilia" name="familyAction" value="CREATE">
+        <label for="crearFamilia">Crear Familia</label><br/>
+
+        <input type="radio" id="familyJoin" name="familyAction" value="JOIN">
+        <label for="familyJoin">Unirse a Familia Existente</label><br/><br/>
+
+        <!-- Campo para ID de Familia-->
+        <div id="joinFamilyIdField">
+            <label for="familiaId">ID de Familia a Unirse:</label><br/>
+            <!-- El campo familyId es opcional, ya que solo se usa si familyAction es JOIN -->
+            <input type="text" id="familiaId" name="familiaId" placeholder="Introduce el ID de familia"/>
+            <br/>
+        </div>
+    </div>
 
     <input type="submit" value="Enviar"/>
   </form>

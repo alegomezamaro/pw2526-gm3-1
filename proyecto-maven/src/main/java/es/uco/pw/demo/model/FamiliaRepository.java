@@ -116,4 +116,32 @@ public class FamiliaRepository {
             return null;
         }
     }
+    
+    public Integer getLastId(){
+        String query = "SELECT LAST_INSERTED_ID()";
+        try{
+            return jdbcTemplate.queryForObject(query,Integer.class);
+        }catch ( DataAccessException e){
+            System.err.println("Unable to get last inserted ID");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean updateFamilia(Familia familia){
+        String query = sqlQueries.getProperty("update-updateFamilia");
+        try{
+            jdbcTemplate.update(query,
+                familia.getNumAdultos(),
+                familia.getNumNiños(),
+                familia.getId()
+            );
+            return true;
+        }catch ( DataAccessException e ){
+            System.err.println("Unable to update familia in the db");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

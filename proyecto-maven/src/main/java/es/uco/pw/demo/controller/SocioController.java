@@ -1,6 +1,7 @@
 package es.uco.pw.demo.controller;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,10 +9,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import es.uco.pw.demo.model.Familia;
+import es.uco.pw.demo.model.FamiliaRepository;
 import es.uco.pw.demo.model.Inscripcion;
-import es.uco.pw.demo.model.InscripcionType;
 import es.uco.pw.demo.model.InscripcionRepository;
-
+import es.uco.pw.demo.model.InscripcionType;
 import es.uco.pw.demo.model.Socio;
 import es.uco.pw.demo.model.SocioRepository;
 
@@ -20,12 +22,20 @@ public class SocioController {
 
     private final SocioRepository socioRepository;
     private final InscripcionRepository inscripcionRepository;
+    private final FamiliaRepository familiaRepository;
+    private static final int mayorEdad = 18;
 
     public SocioController(SocioRepository socioRepository,
-                           InscripcionRepository inscripcionRepository) {
+                           InscripcionRepository inscripcionRepository, FamiliaRepository familiaRepository) {
         this.socioRepository = socioRepository;
         this.inscripcionRepository = inscripcionRepository;
+        this.familiaRepository = familiaRepository; 
     }
+
+    private int calcularEdad(LocalDate date){
+        return Period.between(date, LocalDate.now()).getYears();
+    }
+
     // ------- VISTA: Formulario alta de socio -------
     @GetMapping("/addSocio")
     public ModelAndView getAddSocioView() {
@@ -40,7 +50,9 @@ public class SocioController {
             @RequestParam("apellidos") String apellidos,
             @RequestParam("direccion") String direccion,
             @RequestParam("fechaNacimiento") String fechaNacimiento,
-            @RequestParam("inscripcion") InscripcionType inscripcion
+            @RequestParam("inscripcion") InscripcionType inscripcion,
+            @RequestParam(value = "familyAction", required = false) String familyAction,
+            @RequestParam(value = "familiaId", required = false) Integer familiaId
             ) {
 
         ModelAndView mav = new ModelAndView();
@@ -59,13 +71,66 @@ public class SocioController {
 
         Socio nuevoSocio = new Socio(dni, nombre, apellidos, fechaNac,direccion, false, fechaAlta);
 
+        boolean isAdulto = calcularEdad(fechaNac) >= mayorEdad;
+
         boolean ok = socioRepository.addSocio(nuevoSocio);
+
+        
+        if(inscripcion == InscripcionType.FAMILIAR){
+            if( familyAction == null ){
+                mav.addObject("errorMessage", "Debe seleccionar una acción (Crear o unirse a una Familia).");
+                mav.setViewName("addSocioViewFail");
+                return mav;
+            }
+            if( "JOIN".equals(familyAction) && familiaId == null){
+                mav.addObject("errorMessage", "Debe introducir un ID de Familia para unirse.");
+                mav.setViewName("addSocioViewFail");
+                return mav;
+            }
+        }
         
         if (!ok) {
             mav.setViewName("addSocioViewFail");
         }
 
         Socio socioGuardado = socioRepository.findSocioByDni(dni);
+        Integer familiaAsociadaId = null;
+
+        if(inscripcion == InscripcionType.FAMILIAR){
+            if("CREATE".equals(familyAction)){
+                Familia nuevaF = new Familia();
+                nuevaF.setDniTitular(socioGuardado.getDni());
+                nuevaF.setNumAdultos(isAdulto ? 1 : 0);
+                nuevaF.setNumNiños(isAdulto ? 0 : 1);
+
+                familiaRepository.addFamilia(nuevaF);
+
+                familiaAsociadaId = familiaRepository.getLastId();
+
+                if(familiaAsociadaId != null){
+                    nuevaF.setId(familiaAsociadaId);
+                    mav.addObject("familiaIdCreada", familiaAsociadaId);
+                }
+            } else if("JOIN".equals(familyAction) && familiaId != null){
+                Familia familiaUnir = familiaRepository.findFamiliaById(familiaId);
+                if(familiaUnir == null){
+                    mav.addObject("errorMessage", "No se encontró familia con ID: " + familiaId);
+                    mav.setViewName("addSocioViewFail");
+                    return mav;
+                }
+                if(isAdulto){
+                    familiaUnir.setNumAdultos(familiaUnir.getNumAdultos()+1);
+                }else{
+                    familiaUnir.setNumNiños(familiaUnir.getNumNiños()+1);
+                }
+                boolean okUpdate = familiaRepository.updateFamilia(familiaUnir);
+                if (!okUpdate) {
+                    mav.addObject("warningMessage", "El socio se unió, pero hubo un problema al actualizar la familia.");
+                }
+                familiaAsociadaId = familiaId;
+            }
+        }
+
 
         Inscripcion nuevaInscripcion = new Inscripcion(
                 0,
@@ -76,15 +141,6 @@ public class SocioController {
                 0
             );
 
-        if(inscripcion == InscripcionType.FAMILIAR){
-            // Debe de pedir si vas a crear una familia o te vas a unir a una
-            // (Si creas familia)
-            // Se añade el socio y se crea una familia con valores dfl
-            // Se muestra por pantalla el ID de familia
-            // (Si no creas familia)
-            // Te pide ID de familia
-            // Te une a dicha familia, añadiendo socio e incrementando el numAdultos o numNiños de Familia en funcion de tu fecha de nacimiento
-        }
 
         boolean okInscripcion = inscripcionRepository.addInscripcion(nuevaInscripcion);
         if (!okInscripcion) {
