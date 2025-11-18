@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import es.uco.pw.demo.model.Inscripcion;
+import es.uco.pw.demo.model.InscripcionType;
+import es.uco.pw.demo.model.InscripcionRepository;
+
 import es.uco.pw.demo.model.Socio;
 import es.uco.pw.demo.model.SocioRepository;
 
@@ -15,11 +19,13 @@ import es.uco.pw.demo.model.SocioRepository;
 public class SocioController {
 
     private final SocioRepository socioRepository;
+    private final InscripcionRepository inscripcionRepository;
 
-    public SocioController(SocioRepository socioRepository) {
+    public SocioController(SocioRepository socioRepository,
+                           InscripcionRepository inscripcionRepository) {
         this.socioRepository = socioRepository;
+        this.inscripcionRepository = inscripcionRepository;
     }
-
     // ------- VISTA: Formulario alta de socio -------
     @GetMapping("/addSocio")
     public ModelAndView getAddSocioView() {
@@ -33,7 +39,8 @@ public class SocioController {
             @RequestParam("nombre") String nombre,
             @RequestParam("apellidos") String apellidos,
             @RequestParam("direccion") String direccion,
-            @RequestParam("fechaNacimiento") String fechaNacimiento
+            @RequestParam("fechaNacimiento") String fechaNacimiento,
+            @RequestParam("inscripcion") InscripcionType inscripcion
             ) {
 
         ModelAndView mav = new ModelAndView();
@@ -50,17 +57,44 @@ public class SocioController {
         LocalDate fechaNac = LocalDate.parse(fechaNacimiento);  // Convierte String a LocalDate
         LocalDate fechaAlta = LocalDate.now();
 
-        // Creamos el nuevo socio (por defecto patronEmbarcacion = NO)
         Socio nuevoSocio = new Socio(dni, nombre, apellidos, fechaNac,direccion, false, fechaAlta);
 
         boolean ok = socioRepository.addSocio(nuevoSocio);
-
-        if (ok) {
-            mav.setViewName("addSocioViewSuccess");
-        } else {
+        
+        if (!ok) {
             mav.setViewName("addSocioViewFail");
         }
+
+        Socio socioGuardado = socioRepository.findSocioByDni(dni);
+
+        Inscripcion nuevaInscripcion = new Inscripcion(
+                0,
+                inscripcion,
+                300,
+                fechaAlta,
+                socioGuardado.getDni(),
+                0
+            );
+
+        if(inscripcion == InscripcionType.FAMILIAR){
+            // Debe de pedir si vas a crear una familia o te vas a unir a una
+            // (Si creas familia)
+            // Se añade el socio y se crea una familia con valores dfl
+            // Se muestra por pantalla el ID de familia
+            // (Si no creas familia)
+            // Te pide ID de familia
+            // Te une a dicha familia, añadiendo socio e incrementando el numAdultos o numNiños de Familia en funcion de tu fecha de nacimiento
+        }
+
+        boolean okInscripcion = inscripcionRepository.addInscripcion(nuevaInscripcion);
+        if (!okInscripcion) {
+        mav.addObject("warningMessage",
+                "El socio se ha creado correctamente, pero ha habido un problema creando la inscripción.");
+        }
+
+        mav.setViewName("addSocioViewSuccess");
         mav.addObject("socio", nuevoSocio);
+        mav.addObject("inscripcion", nuevaInscripcion);
         return mav;
     }
 

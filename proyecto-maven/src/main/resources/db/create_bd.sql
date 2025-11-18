@@ -198,12 +198,12 @@ CREATE TABLE Socio (
 -- 
 
 INSERT INTO Socio VALUES ('11111111A', 'Ana', 'López García', 'Av. del Puerto 12, Cádiz', '1999-03-21', 1, '2023-11-12');
-INSERT INTO Socio VALUES ('22222222B', 'Javier', 'Martín Ruiz', 'C/ Cruz Conde 7, Córdoba', '2001-11-02', 0, '0000-00-00');
-INSERT INTO Socio VALUES ('54290546C', 'Alejandro', 'Gómez', 'Calle del Oro, 10, Málaga', '2004-10-14', 1, '0000-00-00');
-INSERT INTO Socio VALUES ('23753621A', 'Javier', 'Castilla', 'Avenida Grán Capitan, 3, Córdoba', '2002-02-01', 1, '0000-00-00');
-INSERT INTO Socio VALUES ('10293847D', 'Alejandro', 'Antúnez', 'Calle Séneca, SN, Córdoba', '2005-12-10', 1, '0000-00-00');
-INSERT INTO Socio VALUES ('19283746E', 'Pedro', 'Amaro', 'Calle Luciano, 3, Lucena', '2004-03-12', 0, '0000-00-00');
-INSERT INTO Socio VALUES ('32009284H', 'José', 'Sánchez', 'Calle Córdoba, 14, Sevilla', '2004-10-14', 0, '0000-00-00');
+INSERT INTO Socio VALUES ('22222222B', 'Javier', 'Martín Ruiz', 'C/ Cruz Conde 7, Córdoba', '2001-11-02', 0, '2023-11-12');
+INSERT INTO Socio VALUES ('54290546C', 'Alejandro', 'Gómez', 'Calle del Oro, 10, Málaga', '2004-10-14', 1, '2023-11-12');
+INSERT INTO Socio VALUES ('23753621A', 'Javier', 'Castilla', 'Avenida Grán Capitan, 3, Córdoba', '2002-02-01', 1, '2023-11-12');
+INSERT INTO Socio VALUES ('10293847D', 'Alejandro', 'Antúnez', 'Calle Séneca, SN, Córdoba', '2005-12-10', 1, '2023-11-12');
+INSERT INTO Socio VALUES ('19283746E', 'Pedro', 'Amaro', 'Calle Luciano, 3, Lucena', '2004-03-12', 0, '2023-11-12');
+INSERT INTO Socio VALUES ('32009284H', 'José', 'Sánchez', 'Calle Córdoba, 14, Sevilla', '2004-10-14', 0, '2023-11-12');
 INSERT INTO Socio VALUES ('87654321X', 'Mohssin', 'Bassat Sidki', 'Calle Manuel Altolaguirre, Málaga', '2004-05-18', 0, '2025-11-12');
 
 -- 
