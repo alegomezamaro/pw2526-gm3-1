@@ -1,0 +1,41 @@
+Socio
+    - Mostrar socios
+    - Filtrar socio por DNI
+    - Crear socio sin inscripción
+    - Crear socio asociado a una familia
+
+Inscripción
+    - Filtrar inscripciones en individuales o familiares
+    - Filtrar inscripciones por DNI
+    - Crear inscripcion para socio titular
+
+Familia
+    
+
+Embarcacion
+    - Mostrar embarcaciones
+    - Filtrar embarcaciones por tipos
+    - Crear embarcacion sin patrón
+
+
+Patron
+    - Mostrar patrones
+    - Crear patron sin embarcacion
+
+Alquiler
+    
+
+Eventos (Reserva)
+    
+
+- Listar alquileres
+- Alquileres futuros dado una fecha
+- Informacion de un alquiler dado el id
+- Embarcaciones disponibles dada fecha inicio y fin
+- Crear nuevo alquiler para una embarcacion disponible sin incluir la vinculacion de los socios 
+
+Organizacion de actividades
+- Obtener las reservas
+- Obtener las reservas futuras dada una fecha
+- Obtener la info de una reserva dado el id
+- Crear una reserva para una embarcacion disponible
