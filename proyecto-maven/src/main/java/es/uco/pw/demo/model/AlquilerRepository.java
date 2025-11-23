@@ -177,5 +177,40 @@ public class AlquilerRepository {
             return null;
         }
     }
+
+    public Alquiler findAlquilerByMatricula(String matricula){
+        if (sqlQueries == null) {
+            createProperties();
+        }
+        String query = (sqlQueries != null) ? sqlQueries.getProperty("select-findAlquilerByMatricula") : null;
+        try {
+            return jdbcTemplate.queryForObject(query, (rs, rowNum) -> {
+                Alquiler alquiler = new Alquiler();
+                alquiler.setId(rs.getInt("id"));
+                alquiler.setMatriculaEmbarcacion(rs.getString("matriculaEmbarcacion"));
+                alquiler.setDniTitular(rs.getString("dniTitular"));
+                java.sql.Date fechaInicio = rs.getDate("fechaInicio");
+                if (fechaInicio != null) {
+                    alquiler.setFechaInicio(fechaInicio.toLocalDate());
+                }
+                java.sql.Date fechaFin = rs.getDate("fechaFin");
+                if (fechaFin != null) {
+                    alquiler.setFechaFin(fechaFin.toLocalDate());
+                }
+                alquiler.setPlazasSolicitadas(rs.getInt("plazasSolicitadas"));
+                alquiler.setPrecioTotal(rs.getDouble("precioTotal"));
+                
+                return alquiler;
+            }, matricula);
+
+        } catch (EmptyResultDataAccessException e) {
+            System.out.println("No se encontró ningún alquiler con ID: " + matricula);
+            return null;
+        } catch (DataAccessException e) {
+            System.err.println("Error al buscar alquiler con ID: " + matricula);
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
 
