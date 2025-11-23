@@ -23,19 +23,14 @@ Patron
     - Crear patron sin embarcacion
 
 Alquiler
-    
+    - Mostrar alquileres
+    - Mostrar alquileres por fecha
+    - Mostrar alquiler por id
+    - Mostrar embarcaciones disponibles por fecha de inicio y fin
+    - Crear alquiler para embarcacion disponible sin incluir vinculacion de los socios 
 
 Eventos (Reserva)
-    
-
-- Listar alquileres
-- Alquileres futuros dado una fecha
-- Informacion de un alquiler dado el id
-- Embarcaciones disponibles dada fecha inicio y fin
-- Crear nuevo alquiler para una embarcacion disponible sin incluir la vinculacion de los socios 
-
-Organizacion de actividades
-- Obtener las reservas
-- Obtener las reservas futuras dada una fecha
-- Obtener la info de una reserva dado el id
-- Crear una reserva para una embarcacion disponible
+    - Mostrar las reservas
+    - Mostrar las reservas por fecha
+    - Mostrar las reservas por id
+    - Crear reserva por embarcacion disponible
