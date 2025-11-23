@@ -56,6 +56,12 @@ public class AlquilerApiController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/buscar_por_fecha")
+    public ResponseEntity<List<Alquiler>> getAlquilerById(@RequestParam("fecha") LocalDate fecha) {
+        List<Alquiler> alquileres = alquilerRepository.findAlquileresByFechaInicio(fecha);
+        return ResponseEntity.ok(alquileres);
+    }
     
     @GetMapping("/embarcaciones_disponibles")
     public ResponseEntity<List<Embarcacion>> getEmbarcacionesDisponibles(

@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.time.LocalDate;
 
 import es.uco.pw.demo.model.EmbarcacionType;
 import es.uco.pw.demo.model.Embarcacion;
@@ -212,5 +213,34 @@ public class AlquilerRepository {
             return null;
         }
     }
+
+    public List<Alquiler> findAlquileresByFechaInicio(LocalDate fechaInicio){
+        try {
+
+            String query = sqlQueries.getProperty("select-findAlquilerByFechaInicio");
+
+            String fecha = fechaInicio.toString();
+
+            return jdbcTemplate.query(query, new RowMapper<Alquiler>() {
+                @Override
+                public Alquiler mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return new Alquiler(
+                        rs.getInt("id"),
+                        rs.getString("matriculaEmbarcacion"),             
+                        rs.getString("dniTitular"),
+                        rs.getDate("fechaInicio") != null ? rs.getDate("fechaInicio").toLocalDate() : null,
+                        rs.getDate("fechaFin") != null ? rs.getDate("fechaFin").toLocalDate() : null,
+                        rs.getInt("plazasSolicitadas"),
+                        rs.getDouble("precioTotal")
+                    );
+                }
+            }, fecha);
+
+        } catch (DataAccessException e) {
+            System.err.println("Unable to find alquileres for date: " + fechaInicio);
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    } 
 }
 
