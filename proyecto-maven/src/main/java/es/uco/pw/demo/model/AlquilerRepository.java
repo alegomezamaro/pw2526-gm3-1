@@ -1,6 +1,7 @@
 package es.uco.pw.demo.model;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -15,8 +16,13 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import es.uco.pw.demo.model.EmbarcacionType;
+import es.uco.pw.demo.model.Embarcacion;
+import es.uco.pw.demo.model.EmbarcacionRepository;
 
 @Repository
 public class AlquilerRepository {
@@ -105,6 +111,70 @@ public class AlquilerRepository {
             System.err.println("Unable to insert alquiler into the db");
             ex.printStackTrace();
             return false;
+        }
+    }
+
+    public List<Alquiler> findAlquilerByEmbarcacionType(EmbarcacionType emb) {
+        try {
+
+            String query = sqlQueries.getProperty("select-findAlquilerByEmbarcacionType");
+            
+            String tipoBarco = emb.toString(); 
+
+            return jdbcTemplate.query(query, new RowMapper<Alquiler>() {
+                @Override
+                public Alquiler mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return new Alquiler(
+                        rs.getInt("id"),
+                        rs.getString("matriculaEmbarcacion"),             
+                        rs.getString("dniTitular"),
+                        rs.getDate("fechaInicio") != null ? rs.getDate("fechaInicio").toLocalDate() : null,
+                        rs.getDate("fechaFin") != null ? rs.getDate("fechaFin").toLocalDate() : null,
+                        rs.getInt("plazasSolicitadas"),
+                        rs.getDouble("precioTotal")
+                    );
+                }
+            }, tipoBarco);
+
+        } catch (DataAccessException e) {
+            System.err.println("Unable to find alquileres for type: " + emb);
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public Alquiler findAlquilerById(Integer id) {
+        if (sqlQueries == null) {
+            createProperties();
+        }
+        String query = (sqlQueries != null) ? sqlQueries.getProperty("select-findAlquilerById") : null;
+        try {
+            return jdbcTemplate.queryForObject(query, (rs, rowNum) -> {
+                Alquiler alquiler = new Alquiler();
+                alquiler.setId(rs.getInt("id"));
+                alquiler.setMatriculaEmbarcacion(rs.getString("matriculaEmbarcacion"));
+                alquiler.setDniTitular(rs.getString("dniTitular"));
+                java.sql.Date fechaInicio = rs.getDate("fechaInicio");
+                if (fechaInicio != null) {
+                    alquiler.setFechaInicio(fechaInicio.toLocalDate());
+                }
+                java.sql.Date fechaFin = rs.getDate("fechaFin");
+                if (fechaFin != null) {
+                    alquiler.setFechaFin(fechaFin.toLocalDate());
+                }
+                alquiler.setPlazasSolicitadas(rs.getInt("plazasSolicitadas"));
+                alquiler.setPrecioTotal(rs.getDouble("precioTotal"));
+                
+                return alquiler;
+            }, id);
+
+        } catch (EmptyResultDataAccessException e) {
+            System.out.println("No se encontró ningún alquiler con ID: " + id);
+            return null;
+        } catch (DataAccessException e) {
+            System.err.println("Error al buscar alquiler con ID: " + id);
+            e.printStackTrace();
+            return null;
         }
     }
 }
