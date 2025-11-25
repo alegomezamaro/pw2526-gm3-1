@@ -20,6 +20,9 @@ public class Patron {
         this.fechaTituloPatron = fechaTituloPatron;
     }
 
+    public Patron() {}
+
+
     public Integer getId() {
         return id;
     }
