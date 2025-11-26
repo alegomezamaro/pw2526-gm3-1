@@ -72,6 +72,7 @@ public class AlquilerApiController {
         return ResponseEntity.ok(embarcacionesDisponibles);
     }
 
+    // Añadimos un alquiler si ningun titular/socio asociado
     @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> createAlquilerSinSocioVinculado(@RequestBody Alquiler alquiler) {
 
@@ -86,7 +87,7 @@ public class AlquilerApiController {
 
         boolean ok = alquilerRepository.addAlquiler(alquiler);
         if ( !ok) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha podido crear el socio en la base de datos.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha podido crear el alquiler en la base de datos.");
         } else {
             return ResponseEntity.status(HttpStatus.CREATED).body(alquiler);
         }

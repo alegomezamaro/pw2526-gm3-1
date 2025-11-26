@@ -183,7 +183,7 @@ public class AlquilerRepository {
         if (sqlQueries == null) {
             createProperties();
         }
-        String query = (sqlQueries != null) ? sqlQueries.getProperty("select-findAlquilerByMatricula") : null;
+        String query = (sqlQueries != null) ? sqlQueries.getProperty("select-findAlquileresByMatricula") : null;
         try {
             return jdbcTemplate.queryForObject(query, (rs, rowNum) -> {
                 Alquiler alquiler = new Alquiler();
@@ -205,10 +205,10 @@ public class AlquilerRepository {
             }, matricula);
 
         } catch (EmptyResultDataAccessException e) {
-            System.out.println("No se encontró ningún alquiler con ID: " + matricula);
+            System.out.println("No se encontró ningún alquiler asociado a la matricula: " + matricula);
             return null;
         } catch (DataAccessException e) {
-            System.err.println("Error al buscar alquiler con ID: " + matricula);
+            System.err.println("Error al buscar alquiler asociado a la matricula: " + matricula);
             e.printStackTrace();
             return null;
         }
