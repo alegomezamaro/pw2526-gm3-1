@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,7 +50,7 @@ public class SocioApiController {
         }
     }
 
-//CREAR NUEVO SOCIO SIN INSCRIPCION PREVIA
+    //CREAR NUEVO SOCIO SIN INSCRIPCION PREVIA
     @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> createSocioSinInscripcion(@RequestBody Socio socio) {
 
@@ -73,7 +74,25 @@ public class SocioApiController {
         
     }
 
+    // MÉTODOS PATCH
+    @PatchMapping(path="/{dni}", consumes="application/json")
+    public ResponseEntity<?> patchResource(@PathVariable String dni, @RequestBody Socio socio){
+        Socio socioActualizar = socioRepository.findSocioByDni(dni);
 
+        if( socio.getNombre() != null){ socioActualizar.setNombre(socio.getNombre());}
+        if( socio.getApellidos() != null){ socioActualizar.setApellidos(socio.getApellidos());}
+        if( socio.getDireccion() != null){ socioActualizar.setDireccion(socio.getDireccion());}
+        if( socio.getFechaNacimiento() != null){ socioActualizar.setFechaNacimiento(socio.getFechaNacimiento());}
+        if( socio.getFechaAlta() != null){ socioActualizar.setFechaAlta(socio.getFechaAlta());}
+        if( socio.esPatronEmbarcacion() == false || socio.esPatronEmbarcacion() == true){ socioActualizar.setPatronEmbarcacion(socio.esPatronEmbarcacion());}
+
+        boolean ok = socioRepository.updateSocio(socioActualizar);
+        if ( !ok) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha podido actualizar el socio con dni: " + dni);
+        } else {
+            return ResponseEntity.ok(socioActualizar);
+        }
+    }
 
 
 

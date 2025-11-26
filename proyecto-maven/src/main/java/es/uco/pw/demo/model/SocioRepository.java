@@ -4,7 +4,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowMapper;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -84,16 +83,16 @@ public class SocioRepository {
 
     // Método para actualizar los datos de un socio
     public boolean updateSocio(Socio socio) {
-        String query = "UPDATE Socio SET nombre = ?, apellidos = ?, direccion = ?, fechaNacimiento = ?, patronEmbarcacion = ? WHERE dni = ?";
+        String query = "UPDATE Socio SET nombre = ?, apellidos = ?, direccion = ?, fechaNacimiento = ?, fechaAlta = ?, patronEmbarcacion = ? WHERE dni = ?";
         try {
             jdbcTemplate.update(query,
                 socio.getNombre(),  // Usamos 'nombre' en lugar de 'name'
                 socio.getApellidos(),  // Usamos 'apellidos' en lugar de 'surname'
                 socio.getDireccion(),
                 socio.getFechaNacimiento(),
+                socio.getFechaAlta(),
                 socio.esPatronEmbarcacion(),
-                socio.getDni(),
-                socio.getFechaAlta()
+                socio.getDni()
             );
             return true;
         } catch (DataAccessException e) {
