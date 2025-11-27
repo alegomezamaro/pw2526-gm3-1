@@ -182,4 +182,44 @@ public class EmbarcacionRepository {
             return false;
         }
     }
+
+    //actualizar embarcacion 
+
+    public boolean updateEmbarcacion(Embarcacion e) {
+    try {
+        if (sqlQueries == null) createProperties();
+
+        String query = sqlQueries.getProperty("update-updateEmbarcacion");
+        if (query == null) {
+            System.err.println("SQL query 'update-updateEmbarcacion' not found.");
+            return false;
+        }
+
+        // ⚠ Si patronAsignado es 0, lo enviamos como NULL para que no rompa la FK
+        Integer patron = e.getPatronAsignado();
+        if (patron != null && patron == 0) {
+            patron = null;
+        }
+
+        jdbcTemplate.update(
+                query,
+                e.getNombre(),
+                e.getTipo() != null ? e.getTipo().toString() : null,
+                e.getPlazas(),
+                e.getDimensiones(),
+                patron,              // <- usamos patron ya normalizado
+                e.getMatricula()
+        );
+
+        return true;
+
+    } catch (DataAccessException ex) {
+        System.err.println("Unable to update embarcacion in the db");
+        ex.printStackTrace();
+        return false;
+    }
 }
+
+}
+
+

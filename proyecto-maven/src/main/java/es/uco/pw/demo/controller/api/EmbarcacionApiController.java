@@ -92,4 +92,47 @@ public class EmbarcacionApiController {
                 .status(HttpStatus.CREATED)
                 .body(embarcacion);
     }
+
+      @PatchMapping(path = "/{matricula}", consumes = "application/json", produces = "application/json")
+         public ResponseEntity<?> patchEmbarcacion(
+            @PathVariable String matricula,
+            @RequestBody Embarcacion embPatch) {
+
+        List<Embarcacion> todas = embarcacionRepository.findAllEmbarcaciones();
+        Embarcacion actual = todas.stream()
+                .filter(e -> e.getMatricula().equalsIgnoreCase(matricula))
+                .findFirst()
+                .orElse(null);
+
+        if (actual == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // No se permite cambiar matrícula
+
+        if (embPatch.getNombre() != null) {
+            actual.setNombre(embPatch.getNombre());
+        }
+        if (embPatch.getTipo() != null) {
+            actual.setTipo(embPatch.getTipo());
+        }
+        if (embPatch.getPlazas() != 0) {
+            actual.setPlazas(embPatch.getPlazas());
+        }
+        if (embPatch.getDimensiones() != null) {
+            actual.setDimensiones(embPatch.getDimensiones());
+        }
+        if (embPatch.getPatronAsignado() != null) {
+            actual.setPatronAsignado(embPatch.getPatronAsignado());
+        }
+
+        boolean ok = embarcacionRepository.updateEmbarcacion(actual);
+        if (!ok) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("No se ha podido actualizar la embarcación en la base de datos.");
+        }
+
+        return ResponseEntity.ok(actual);
+    }
 }

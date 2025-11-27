@@ -101,4 +101,6 @@ public class SocioRepository {
             return false;
         }
     }
+
+    
 }
