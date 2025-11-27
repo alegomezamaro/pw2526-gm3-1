@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import es.uco.pw.demo.model.InscripcionType;
+
 @RestController
 @RequestMapping("/api/inscripciones")
 public class InscripcionApiController {
@@ -22,26 +24,27 @@ public class InscripcionApiController {
         return ResponseEntity.ok(inscripcionRepository.findAllInscripciones());
     }
 
-    @PutMapping(path = "/{id}", consumes = "application/json", produces = "application/json")
+    @PutMapping(path = "/individual_a_familiar/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> putInscripcion(
             @PathVariable Integer id,
-            @RequestBody Inscripcion inscripcionBody) {
+            @RequestBody Integer familiaId) {
 
         Inscripcion actual = inscripcionRepository.findInscripcionById(id);
         if (actual == null) {
             return ResponseEntity.notFound().build();
         }
 
-        inscripcionBody.setId(id);
+        actual.setTipoCuota(InscripcionType.FAMILIAR);
+        actual.setFamiliaId(familiaId);
 
-        boolean ok = inscripcionRepository.updateInscripcion(inscripcionBody);
+        boolean ok = inscripcionRepository.updateInscripcion(actual);
         if (!ok) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al actualizar la inscripción en la BD.");
         }
 
-        return ResponseEntity.ok(inscripcionBody);
+        return ResponseEntity.ok(actual);
     }
 
     @DeleteMapping("/eliminar_inscripcion/{dni}")

@@ -166,12 +166,12 @@ public class InscripcionRepository {
     public boolean updateInscripcion(Inscripcion ins) {
         String sql = "UPDATE Inscripcion " +
                      "SET tipoCuota = ?, cuotaAnual = ?, dniTitular = ?, " +
-                     "    fechaInscripcion = ?, familiaId = ? " +
+                     "fechaInscripcion = ?, familiaId = ? " +
                      "WHERE id = ?";
         try {
             int rows = jdbcTemplate.update(
                 sql,
-                ins.getTipoCuota() != null ? ins.getTipoCuota().toString() : null,
+                ins.getTipoCuota() != null ? ins.getTipoCuota().toString() : "INDIVIDUAL",
                 ins.getCuotaAnual(),
                 ins.getDniTitular(),
                 ins.getFechaInscripcion() != null ? Date.valueOf(ins.getFechaInscripcion()) : null,
