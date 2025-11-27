@@ -5,14 +5,17 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.uco.pw.demo.model.InscripcionRepository;
 import es.uco.pw.demo.model.Socio;
 import es.uco.pw.demo.model.SocioRepository;
 
@@ -22,9 +25,11 @@ import es.uco.pw.demo.model.SocioRepository;
 
 public class SocioApiController {
     private final SocioRepository socioRepository;
+    private final InscripcionRepository inscripcionRepository;
 
-    public SocioApiController(SocioRepository socioRepository) {
+    public SocioApiController(SocioRepository socioRepository, InscripcionRepository inscripcionRepository) {
         this.socioRepository = socioRepository;
+        this.inscripcionRepository = inscripcionRepository;
     }
 
 // GET DE TODOS LOS SOCIOS
@@ -75,8 +80,10 @@ public class SocioApiController {
     }
 
     // MÉTODOS PATCH
+
+    //Actualizamos socio excepto el dni
     @PatchMapping(path="/{dni}", consumes="application/json")
-    public ResponseEntity<?> patchResource(@PathVariable String dni, @RequestBody Socio socio){
+    public ResponseEntity<?> actualizarSocio(@PathVariable String dni, @RequestBody Socio socio){
         Socio socioActualizar = socioRepository.findSocioByDni(dni);
 
         if( socio.getNombre() != null){ socioActualizar.setNombre(socio.getNombre());}
@@ -94,7 +101,43 @@ public class SocioApiController {
         }
     }
 
+    //Vinculamos socio a una inscripcion familiar NO HAY RELACION ENTRE UN SOCIO (NO TITULAR) Y UNA INSCRIPCION FAMILIAR
+    // @PatchMapping(path="/vincular_socio_a_inscripcionf", consumes="application/json")
+    //     public ResponseEntity<?> vincularSocioInscripcionF(@RequestBody Integer id, String dni){
 
+    //     Inscripcion ins = inscripcionRepository.findInscripcionById(id);
+    //     if(ins == null){
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha podido encontrar ninguna inscripcion válida con id: " + id + " para vincular al socio con dni: " + dni);
+    //     }
+    //     if(ins.getTipoCuota() != InscripcionType.FAMILIAR){
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("La inscripcion con id: " + id + " no es válida para este proceso");
+    //     }
 
+    //     Socio socio = socioRepository.findSocioByDni(dni);
+    //     if(socio == null){
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha encontrado a ningun socio con dni: " + dni);
+    //     }
 
+    //     boolean ok = socioRepository.updateSocio(socio);
+    //     if ( !ok) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha podido vincular el socio con dni: " + dni + " a la inscripcion familiar con id: " + id);
+    //     } else {
+    //         return ResponseEntity.ok(socio);
+    //     }
+    // }
+
+    // MÉTODOs DELETE
+
+    //Eliminar socio si no esta vinculado a ninguna inscripcion
+    @DeleteMapping("/deletesocio/{dni}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteSocioByDni(@PathVariable String dni) {
+        Socio socio = socioRepository.findSocioByDni(dni);
+        if(socio != null){
+            if(!inscripcionRepository.existsInscripcionByTitular(dni)){
+                socioRepository.deleteSocioByDni(dni);
+            }
+        }
+    }
+    
 }

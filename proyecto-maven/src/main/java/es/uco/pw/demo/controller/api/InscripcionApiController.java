@@ -43,6 +43,15 @@ public class InscripcionApiController {
 
         return ResponseEntity.ok(inscripcionBody);
     }
+
+    @DeleteMapping("/eliminar_inscripcion/{dni}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteInscripcion(@PathVariable String dni){
+        inscripcionRepository.deleteInscripcionByDniTitular(dni);
+    }
+
+
+
 }
 
 

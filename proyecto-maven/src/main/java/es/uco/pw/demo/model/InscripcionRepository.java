@@ -1,13 +1,5 @@
 package es.uco.pw.demo.model;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,11 +7,15 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
-import java.util.Collections;
-import es.uco.pw.demo.model.InscripcionType;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class InscripcionRepository {
@@ -149,6 +145,23 @@ public class InscripcionRepository {
         }
     }
 
+    // buscar inscripcion por titular
+    public boolean existsInscripcionByTitular(String dniTitular) {
+        String sql = "SELECT COUNT(*) FROM Inscripcion WHERE dniTitular = ?";
+        
+        try {
+
+            Integer count = jdbcTemplate.queryForObject(sql, Integer.class, dniTitular);
+            
+            return count != null && count > 0;
+            
+        } catch (DataAccessException e) {
+            System.err.println("Error checking existence for dni: " + dniTitular);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // ===  actualizar inscripción completa ===
     public boolean updateInscripcion(Inscripcion ins) {
         String sql = "UPDATE Inscripcion " +
@@ -173,4 +186,14 @@ public class InscripcionRepository {
         }
     }
 
+    public boolean deleteInscripcionByDniTitular(String dniTitular) {
+        String sql = "DELETE FROM Inscripcion WHERE dniTitular = ?";
+        try {
+            int rows = jdbcTemplate.update(sql, dniTitular);
+            return rows > 0;
+        } catch (DataAccessException e) {
+            System.err.println("Unable to delete inscripcion in the db");
+            return false;
+        }
+    }
 }

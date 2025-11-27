@@ -85,16 +85,16 @@ public class SocioRepository {
     public boolean updateSocio(Socio socio) {
         String query = "UPDATE Socio SET nombre = ?, apellidos = ?, direccion = ?, fechaNacimiento = ?, fechaAlta = ?, patronEmbarcacion = ? WHERE dni = ?";
         try {
-            jdbcTemplate.update(query,
-                socio.getNombre(),  // Usamos 'nombre' en lugar de 'name'
-                socio.getApellidos(),  // Usamos 'apellidos' en lugar de 'surname'
+            int rows = jdbcTemplate.update(query,
+                socio.getNombre(),
+                socio.getApellidos(),
                 socio.getDireccion(),
                 socio.getFechaNacimiento(),
                 socio.getFechaAlta(),
                 socio.esPatronEmbarcacion(),
                 socio.getDni()
             );
-            return true;
+            return rows > 0 ;
         } catch (DataAccessException e) {
             System.err.println("Unable to update socio in the db");
             e.printStackTrace();
@@ -102,5 +102,14 @@ public class SocioRepository {
         }
     }
 
-    
+    public boolean deleteSocioByDni(String dni) {
+        String query = "DELETE FROM Socio WHERE dni = ?";
+        try {
+            int rows = jdbcTemplate.update(query,dni);
+            return rows > 0;
+        } catch (DataAccessException e) {
+            System.err.println("Unable to delete socio in the db");
+            return false;
+        }
+    }
 }
