@@ -106,7 +106,6 @@ public class InscripcionRepository {
             if (query != null) {
                 int result = jdbcTemplate.update(
                     query,
-                    ins.getId(),
                     ins.getTipoCuota() != null ? ins.getTipoCuota().toString() : null,
                     ins.getCuotaAnual(),
                     ins.getDniTitular(),

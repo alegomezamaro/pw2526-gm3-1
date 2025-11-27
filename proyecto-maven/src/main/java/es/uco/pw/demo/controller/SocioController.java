@@ -132,14 +132,12 @@ public class SocioController {
         }
 
 
-        Inscripcion nuevaInscripcion = new Inscripcion(
-                0,
-                inscripcion,
-                300,
-                fechaAlta,
-                socioGuardado.getDni(),
-                0
-            );
+        Inscripcion nuevaInscripcion = new Inscripcion();
+            nuevaInscripcion.setTipoCuota(inscripcion);
+            nuevaInscripcion.setCuotaAnual(300);
+            nuevaInscripcion.setFechaInscripcion(fechaAlta);
+            nuevaInscripcion.setDniTitular(socioGuardado.getDni());
+            nuevaInscripcion.setFamiliaId(null);
 
 
         boolean okInscripcion = inscripcionRepository.addInscripcion(nuevaInscripcion);
