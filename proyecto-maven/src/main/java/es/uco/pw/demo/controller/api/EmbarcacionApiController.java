@@ -49,6 +49,23 @@ public class EmbarcacionApiController {
         return ResponseEntity.ok(filtradas);
     }
 
+    // 3. Obtener una embarcación concreta por matrícula (GET /api/embarcaciones/{matricula})
+    @GetMapping("/{matricula}")
+    public ResponseEntity<?> getEmbarcacionByMatricula(@PathVariable String matricula) {
+
+        List<Embarcacion> todas = embarcacionRepository.findAllEmbarcaciones();
+        Embarcacion encontrada = todas.stream()
+                .filter(e -> e.getMatricula().equalsIgnoreCase(matricula))
+                .findFirst()
+                .orElse(null);
+
+        if (encontrada == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(encontrada);
+    }
+
     // 4. Crear una nueva embarcación sin asociarle patrón (POST)
     //    Body JSON como:
     //    {
@@ -92,6 +109,49 @@ public class EmbarcacionApiController {
                 .status(HttpStatus.CREATED)
                 .body(embarcacion);
     }
+
+
+    // 5. (PUT) Actualizar una embarcacion completa
+    @PutMapping(path = "/{matricula}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> updateEmbarcacion(
+            @PathVariable String matricula,
+            @RequestBody Embarcacion embarcacion) {
+
+        List<Embarcacion> todas = embarcacionRepository.findAllEmbarcaciones();
+        Embarcacion actual = todas.stream()
+                .filter(e -> e.getMatricula().equalsIgnoreCase(matricula))
+                .findFirst()
+                .orElse(null);
+
+        if (actual == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Opcional: comprobar que no intentan cambiar la matrícula
+        if (embarcacion.getMatricula() != null &&
+            !embarcacion.getMatricula().equalsIgnoreCase(matricula)) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("No se puede cambiar la matrícula con PUT.");
+        }
+
+        // PUT = reemplazo completo (salvo matrícula)
+        actual.setNombre(embarcacion.getNombre());
+        actual.setTipo(embarcacion.getTipo());
+        actual.setPlazas(embarcacion.getPlazas());
+        actual.setDimensiones(embarcacion.getDimensiones());
+        actual.setPatronAsignado(embarcacion.getPatronAsignado());
+
+        boolean ok = embarcacionRepository.updateEmbarcacion(actual);
+        if (!ok) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("No se ha podido actualizar la embarcación en la base de datos.");
+        }
+
+        return ResponseEntity.ok(actual);
+    }
+
 
       @PatchMapping(path = "/{matricula}", consumes = "application/json", produces = "application/json")
          public ResponseEntity<?> patchEmbarcacion(
