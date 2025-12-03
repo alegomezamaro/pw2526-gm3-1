@@ -4,14 +4,17 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.uco.pw.demo.model.EmbarcacionRepository;
 import es.uco.pw.demo.model.Patron;
 import es.uco.pw.demo.model.PatronRepository;
 
@@ -20,9 +23,11 @@ import es.uco.pw.demo.model.PatronRepository;
 public class PatronApiController {
 
     private final PatronRepository patronRepository;
+    private final EmbarcacionRepository embarcacionRepository;
 
-    public PatronApiController(PatronRepository patronRepository) {
+    public PatronApiController(PatronRepository patronRepository, EmbarcacionRepository embarcacionRepository) {
         this.patronRepository = patronRepository;
+        this.embarcacionRepository = embarcacionRepository;
     }
 
     // 3. Obtener la lista completa de patrones (GET)
@@ -91,6 +96,19 @@ public class PatronApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha podido actualizar el Patron con dni: " + dni);
         } else {
             return ResponseEntity.ok(PatronActualizar);
+        }
+    }
+
+    // ELIMINAR PATRON SI NO ESTA ASIGNADO A NINGUNA EMBARCACION
+    @DeleteMapping("/delete_patron/{dni}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePatronByDni(@PathVariable String dni) {
+        Patron patron = patronRepository.findPatronByDNI(dni);
+        List<Integer> patrones = embarcacionRepository.getAsignedPatrones();
+        if(patron != null){
+            if(!patrones.contains(patron.getId())){
+                patronRepository.deletePatronByDni(dni);
+            }
         }
     }
 }

@@ -213,12 +213,17 @@ public class EmbarcacionRepository {
 
         return true;
 
-    } catch (DataAccessException ex) {
-        System.err.println("Unable to update embarcacion in the db");
-        ex.printStackTrace();
-        return false;
+        } catch (DataAccessException ex) {
+            System.err.println("Unable to update embarcacion in the db");
+            ex.printStackTrace();
+            return false;
+        }
     }
-}
+
+    public List<Integer> getAsignedPatrones(){
+        String query = sqlQueries.getProperty("select-getAllPatrones");
+        return jdbcTemplate.queryForList(query, Integer.class);
+    }
 
 }
 

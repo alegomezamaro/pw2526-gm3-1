@@ -152,4 +152,15 @@ public class PatronRepository {
             return false;
         }
     }
+
+    public boolean deletePatronByDni(String dni) {
+        String query = sqlQueries.getProperty("delete-deletePatronByDNI");
+        try {
+            int rows = jdbcTemplate.update(query,dni);
+            return rows > 0;
+        } catch (DataAccessException e) {
+            System.err.println("Unable to delete socio in the db");
+            return false;
+        }
+    }
 }
