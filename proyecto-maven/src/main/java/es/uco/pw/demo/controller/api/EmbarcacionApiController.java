@@ -1,15 +1,22 @@
 package es.uco.pw.demo.controller.api;
 
-import es.uco.pw.demo.model.Embarcacion;
-import es.uco.pw.demo.model.EmbarcacionRepository;
-import es.uco.pw.demo.model.EmbarcacionType;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import es.uco.pw.demo.model.Embarcacion;
+import es.uco.pw.demo.model.EmbarcacionRepository;
+import es.uco.pw.demo.model.EmbarcacionType;
 
 @RestController
 @RequestMapping("/api/embarcaciones")
@@ -194,5 +201,19 @@ public class EmbarcacionApiController {
         }
 
         return ResponseEntity.ok(actual);
+    }
+
+    // DESVINCULAR PATRON DE UNA EMBARCACION
+    @PatchMapping(path="/desvincular_patron/{matricula}")
+    public ResponseEntity<?> desvincularPatron(@PathVariable String matricula){
+
+        Integer patronId = null;
+
+        boolean ok = embarcacionRepository.updatePatronAsignado(matricula, patronId);
+        if ( !ok) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha podido actualizar el Embarcacion con dni: " + matricula);
+        } else {
+            return ResponseEntity.ok("Se ha desvinculado el patron de la Embarcacion con Matricula: " + matricula);
+        }
     }
 }

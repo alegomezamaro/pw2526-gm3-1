@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Properties;
 
@@ -110,6 +111,44 @@ public class PatronRepository {
         } catch (DataAccessException ex) {
             System.err.println("Unable to insert patron into the db");
             ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public Patron findPatronByDNI(String dni){
+        String query = sqlQueries.getProperty("select-findPatronByDNI");
+        // RowMapper manual para MySQL 5.1.49
+        List<Patron> patrones = jdbcTemplate.query(query, new RowMapper<Patron>() {
+            public Patron mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
+                return new Patron(
+                    rs.getInt("id"),
+                    rs.getString("dni"),  
+                    rs.getString("nombre"),  
+                    rs.getString("apellidos"), 
+                    LocalDate.parse(rs.getString("fechaNacimiento")),
+                    LocalDate.parse(rs.getString("fechaTituloPatron"))
+                );
+            }
+        }, dni);
+        return patrones.isEmpty() ? null : patrones.get(0);
+
+    }
+
+
+    public boolean updatePatron(Patron Patron) {
+        String query = sqlQueries.getProperty("update-updatePatron2");
+        try {
+            int rows = jdbcTemplate.update(query,
+                Patron.getNombre(),
+                Patron.getApellidos(),
+                Patron.getFechaNacimiento(),
+                Patron.getFechaTituloPatron(),
+                Patron.getDni()
+            );
+            return rows > 0 ;
+        } catch (DataAccessException e) {
+            System.err.println("Unable to update Patron in the db");
+            e.printStackTrace();
             return false;
         }
     }
