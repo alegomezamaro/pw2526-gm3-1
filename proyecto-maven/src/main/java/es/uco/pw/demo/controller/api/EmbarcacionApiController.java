@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,10 +38,20 @@ public class EmbarcacionApiController {
         return ResponseEntity.ok(embarcaciones);
     }
 
+    /*
+        @GetMapping(params="type")
+         public ResponseEntity<List<Student>> getStudentsByType(@RequestParam String type) {
+        List<Student> students = studentRepository.findStudentsByType(StudentType.valueOf(type));
+        ResponseEntity<List<Student>> response = new ResponseEntity<>(students, HttpStatus.OK);
+        return response;
+        }
+    */
+
+
     // 2. Obtener la lista de embarcaciones según el tipo (GET)
     //    Ejemplo: GET /api/embarcaciones/tipo/VELERO
-    @GetMapping("/tipo/{tipo}")
-    public ResponseEntity<?> getEmbarcacionesByTipo(@PathVariable String tipo) {
+    @GetMapping(params="tipo")
+    public ResponseEntity<?> getEmbarcacionesByTipo(@RequestParam String tipo) {
         EmbarcacionType tipoEnum;
         try {
             tipoEnum = EmbarcacionType.valueOf(tipo.toUpperCase());

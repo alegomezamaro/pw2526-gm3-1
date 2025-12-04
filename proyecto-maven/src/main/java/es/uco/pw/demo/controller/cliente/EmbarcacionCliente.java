@@ -1,5 +1,11 @@
 package es.uco.pw.demo.controller.cliente;
 
+import java.util.List;
+import java.util.Arrays;
+import java.util.Date;
+import java.time.LocalDate;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -12,10 +18,48 @@ import es.uco.pw.demo.model.EmbarcacionRepository;
 public class EmbarcacionCliente {
   
   public static void main(String[] args){
+		sendGetRequests();
+		sendPostRequests();
     sendPutRequests();
 		sendPatchRequests();
 		sendDeleteRequests();
   }
+
+	private static void sendGetRequests(){
+		RestTemplate rest = new RestTemplate();
+		String baseURL = "http://localhost:8080";
+
+		// 1. Muestra todas las embarcaciones
+		ResponseEntity<Embarcacion[]> response = rest.getForEntity(baseURL + "/api/embarcaciones", Embarcacion[].class);
+		List<Embarcacion> embarcacionesList = Arrays.asList(response.getBody());
+		System.out.println("==== REQUEST 1: GET all embarcaciones ====");
+		Date date = new Date(response.getHeaders().getDate());
+		System.out.println("Response date: " + date);
+		for(Embarcacion s: embarcacionesList){
+			System.out.println(s.getMatricula() + " : " + s.getNombre() );
+		}
+
+		// 2. Embarcaciones de tipo YATE
+		response = rest.getForEntity(baseURL + "/api/embarcaciones?tipo=YATE", Embarcacion[].class);
+		embarcacionesList = Arrays.asList(response.getBody());
+		System.out.println("==== REQUEST 2: GET Embarcacions ====");
+		date = new Date(response.getHeaders().getDate());
+		System.out.println("Response date: " + date);
+		for(Embarcacion s: embarcacionesList){
+			System.out.println(s.getMatricula() + " : " + s.getNombre() );
+		}
+
+		// Request to retrive one Embarcacion
+		Embarcacion Embarcacion = rest.getForObject(baseURL + "/api/embarcaciones/{matricula}", Embarcacion.class, "6a-AB-1-1-15");
+		System.out.println("==== REQUEST 3: GET Embarcacion por matricula ====");
+		if(Embarcacion != null) System.out.println(Embarcacion.getMatricula() + " : " + Embarcacion.getNombre() );
+	}
+
+	private static void sendPostRequests(){
+
+		
+
+	}
 
   private static void sendPutRequests(){
 
