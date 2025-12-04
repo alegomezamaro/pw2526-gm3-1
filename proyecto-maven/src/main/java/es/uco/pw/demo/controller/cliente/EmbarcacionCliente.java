@@ -4,6 +4,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import ch.qos.logback.core.pattern.util.RestrictedEscapeUtil;
 import es.uco.pw.demo.model.Embarcacion;
 import es.uco.pw.demo.model.EmbarcacionType;
 import es.uco.pw.demo.model.EmbarcacionRepository;
@@ -13,7 +14,7 @@ public class EmbarcacionCliente {
   public static void main(String[] args){
     sendPutRequests();
 		sendPatchRequests();
-		// sendDeleteRequests();
+		sendDeleteRequests();
   }
 
   private static void sendPutRequests(){
@@ -81,5 +82,41 @@ public class EmbarcacionCliente {
 		}
 
   }
+
+	private static void sendDeleteRequests(){
+
+		RestTemplate rest = new RestTemplate();
+		String baseUrl = "http://localhost:8080/api/embarcaciones";
+
+		// 1. Borrar una embarcacion con matricula ABC123
+		try{
+			String matricula = "ABC123";
+			System.out.println("==== REQUEST 5: DELETE ONE OBJECT (valid) ====");
+			rest.delete(baseUrl + "/{matricula}", matricula);
+		}catch(RestClientException exception){
+			System.out.println(exception);
+		}
+
+		// 2. Borrar una embarcacion que no existe
+		try{
+			System.out.println("==== REQUEST 6: DELETE AN OBJECT THAT DOESNT EXIST (no effect) ====");
+			rest.delete(baseUrl + "/{matricula}", "MatriculaInvalida");
+		}catch(RestClientException exception){
+			System.out.println(exception);
+		}
+
+		// 3. Borrarlo todo
+		// Descomentar en caso de querer usar
+
+		/*
+			try{
+				System.out.println("==== REQUEST 7: DELETE ALL OBJECTS (valid) ====");
+				rest.delete(baseUrl);
+			}catch(RestClientException exception){
+				System.out.println(exception);
+			}
+		*/
+
+	}
 
 }

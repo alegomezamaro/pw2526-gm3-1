@@ -216,4 +216,20 @@ public class EmbarcacionApiController {
             return ResponseEntity.ok("Se ha desvinculado el patron de la Embarcacion con Matricula: " + matricula);
         }
     }
+
+    @DeleteMapping("/{matricula}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEmbarcacion(@PathVariable String matricula){
+        Embarcacion embarcacion = this.embarcacionRepository.findEmbarcacionByMatricula(matricula);
+        System.out.println(embarcacion.getMatricula());
+        if(embarcacion != null){
+            this.embarcacionRepository.deleteEmbarcacion(matricula);
+        }
+    }
+
+    @DeleteMapping()
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAllEmbarcaciones(){
+        this.embarcacionRepository.deleteAllEmbarcaciones();
+    }
 }

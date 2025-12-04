@@ -225,6 +225,57 @@ public class EmbarcacionRepository {
         return jdbcTemplate.queryForList(query, Integer.class);
     }
 
+    public boolean deleteEmbarcacion(String matricula) {
+        try {
+            if (sqlQueries == null) createProperties();
+
+            String query = (sqlQueries != null)
+                    ? sqlQueries.getProperty("delete-deleteEmbarcacionByMatricula")
+                    : null;
+
+            System.out.println(">> [DELETE] Matricula: " + matricula);
+            System.out.println(">> [DELETE] Query: " + query);
+
+            if (query == null) {
+                System.err.println("SQL query 'delete-deleteEmbarcacionByMatricula' not found.");
+                return false;
+            }
+
+            int result = jdbcTemplate.update(query, matricula);
+            System.out.println(">> [DELETE] Filas afectadas: " + result);
+            return result > 0;
+
+        } catch (DataAccessException ex) {
+            System.err.println("Unable to delete embarcacion with matricula: " + matricula);
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteAllEmbarcaciones() {
+        try {
+            if (sqlQueries == null) createProperties();
+
+            // nombre de la query en db/sql.properties
+            String query = (sqlQueries != null)
+                    ? sqlQueries.getProperty("delete-deleteAllEmbarcaciones")
+                    : null;
+
+            if (query == null) {
+                System.err.println("SQL query 'delete-deleteAllEmbarcaciones' not found.");
+                return false;
+            }
+
+            int result = jdbcTemplate.update(query);
+            return result > 0;
+
+        } catch (DataAccessException ex) {
+            System.err.println("Unable to delete all embarcaciones");
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
 }
 
 
