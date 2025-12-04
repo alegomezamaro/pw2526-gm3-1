@@ -190,6 +190,12 @@ public class EmbarcacionCliente {
 			System.out.println(exception);
 		}
 
+				try{
+			System.out.println("==== REQUEST 12: DELETE EMBARCACION NOT RENTED ====");
+			rest.delete(baseUrl + "/delete_embarcacion_no_alquilada/{matricula}", "MatriculaInvalida");
+		}catch(RestClientException exception){
+			System.out.println(exception);
+		}
 
 	}
 

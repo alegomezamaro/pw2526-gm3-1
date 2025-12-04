@@ -217,7 +217,7 @@ public class AlquilerRepository {
     public List<Alquiler> findAlquileresByFechaInicio(LocalDate fechaInicio){
         try {
 
-            String query = sqlQueries.getProperty("select-findAlquilerByFechaInicio");
+            String query = sqlQueries.getProperty("select-findAlquileresByFechaInicio");
 
             String fecha = fechaInicio.toString();
 
