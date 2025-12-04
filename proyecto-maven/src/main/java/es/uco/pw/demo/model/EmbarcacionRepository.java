@@ -310,6 +310,11 @@ public class EmbarcacionRepository {
         }
     }
 
+    public List<String> findEmbarcacionesLibres(){
+        String query = sqlQueries.getProperty("select-getMatriculasEmbarcacionesLibres");
+        return jdbcTemplate.queryForList(query, String.class);
+    }
+
 }
 
 
