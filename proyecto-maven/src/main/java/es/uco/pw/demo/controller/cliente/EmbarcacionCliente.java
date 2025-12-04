@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,8 +19,8 @@ import es.uco.pw.demo.model.EmbarcacionRepository;
 public class EmbarcacionCliente {
   
   public static void main(String[] args){
-		sendGetRequests();
 		sendPostRequests();
+		sendGetRequests();
     sendPutRequests();
 		sendPatchRequests();
 		sendDeleteRequests();
@@ -32,7 +33,7 @@ public class EmbarcacionCliente {
 		// 1. Muestra todas las embarcaciones
 		ResponseEntity<Embarcacion[]> response = rest.getForEntity(baseURL + "/api/embarcaciones", Embarcacion[].class);
 		List<Embarcacion> embarcacionesList = Arrays.asList(response.getBody());
-		System.out.println("==== REQUEST 1: GET all embarcaciones ====");
+		System.out.println("==== REQUEST 3: GET all embarcaciones ====");
 		Date date = new Date(response.getHeaders().getDate());
 		System.out.println("Response date: " + date);
 		for(Embarcacion s: embarcacionesList){
@@ -42,7 +43,7 @@ public class EmbarcacionCliente {
 		// 2. Embarcaciones de tipo YATE
 		response = rest.getForEntity(baseURL + "/api/embarcaciones?tipo=YATE", Embarcacion[].class);
 		embarcacionesList = Arrays.asList(response.getBody());
-		System.out.println("==== REQUEST 2: GET Embarcacions ====");
+		System.out.println("==== REQUEST 4: GET Embarcacions ====");
 		date = new Date(response.getHeaders().getDate());
 		System.out.println("Response date: " + date);
 		for(Embarcacion s: embarcacionesList){
@@ -51,13 +52,37 @@ public class EmbarcacionCliente {
 
 		// Request to retrive one Embarcacion
 		Embarcacion Embarcacion = rest.getForObject(baseURL + "/api/embarcaciones/{matricula}", Embarcacion.class, "6a-AB-1-1-15");
-		System.out.println("==== REQUEST 3: GET Embarcacion por matricula ====");
+		System.out.println("==== REQUEST 5: GET Embarcacion por matricula ====");
 		if(Embarcacion != null) System.out.println(Embarcacion.getMatricula() + " : " + Embarcacion.getNombre() );
 	}
 
 	private static void sendPostRequests(){
 
+		RestTemplate rest = new RestTemplate();
+		String baseURL = "http://localhost:8080";
+
+		// POST a new Embarcacion (valid)
+		Embarcacion newEmbarcacion = new Embarcacion("ABC123","Client Boat",EmbarcacionType.YATE, 8, "80x40m", null);
+		ResponseEntity<Embarcacion> response;
 		
+		try{
+			response = rest.postForEntity(baseURL + "/api/embarcaciones", newEmbarcacion, Embarcacion.class);	
+			System.out.println("==== REQUEST 1: POST Embarcacion (valid) ====");
+			System.out.println("Status code: " + response.getStatusCode());
+			if(response != null) System.err.println("Response body:\n" + response.getBody().getNombre() +  " : " + response.getBody().getMatricula());
+		}catch(HttpClientErrorException exception){
+			System.out.println(exception);
+		}
+
+		// POST a Embarcacion (invalid)
+		newEmbarcacion = new Embarcacion("ABC123","Repeat Boat",EmbarcacionType.YATE, 10, "100x40m", null);
+
+		System.out.println("==== REQUEST 2: POST Embarcacion (invalid) ====");
+		try{
+			response = rest.postForEntity(baseURL + "/api/embarcaciones", newEmbarcacion, Embarcacion.class);
+		}catch(HttpClientErrorException exception){
+			System.out.println(exception);
+		}
 
 	}
 
@@ -71,7 +96,7 @@ public class EmbarcacionCliente {
     String matricula = "6a-BC-1-3-12";
     Embarcacion newEmbarcacion = new Embarcacion(matricula, "Api Boat", tipo, 15, "100x20m", 0);
 		try{
-			System.out.println("==== REQUEST 1: PUT (no response) ====");
+			System.out.println("==== REQUEST 6: PUT (no response) ====");
 			rest.put(baseUrl + "/{matricula}", newEmbarcacion, matricula);
 			System.out.println("Update correct.");
 		}catch(RestClientException exception){
@@ -88,7 +113,7 @@ public class EmbarcacionCliente {
 
     // 1. Update del nombre de embarcacion
     try{
-			System.out.println("==== REQUEST 2: PATCH (valid) ====");
+			System.out.println("==== REQUEST 7: PATCH (valid) ====");
 			matricula = "6a-AB-1-1-15";
 			Embarcacion embarcacion1 = new Embarcacion();
 			embarcacion1.setNombre("Patch Boat");
@@ -100,7 +125,7 @@ public class EmbarcacionCliente {
 
     // 2. Cambio de Tipo y Plazas
     try{
-			System.out.println("==== REQUEST 3: PATCH (valid) ====");
+			System.out.println("==== REQUEST 8: PATCH (valid) ====");
 			matricula = "7a-AB-1-2-20";
 			Embarcacion embarcacion2 = new Embarcacion();
 			embarcacion2.setTipo(EmbarcacionType.CATAMARAN);
@@ -113,7 +138,7 @@ public class EmbarcacionCliente {
 
     // 3. Intento de actualizar una matricula inválida
     try{
-			System.out.println("==== REQUEST 4: PATCH (invalid) ====");
+			System.out.println("==== REQUEST 9: PATCH (invalid) ====");
 			matricula = "Matricula Invalida";
 			Embarcacion embarcacion3 = new Embarcacion();
       embarcacion3.setNombre("Invalido");
@@ -135,7 +160,7 @@ public class EmbarcacionCliente {
 		// 1. Borrar una embarcacion con matricula ABC123
 		try{
 			String matricula = "ABC123";
-			System.out.println("==== REQUEST 5: DELETE ONE OBJECT (valid) ====");
+			System.out.println("==== REQUEST 10: DELETE ONE OBJECT (valid) ====");
 			rest.delete(baseUrl + "/{matricula}", matricula);
 		}catch(RestClientException exception){
 			System.out.println(exception);
@@ -143,7 +168,7 @@ public class EmbarcacionCliente {
 
 		// 2. Borrar una embarcacion que no existe
 		try{
-			System.out.println("==== REQUEST 6: DELETE AN OBJECT THAT DOESNT EXIST (no effect) ====");
+			System.out.println("==== REQUEST 11: DELETE AN OBJECT THAT DOESNT EXIST (no effect) ====");
 			rest.delete(baseUrl + "/{matricula}", "MatriculaInvalida");
 		}catch(RestClientException exception){
 			System.out.println(exception);
