@@ -20,6 +20,7 @@ public class SocioRepository {
     public boolean addSocio(Socio socio) {
         String query = "INSERT INTO Socio (dni, nombre, apellidos, direccion, fechaNacimiento, patronEmbarcacion, fechaAlta) " +
                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        socio.setFechaAlta(LocalDate.now());
         try {
             jdbcTemplate.update(query, 
                 socio.getDni(), 
@@ -111,5 +112,11 @@ public class SocioRepository {
             System.err.println("Unable to delete socio in the db");
             return false;
         }
+    }
+
+    public boolean existsSocioByDni(String dni) {
+        String query = "SELECT COUNT(*) FROM Socio WHERE dni = ?";
+        Integer count = jdbcTemplate.queryForObject(query, Integer.class, dni);
+        return count != null && count > 0;
     }
 }
