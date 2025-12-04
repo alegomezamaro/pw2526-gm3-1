@@ -163,6 +163,40 @@ public class EmbarcacionRepository {
         }
     }
 
+    public Embarcacion findEmbarcacionByMatricula(String matricula) {
+        try {
+            if (sqlQueries == null) createProperties();
+
+            String query = (sqlQueries != null)
+                    ? sqlQueries.getProperty("select-findEmbarcacionByMatricula")
+                    : null;
+
+            if (query == null) {
+                System.err.println("SQL query 'select-findEmbarcacionByMatricula' not found.");
+                return null;
+            }
+
+            List<Embarcacion> lista = jdbcTemplate.query(
+                    query,
+                    new Object[]{ matricula },
+                    (rs, rowNum) -> new Embarcacion(
+                            rs.getString("matricula"),
+                            rs.getString("nombre"),
+                            EmbarcacionType.valueOf(rs.getString("tipo")),
+                            rs.getInt("plazas"),
+                            rs.getString("dimensiones"),
+                            rs.getInt("patronAsignado")   // solo el int FK
+                    )
+            );
+
+            return lista.isEmpty() ? null : lista.get(0);
+
+        } catch (DataAccessException e) {
+            System.err.println("Unable to find embarcacion with matricula: " + matricula);
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public boolean updatePatronAsignado(String matricula, Integer patronId) {
         try {
