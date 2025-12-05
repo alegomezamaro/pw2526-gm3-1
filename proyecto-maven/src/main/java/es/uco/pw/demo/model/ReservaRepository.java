@@ -125,5 +125,25 @@ public boolean updateFechaReserva(int id, LocalDate nuevaFecha) {
     }
 }
 
+// Actualizar número de plazas y precio de una reserva
+public boolean updateDatosReserva(int id, int plazas, double precio) {
+    String sql = "UPDATE Reserva SET plazasReserva = ?, precioReserva = ? WHERE id = ?";
+    try {
+        jdbcTemplate.update(
+                sql,
+                plazas,
+                precio,
+                id
+        );
+        return true;
+    } catch (DataAccessException ex) {
+        System.err.println("Unable to update reserva data in the db");
+        ex.printStackTrace();
+        return false;
+    }
+}
+
+
+
 
 }  

@@ -270,5 +270,88 @@ public class ReservaApiController {
         return ResponseEntity.ok(reserva);
     }
 
-    
+    // ---------------------------------------------------------------------
+    // D.2 Modificar número de plazas de una reserva
+    //      (comprobando que no exceda la capacidad de la embarcación)
+    // ---------------------------------------------------------------------
+    // PATCH /api/reservas/{id}/datos
+    // Body JSON: { "plazasReserva": 5 }
+    @PatchMapping(path = "/{id}/datos",
+                consumes = "application/json",
+                produces = "application/json")
+    public ResponseEntity<?> modificarDatosReserva(
+            @PathVariable("id") int id,
+            @RequestBody java.util.Map<String, Object> body) {
+
+        // 1) Buscar la reserva igual que en GET /{id}
+        List<Reserva> todas = reservaRepository.findAllReservas();
+        Reserva reserva = todas.stream()
+                .filter(r -> r.getId() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (reserva == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No existe reserva con ID " + id);
+        }
+
+        // 2) Leer nuevas plazas (OBLIGATORIO)
+        if (!body.containsKey("plazasReserva")) {
+            return ResponseEntity.badRequest()
+                    .body("Debe indicarse el campo 'plazasReserva'.");
+        }
+
+        Object plazasObj = body.get("plazasReserva");
+        int nuevasPlazas;
+        try {
+            nuevasPlazas = ((Number) plazasObj).intValue();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body("El campo 'plazasReserva' debe ser numérico.");
+        }
+
+        if (nuevasPlazas <= 0) {
+            return ResponseEntity.badRequest()
+                    .body("El número de plazas debe ser mayor que 0.");
+        }
+
+        // 3) Comprobar capacidad de la embarcación asignada
+        String matricula = reserva.getMatriculaEmbarcacion();
+
+        List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
+        Embarcacion emb = embarcaciones.stream()
+                .filter(e -> e.getMatricula().equalsIgnoreCase(matricula))
+                .findFirst()
+                .orElse(null);
+
+        if (emb == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("La embarcación asociada a la reserva no existe.");
+        }
+
+        // Capacidad disponible: plazas totales - 1 (por el patrón)
+        int plazasDisponibles = emb.getPlazas() - 1;
+
+        if (nuevasPlazas > plazasDisponibles) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No hay suficientes plazas. La embarcación tiene "
+                            + plazasDisponibles + " plazas disponibles para reservas.");
+        }
+
+        // 4) Recalcular precio (40€/persona)
+        double nuevoPrecio = nuevasPlazas * 40.0;
+
+        // 5) Actualizar en BD
+        boolean ok = reservaRepository.updateDatosReserva(id, nuevasPlazas, nuevoPrecio);
+        if (!ok) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("No se han podido actualizar los datos de la reserva en la base de datos.");
+        }
+
+        // 6) Actualizar el objeto que devolvemos
+        reserva.setPlazasReserva(nuevasPlazas);
+        reserva.setPrecioReserva(nuevoPrecio);
+
+        return ResponseEntity.ok(reserva);
+    }
 }
