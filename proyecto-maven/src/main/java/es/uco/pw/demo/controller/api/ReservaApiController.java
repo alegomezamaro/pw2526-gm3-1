@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @RestController
 @RequestMapping("/api/reservas")
 public class ReservaApiController {
@@ -180,4 +181,94 @@ public class ReservaApiController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(reserva);
     }
+
+    // ---------------------------------------------------------------------
+    // D.1 Modificar fecha de una reserva futura
+    // ---------------------------------------------------------------------
+    // PATCH /api/reservas/{id}/fecha
+    // Body JSON: { "nuevaFecha": "2026-01-10" }
+    @PatchMapping(path = "/{id}/fecha",
+                consumes = "application/json",
+                produces = "application/json")
+    public ResponseEntity<?> cambiarFechaReserva(
+            @PathVariable("id") int id,
+            @RequestBody java.util.Map<String, String> body) {
+
+        // 1) Buscar la reserva igual que en tu GET /{id}
+        List<Reserva> todas = reservaRepository.findAllReservas();
+        Reserva reserva = todas.stream()
+                .filter(r -> r.getId() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (reserva == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No existe reserva con ID " + id);
+        }
+
+        if (reserva.getFechaReserva() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("La reserva no tiene fecha asignada.");
+        }
+
+        LocalDate hoy = LocalDate.now();
+        LocalDate fechaActual = reserva.getFechaReserva();
+
+        // 2) Debe ser futura
+        if (!fechaActual.isAfter(hoy)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Solo se pueden modificar reservas futuras.");
+        }
+
+        // 3) Leer nueva fecha del body
+        String nuevaFechaStr = body.get("nuevaFecha");
+        if (nuevaFechaStr == null || nuevaFechaStr.isBlank()) {
+            return ResponseEntity.badRequest()
+                    .body("Debe indicarse el campo 'nuevaFecha' (yyyy-MM-dd).");
+        }
+
+        LocalDate nuevaFecha;
+        try {
+            nuevaFecha = LocalDate.parse(nuevaFechaStr);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body("Formato de 'nuevaFecha' inválido. Use yyyy-MM-dd.");
+        }
+
+        // 4) Debe ser posterior a la fecha actual
+        if (!nuevaFecha.isAfter(fechaActual)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("La nueva fecha debe ser posterior a la fecha actual de la reserva.");
+        }
+
+        // 5) Comprobar disponibilidad de la embarcación asignada
+        String matricula = reserva.getMatriculaEmbarcacion();
+        int plazasReserva = reserva.getPlazasReserva();
+
+        List<Embarcacion> disponibles =
+                embarcacionRepository.findEmbarcacionesDisponibles(nuevaFecha, plazasReserva);
+
+        boolean estaLibre = disponibles.stream()
+                .anyMatch(e -> e.getMatricula().equalsIgnoreCase(matricula));
+
+        if (!estaLibre) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("La embarcación " + matricula +
+                        " no está disponible en la nueva fecha solicitada.");
+        }
+
+        // 6) Actualizar solo la fecha en BD
+        boolean ok = reservaRepository.updateFechaReserva(id, nuevaFecha);
+
+        if (!ok) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("No se ha podido actualizar la reserva en la base de datos.");
+        }
+
+        // Actualizamos el objeto que devolvemos
+        reserva.setFechaReserva(nuevaFecha);
+        return ResponseEntity.ok(reserva);
+    }
+
+    
 }

@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Properties;
 
@@ -106,4 +107,23 @@ public class ReservaRepository {
             return false;
         }
     }
+
+    // Actualizar solo la fecha de una reserva
+public boolean updateFechaReserva(int id, LocalDate nuevaFecha) {
+    String sql = "UPDATE Reserva SET fechaReserva = ? WHERE id = ?";
+    try {
+        jdbcTemplate.update(
+                sql,
+                nuevaFecha != null ? Date.valueOf(nuevaFecha) : null,
+                id
+        );
+        return true;
+    } catch (DataAccessException ex) {
+        System.err.println("Unable to update reserva date in the db");
+        ex.printStackTrace();
+        return false;
+    }
 }
+
+
+}  
