@@ -271,7 +271,7 @@ public class ReservaApiController {
     }
 
     // ---------------------------------------------------------------------
-    // D.2 Modificar número de plazas de una reserva
+    // Modificar número de plazas de una reserva
     //      (comprobando que no exceda la capacidad de la embarcación)
     // ---------------------------------------------------------------------
     // PATCH /api/reservas/{id}/datos
@@ -354,4 +354,49 @@ public class ReservaApiController {
 
         return ResponseEntity.ok(reserva);
     }
+
+    // ---------------------------------------------------------------------
+    // Cancelar una reserva que aún no se haya realizado
+    // ---------------------------------------------------------------------
+    // DELETE /api/reservas/{id}
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> cancelarReserva(@PathVariable("id") int id) {
+
+        // 1) Buscar la reserva igual que en GET /{id}
+        List<Reserva> todas = reservaRepository.findAllReservas();
+        Reserva reserva = todas.stream()
+                .filter(r -> r.getId() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (reserva == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No existe reserva con ID " + id);
+        }
+
+        if (reserva.getFechaReserva() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("La reserva no tiene fecha asignada y no se puede cancelar con esta regla.");
+        }
+
+        LocalDate hoy = LocalDate.now();
+        LocalDate fecha = reserva.getFechaReserva();
+
+        // 2) Solo se pueden cancelar reservas futuras
+        if (!fecha.isAfter(hoy)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Solo se pueden cancelar reservas que aún no se hayan realizado (fecha futura).");
+        }
+
+        // 3) Borrar en BD
+        boolean ok = reservaRepository.deleteReserva(id);
+        if (!ok) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("No se ha podido cancelar la reserva en la base de datos.");
+        }
+
+        // 4) Devolver 204 No Content o 200 con mensaje
+        return ResponseEntity.noContent().build();
+    }
+
 }

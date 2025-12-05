@@ -143,6 +143,18 @@ public boolean updateDatosReserva(int id, int plazas, double precio) {
     }
 }
 
+    public boolean deleteReserva(int id) {
+        String sql = "DELETE FROM Reserva WHERE id = ?";
+        try {
+            jdbcTemplate.update(sql, id);
+            return true;
+        } catch (DataAccessException ex) {
+            System.err.println("Unable to delete reserva from the db");
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
 
 
 
