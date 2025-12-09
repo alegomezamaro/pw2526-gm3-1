@@ -1,9 +1,8 @@
 package es.uco.pw.demo.controller.cliente;
 
-import java.util.List;
 import java.util.Arrays;
 import java.util.Date;
-import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -11,10 +10,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import ch.qos.logback.core.pattern.util.RestrictedEscapeUtil;
 import es.uco.pw.demo.model.Embarcacion;
 import es.uco.pw.demo.model.EmbarcacionType;
-import es.uco.pw.demo.model.EmbarcacionRepository;
 
 public class EmbarcacionCliente {
   
@@ -186,6 +183,20 @@ public class EmbarcacionCliente {
 				System.out.println(exception);
 			}
 		*/
+
+		try{
+			System.out.println("==== REQUEST 12: DELETE EMBARCACION NOT RENTED ====");
+			rest.delete(baseUrl + "/delete_embarcacion_no_alquilada/{matricula}", "MatriculaInvalida");
+		}catch(RestClientException exception){
+			System.out.println(exception);
+		}
+
+				try{
+			System.out.println("==== REQUEST 12: DELETE EMBARCACION NOT RENTED ====");
+			rest.delete(baseUrl + "/delete_embarcacion_no_alquilada/{matricula}", "MatriculaInvalida");
+		}catch(RestClientException exception){
+			System.out.println(exception);
+		}
 
 	}
 

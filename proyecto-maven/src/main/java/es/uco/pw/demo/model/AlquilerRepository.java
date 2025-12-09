@@ -217,7 +217,7 @@ public class AlquilerRepository {
     public List<Alquiler> findAlquileresByFechaInicio(LocalDate fechaInicio){
         try {
 
-            String query = sqlQueries.getProperty("select-findAlquilerByFechaInicio");
+            String query = sqlQueries.getProperty("select-findAlquileresByFechaInicio");
 
             String fecha = fechaInicio.toString();
 
@@ -242,5 +242,53 @@ public class AlquilerRepository {
             return new ArrayList<>();
         }
     } 
+        
+    public boolean updateAlquiler(Alquiler alquiler) {
+        String query = sqlQueries.getProperty("update-updateAlquiler");
+        try {
+            int rows = jdbcTemplate.update(query,
+                alquiler.getId(),
+                alquiler.getMatriculaEmbarcacion(),
+                alquiler.getDniTitular(),
+                alquiler.getFechaInicio(),
+                alquiler.getFechaFin(),
+                alquiler.getPlazasSolicitadas(),
+                alquiler.getPrecioTotal(),
+                alquiler.getId()
+            );
+            return rows > 0 ;
+        } catch (DataAccessException e) {
+            System.err.println("Unable to update alquiler in the db");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteAlquiler(Integer id) {
+        try {
+            if (sqlQueries == null) createProperties();
+
+            String query = (sqlQueries != null)
+                    ? sqlQueries.getProperty("delete-deleteAlquilerById")
+                    : null;
+
+            System.out.println(">> [DELETE] Id: " + id);
+            System.out.println(">> [DELETE] Query: " + query);
+
+            if (query == null) {
+                System.err.println("SQL query 'delete-deleteAlquilerById' not found.");
+                return false;
+            }
+
+            int result = jdbcTemplate.update(query, id);
+            System.out.println(">> [DELETE] Filas afectadas: " + result);
+            return result > 0;
+
+        } catch (DataAccessException ex) {
+            System.err.println("Unable to delete alquiler with ID: " + id);
+            ex.printStackTrace();
+            return false;
+        }
+    }
 }
 

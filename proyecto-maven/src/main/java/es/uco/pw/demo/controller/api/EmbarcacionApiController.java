@@ -4,17 +4,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.uco.pw.demo.model.Embarcacion;
@@ -243,5 +243,18 @@ public class EmbarcacionApiController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAllEmbarcaciones(){
         this.embarcacionRepository.deleteAllEmbarcaciones();
+    }
+
+    @DeleteMapping("/delete_embarcacion_no_alquilada/{matricula}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEmbarcacionLibre(@PathVariable String matricula){
+        Embarcacion embarcacion = this.embarcacionRepository.findEmbarcacionByMatricula(matricula);
+        List<String> libres = embarcacionRepository.findEmbarcacionesLibres();
+        if(embarcacion != null){
+            if(libres.contains(embarcacion.getMatricula())){
+                this.embarcacionRepository.deleteEmbarcacion(matricula);
+            } 
+            
+        }
     }
 }
