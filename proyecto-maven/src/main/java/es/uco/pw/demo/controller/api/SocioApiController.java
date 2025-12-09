@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.uco.pw.demo.model.Embarcacion;
 import es.uco.pw.demo.model.InscripcionRepository;
 import es.uco.pw.demo.model.Socio;
 import es.uco.pw.demo.model.SocioRepository;
@@ -79,12 +81,57 @@ public class SocioApiController {
         
     }
 
+    // PUT
+
+    @PutMapping(path = "/{dni}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> updateSocio(
+            @PathVariable String dni,
+            @RequestBody Socio socio) {
+
+        List<Socio> todas = socioRepository.findAllSocios();
+        Socio actual = todas.stream()
+                .filter(e -> e.getDni().equalsIgnoreCase(dni))
+                .findFirst()
+                .orElse(null);
+
+        if (actual == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Opcional: comprobar que no intentan cambiar la matrícula
+        if (socio.getDni() != null &&
+            !socio.getDni().equalsIgnoreCase(dni)) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("No se puede cambiar el DNI con PUT.");
+        }
+
+        // PUT = reemplazo completo (salvo matrícula)
+        actual.setNombre(socio.getNombre());
+        actual.setApellidos(socio.getApellidos());
+        actual.setDireccion(socio.getDireccion());
+        actual.setFechaNacimiento(socio.getFechaNacimiento());
+        actual.setFechaAlta(socio.getFechaAlta());
+        actual.setPatronEmbarcacion(socio.esPatronEmbarcacion());
+
+        boolean ok = socioRepository.updateSocio(actual);
+        if (!ok) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("No se ha podido actualizar la embarcación en la base de datos.");
+        }
+
+        return ResponseEntity.ok(actual);
+    }
+
     // MÉTODOS PATCH
 
     //Actualizamos socio excepto el dni
     @PatchMapping(path="/{dni}", consumes="application/json")
     public ResponseEntity<?> actualizarSocio(@PathVariable String dni, @RequestBody Socio socio){
         Socio socioActualizar = socioRepository.findSocioByDni(dni);
+
+        if(socioActualizar == null) return ResponseEntity.notFound().build();
 
         if( socio.getNombre() != null){ socioActualizar.setNombre(socio.getNombre());}
         if( socio.getApellidos() != null){ socioActualizar.setApellidos(socio.getApellidos());}
@@ -128,8 +175,10 @@ public class SocioApiController {
 
     // MÉTODOs DELETE
 
+
+
     //Eliminar socio si no esta vinculado a ninguna inscripcion
-    @DeleteMapping("/deletesocio/{dni}")
+    @DeleteMapping("/{dni}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSocioByDni(@PathVariable String dni) {
         Socio socio = socioRepository.findSocioByDni(dni);

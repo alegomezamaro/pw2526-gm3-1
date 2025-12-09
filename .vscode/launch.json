@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "SocioCliente",
+            "request": "launch",
+            "mainClass": "es.uco.pw.demo.controller.cliente.SocioCliente",
+            "projectName": "demo"
+        },
+        {
+            "type": "java",
             "name": "EmbarcacionCliente",
             "request": "launch",
             "mainClass": "es.uco.pw.demo.controller.cliente.EmbarcacionCliente",

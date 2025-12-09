@@ -66,10 +66,11 @@ public class EmbarcacionCliente {
 		ResponseEntity<Embarcacion> response;
 		
 		try{
-			response = rest.postForEntity(baseURL + "/api/embarcaciones", newEmbarcacion, Embarcacion.class);	
+			response = rest.postForEntity(baseURL + "/api/embarcaciones", newEmbarcacion, Embarcacion.class);
 			System.out.println("==== REQUEST 1: POST Embarcacion (valid) ====");
 			System.out.println("Status code: " + response.getStatusCode());
-			if(response != null) System.err.println("Response body:\n" + response.getBody().getNombre() +  " : " + response.getBody().getMatricula());
+			if(response != null)
+				System.err.println("Response body:\n" + response.getBody().getNombre() +  " : " + response.getBody().getMatricula());
 		}catch(HttpClientErrorException exception){
 			System.out.println(exception);
 		}
@@ -179,7 +180,7 @@ public class EmbarcacionCliente {
 
 		/*
 			try{
-				System.out.println("==== REQUEST 7: DELETE ALL OBJECTS (valid) ====");
+				System.out.println("==== REQUEST 12: DELETE ALL OBJECTS (valid) ====");
 				rest.delete(baseUrl);
 			}catch(RestClientException exception){
 				System.out.println(exception);
