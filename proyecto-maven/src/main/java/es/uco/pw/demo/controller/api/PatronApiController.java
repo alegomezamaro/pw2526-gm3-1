@@ -80,7 +80,7 @@ public class PatronApiController {
     }
 
     //ACTUALIZAR CAMPOS DE PATRON EXCEPTUANDO EL CAMPO DNI
-    @PatchMapping(path="/actualizar_patron/{dni}", consumes="application/json")
+    @PatchMapping(path="/{dni}", consumes="application/json")
     public ResponseEntity<?> actualizarPatron(@PathVariable String dni, @RequestBody Patron Patron){
         Patron PatronActualizar = patronRepository.findPatronByDNI(dni);
 
@@ -100,7 +100,7 @@ public class PatronApiController {
     }
 
     // ELIMINAR PATRON SI NO ESTA ASIGNADO A NINGUNA EMBARCACION
-    @DeleteMapping("/delete_patron/{dni}")
+    @DeleteMapping("/{dni}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePatronByDni(@PathVariable String dni) {
         Patron patron = patronRepository.findPatronByDNI(dni);
