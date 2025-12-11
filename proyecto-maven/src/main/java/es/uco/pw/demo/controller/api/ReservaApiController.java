@@ -4,8 +4,11 @@ import es.uco.pw.demo.model.Reserva;
 import es.uco.pw.demo.model.ReservaRepository;
 import es.uco.pw.demo.model.Embarcacion;
 import es.uco.pw.demo.model.EmbarcacionRepository;
+import java.util.Collections;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -88,6 +91,7 @@ public class ReservaApiController {
     // }
     @PostMapping(consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> createReserva(@RequestBody Reserva reserva) {
+        
 
         // 1. GENERAR ID AUTOMÁTICO SIN PEDIR NADA AL CLIENTE
         List<Reserva> existentes = reservaRepository.findAllReservas();
@@ -181,6 +185,128 @@ public class ReservaApiController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(reserva);
     }
+
+
+    @PutMapping(path = "/{id}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> actualizarReservaCompleta(
+            @PathVariable("id") int id,
+            @RequestBody Reserva reservaActualizada) {
+
+        // 0) Buscar la reserva existente
+        List<Reserva> todas = Optional
+                .ofNullable(reservaRepository.findAllReservas())
+                .orElse(Collections.emptyList());
+
+        Reserva existente = todas.stream()
+                .filter(r -> r.getId() == id)
+                .findFirst()
+                .orElse(null);
+
+        if (existente == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("No existe reserva con ID " + id);
+        }
+
+        // Forzamos el ID del path (ignoramos el que venga en el body)
+        reservaActualizada.setId(id);
+
+        // ------------------------------
+        // Validaciones básicas
+        // ------------------------------
+        if (reservaActualizada.getMatriculaEmbarcacion() == null) {
+            return ResponseEntity.badRequest().body("La matrícula es obligatoria.");
+        }
+
+        if (reservaActualizada.getPlazasReserva() <= 0) {
+            return ResponseEntity.badRequest().body("Plazas inválidas.");
+        }
+
+        if (reservaActualizada.getFechaReserva() == null) {
+            return ResponseEntity.badRequest().body("La fecha es obligatoria.");
+        }
+
+        // ------------------------------
+        // 1. Comprobar que la embarcación existe
+        // ------------------------------
+        List<Embarcacion> embarcaciones = Optional
+                .ofNullable(embarcacionRepository.findAllEmbarcaciones())
+                .orElse(Collections.emptyList());
+
+        Embarcacion emb = embarcaciones.stream()
+                .filter(e -> e.getMatricula()
+                        .equalsIgnoreCase(reservaActualizada.getMatriculaEmbarcacion()))
+                .findFirst()
+                .orElse(null);
+
+        if (emb == null) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body("No existe ninguna embarcación con matrícula: " +
+                            reservaActualizada.getMatriculaEmbarcacion());
+        }
+
+        // ------------------------------
+        // 2. Debe tener patrón asignado
+        // ------------------------------
+        if (emb.getPatronAsignado() == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("La embarcación no tiene patrón y no se puede reservar.");
+        }
+
+        // ------------------------------
+        // 3. Comprobar disponibilidad ese día
+        //    (que no haya otra reserva distinta con misma embarcación y fecha)
+        // ------------------------------
+        List<Reserva> reservasExistentes = Optional
+                .ofNullable(reservaRepository.findAllReservas())
+                .orElse(Collections.emptyList());
+
+        boolean ocupada = reservasExistentes.stream().anyMatch(r ->
+                r.getId() != id && // importante: excluir la propia reserva
+                r.getMatriculaEmbarcacion()
+                        .equalsIgnoreCase(reservaActualizada.getMatriculaEmbarcacion()) &&
+                r.getFechaReserva().equals(reservaActualizada.getFechaReserva())
+        );
+
+        if (ocupada) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("La embarcación está ocupada ese día.");
+        }
+
+        // ------------------------------
+        // 4. Comprobar plazas (restando 1 por el patrón)
+        // ------------------------------
+        int plazasDisponibles = emb.getPlazas() - 1;
+
+        if (reservaActualizada.getPlazasReserva() > plazasDisponibles) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("No hay suficientes plazas. La embarcación tiene "
+                            + plazasDisponibles + " plazas disponibles.");
+        }
+
+        // ------------------------------
+        // 5. Calcular precio (40€/persona)
+        // ------------------------------
+        // double precio = reservaActualizada.getPlazasReserva() * 40.0;
+        // reservaActualizada.setPrecioReserva(precio);
+
+        // ------------------------------
+        // 6. Actualizar en BD
+        // ------------------------------
+        // Ajusta este método al que tengas en tu repositorio
+
+        boolean fechaOk = reservaRepository.updateFechaReserva(id, reservaActualizada.getFechaReserva());
+        boolean restOk = reservaRepository.updateDatosReserva(id, reservaActualizada.getPlazasReserva(), reservaActualizada.getPrecioReserva());
+
+
+        if (!fechaOk || !restOk) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("No se ha podido actualizar la reserva en la base de datos.");
+        }
+
+        return ResponseEntity.ok(reservaActualizada);
+    }
+
 
     // ---------------------------------------------------------------------
     // D.1 Modificar fecha de una reserva futura
@@ -383,10 +509,10 @@ public class ReservaApiController {
         LocalDate fecha = reserva.getFechaReserva();
 
         // 2) Solo se pueden cancelar reservas futuras
-        if (!fecha.isAfter(hoy)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Solo se pueden cancelar reservas que aún no se hayan realizado (fecha futura).");
-        }
+        // if (!fecha.isAfter(hoy)) {
+        //     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        //             .body("Solo se pueden cancelar reservas que aún no se hayan realizado (fecha futura).");
+        // }
 
         // 3) Borrar en BD
         boolean ok = reservaRepository.deleteReserva(id);

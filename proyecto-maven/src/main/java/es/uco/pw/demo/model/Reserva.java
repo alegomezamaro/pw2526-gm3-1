@@ -13,7 +13,6 @@ public class Reserva {
     public Reserva() {
     }
 
-
     public Reserva(int id,String matriculaEmbarcacion,int plazasReserva,LocalDate fechaReserva,double precioReserva){
         this.id = id;
         this.matriculaEmbarcacion = matriculaEmbarcacion;
