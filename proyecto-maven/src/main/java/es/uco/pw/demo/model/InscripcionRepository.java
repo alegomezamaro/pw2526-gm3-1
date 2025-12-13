@@ -145,6 +145,30 @@ public class InscripcionRepository {
         }
     }
 
+    public Inscripcion findInscripcionByDNI(String dniTitular) {
+        String sql = "SELECT * FROM Inscripcion WHERE dniTitular = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, new Object[]{dniTitular}, (rs, rowNum) -> {
+                Inscripcion ins = new Inscripcion();
+                ins.setId(rs.getInt("id"));
+                String typeStr = rs.getString("tipoCuota");
+                if (typeStr != null) {
+                    ins.setTipoCuota(InscripcionType.valueOf(typeStr));
+                }
+                ins.setCuotaAnual(rs.getInt("cuotaAnual"));
+                ins.setDniTitular(rs.getString("dniTitular"));
+                if (rs.getDate("fechaInscripcion") != null) {
+                    ins.setFechaInscripcion(rs.getDate("fechaInscripcion").toLocalDate());
+                }
+                ins.setFamiliaId(rs.getInt("familiaId"));
+                return ins;
+            });
+        } catch (DataAccessException e) {
+            System.err.println("Unable to find inscripcion with dni " + dniTitular);
+            return null;
+        }
+    }
+
     // buscar inscripcion por titular
     public boolean existsInscripcionByTitular(String dniTitular) {
         String sql = "SELECT COUNT(*) FROM Inscripcion WHERE dniTitular = ?";

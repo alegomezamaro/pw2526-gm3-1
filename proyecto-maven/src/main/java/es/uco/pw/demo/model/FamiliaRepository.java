@@ -144,4 +144,27 @@ public class FamiliaRepository {
         }
     }
 
+    public boolean deleteFamilia(int id) {
+    try {
+        if (sqlQueries == null) createProperties();
+
+        String query = sqlQueries.getProperty("delete-deleteFamilia");
+
+        // Si no existe en el properties, usamos un fallback SQL correcto
+        if (query == null) {
+            query = "DELETE FROM Familia WHERE id = ?";
+        }
+
+        int rows = jdbcTemplate.update(query, id);
+
+        return rows > 0; // true si realmente se borró
+
+    } catch (DataAccessException e) {
+        System.err.println("Unable to delete familia with ID: " + id);
+        e.printStackTrace();
+        return false;
+    }
+}
+
+
 }
