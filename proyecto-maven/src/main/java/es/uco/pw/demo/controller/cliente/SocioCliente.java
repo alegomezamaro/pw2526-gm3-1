@@ -51,7 +51,7 @@ public class SocioCliente {
 		String baseURL = "http://localhost:8080";
 
 		// POST a new Socio (valid)
-		Socio newSocio = new Socio("46072606H","Javier", "Castilla Arroyo", LocalDate.parse("2005-10-03"), "C/Obispo Torres n5", false , LocalDate.parse("2024-10-10"));
+		Socio newSocio = new Socio("46072606H","Javier", "Castilla Ordoñez", LocalDate.parse("2005-10-03"), "C/Obispo Torres n5", false , LocalDate.parse("2024-10-10"));
 		ResponseEntity<Socio> response;
 		
 		try{
@@ -153,9 +153,9 @@ public class SocioCliente {
 		RestTemplate rest = new RestTemplate();
 		String baseUrl = "http://localhost:8080/api/socios";
 
-		// 1. Borrar una Socio con dni 46072606H
+		// 1. Borrar una Socio con dni 23753621A
 		try{
-			String dni = "46072606H";
+			String dni = "23753621A";
 			System.out.println("==== REQUEST 10: DELETE ONE OBJECT (valid) ====");
 			rest.delete(baseUrl + "/{dni}", dni);
 		}catch(RestClientException exception){

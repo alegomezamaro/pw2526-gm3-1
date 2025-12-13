@@ -87,24 +87,24 @@ public class InscripcionApiController {
         else{
             Integer famId = previa.getFamiliaId();
 
-        if(famId != null){
-            Familia famPrevia = familiaRepository.findFamiliaById(famId);
+            if(famId != null){
+                Familia famPrevia = familiaRepository.findFamiliaById(famId);
 
-            if(famPrevia.getDniTitular() == dni){
-                boolean ok = familiaRepository.deleteFamilia(famId);
+                if(famPrevia.getDniTitular() == dni){
+                    boolean ok = familiaRepository.deleteFamilia(famId);
 
-                if(!ok){
-                    System.out.println("No se ha podido borrar la familia \n");
+                    if(!ok){
+                        System.out.println("No se ha podido borrar la familia \n");
+                    }
+                }
+                else{
+                    famPrevia.setNumAdultos(famPrevia.getNumAdultos()-1);
+                    boolean ok = familiaRepository.updateFamilia(famPrevia);
+                    if(!ok){
+                        System.out.println("No se ha podido actualizar el numero de adultos de la familia");
+                    }
                 }
             }
-            else{
-                famPrevia.setNumAdultos(famPrevia.getNumAdultos()-1);
-                boolean ok = familiaRepository.updateFamilia(famPrevia);
-                if(!ok){
-                    System.out.println("No se ha podido actualizar el numero de adultos de la familia");
-                }
-            }
-        }
 
         inscripcionRepository.deleteInscripcionByDniTitular(dni);
         }

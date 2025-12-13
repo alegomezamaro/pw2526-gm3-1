@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import es.uco.pw.demo.model.Embarcacion;
 import es.uco.pw.demo.model.InscripcionRepository;
+import es.uco.pw.demo.model.InscripcionType;
 import es.uco.pw.demo.model.Socio;
 import es.uco.pw.demo.model.SocioRepository;
+import es.uco.pw.demo.model.Inscripcion;
+import es.uco.pw.demo.model.InscripcionRepository;
 
 @RestController
 @RequestMapping("/api/socios")
@@ -69,12 +72,24 @@ public class SocioApiController {
         if (existente != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Ya existe un socio con DNI: " + socio.getDni());
         }
+
+        Inscripcion newInscripcion = new Inscripcion();
+        newInscripcion.setTipoCuota(InscripcionType.INDIVIDUAL);
+        newInscripcion.setCuotaAnual(300);
+        newInscripcion.setFechaInscripcion(LocalDate.now());
+        newInscripcion.setDniTitular(socio.getDni());
+        newInscripcion.setFamiliaId(null);
  
         socio.setFechaAlta(LocalDate.now());
 
+   
         boolean ok = socioRepository.addSocio(socio);
-        if ( !ok) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha podido crear el socio en la base de datos.");
+        boolean insOk = inscripcionRepository.addInscripcion(newInscripcion);
+        if ( !ok || !insOk ) {
+            if(!ok) inscripcionRepository.deleteInscripcionByDniTitular(socio.getDni());
+            if(!insOk) socioRepository.deleteSocioByDni(socio.getDni());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha podido crear el socio y su inscripcion pertinente en la base de datos." + insOk);
         } else {
             return ResponseEntity.status(HttpStatus.CREATED).body(socio);
         }
@@ -175,9 +190,7 @@ public class SocioApiController {
 
     // MÉTODOs DELETE
 
-
-
-    //Eliminar socio si no esta vinculado a ninguna inscripcion
+    //Eliminar socio
     @DeleteMapping("/{dni}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSocioByDni(@PathVariable String dni) {
