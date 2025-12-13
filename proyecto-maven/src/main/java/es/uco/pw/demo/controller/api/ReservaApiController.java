@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -313,174 +314,57 @@ public class ReservaApiController {
     // ---------------------------------------------------------------------
     // PATCH /api/reservas/{id}/fecha
     // Body JSON: { "nuevaFecha": "2026-01-10" }
-    @PatchMapping(path = "/{id}/fecha",
-                consumes = "application/json",
-                produces = "application/json")
-    public ResponseEntity<?> cambiarFechaReserva(
-            @PathVariable("id") int id,
-            @RequestBody java.util.Map<String, String> body) {
-
-        // 1) Buscar la reserva igual que en tu GET /{id}
-        List<Reserva> todas = reservaRepository.findAllReservas();
-        Reserva reserva = todas.stream()
-                .filter(r -> r.getId() == id)
-                .findFirst()
-                .orElse(null);
-
-        if (reserva == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("No existe reserva con ID " + id);
-        }
-
-        if (reserva.getFechaReserva() == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("La reserva no tiene fecha asignada.");
-        }
-
-        LocalDate hoy = LocalDate.now();
-        LocalDate fechaActual = reserva.getFechaReserva();
-
-        // 2) Debe ser futura
-        if (!fechaActual.isAfter(hoy)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Solo se pueden modificar reservas futuras.");
-        }
-
-        // 3) Leer nueva fecha del body
-        String nuevaFechaStr = body.get("nuevaFecha");
-        if (nuevaFechaStr == null || nuevaFechaStr.isBlank()) {
-            return ResponseEntity.badRequest()
-                    .body("Debe indicarse el campo 'nuevaFecha' (yyyy-MM-dd).");
-        }
-
-        LocalDate nuevaFecha;
-        try {
-            nuevaFecha = LocalDate.parse(nuevaFechaStr);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body("Formato de 'nuevaFecha' inválido. Use yyyy-MM-dd.");
-        }
-
-        // 4) Debe ser posterior a la fecha actual
-        if (!nuevaFecha.isAfter(fechaActual)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("La nueva fecha debe ser posterior a la fecha actual de la reserva.");
-        }
-
-        // 5) Comprobar disponibilidad de la embarcación asignada
-        String matricula = reserva.getMatriculaEmbarcacion();
-        int plazasReserva = reserva.getPlazasReserva();
-
-        List<Embarcacion> disponibles =
-                embarcacionRepository.findEmbarcacionesDisponibles(nuevaFecha, plazasReserva);
-
-        boolean estaLibre = disponibles.stream()
-                .anyMatch(e -> e.getMatricula().equalsIgnoreCase(matricula));
-
-        if (!estaLibre) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("La embarcación " + matricula +
-                        " no está disponible en la nueva fecha solicitada.");
-        }
-
-        // 6) Actualizar solo la fecha en BD
-        boolean ok = reservaRepository.updateFechaReserva(id, nuevaFecha);
-
-        if (!ok) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("No se ha podido actualizar la reserva en la base de datos.");
-        }
-
-        // Actualizamos el objeto que devolvemos
-        reserva.setFechaReserva(nuevaFecha);
-        return ResponseEntity.ok(reserva);
-    }
-
-    // ---------------------------------------------------------------------
-    // Modificar número de plazas de una reserva
-    //      (comprobando que no exceda la capacidad de la embarcación)
-    // ---------------------------------------------------------------------
-    // PATCH /api/reservas/{id}/datos
-    // Body JSON: { "plazasReserva": 5 }
-    @PatchMapping(path = "/{id}/datos",
-                consumes = "application/json",
-                produces = "application/json")
+    @PatchMapping(path = "/{id}",
+        consumes = "application/json",
+        produces = "application/json")
     public ResponseEntity<?> modificarDatosReserva(
-            @PathVariable("id") int id,
-            @RequestBody java.util.Map<String, Object> body) {
+        @PathVariable("id") int id,
+        @RequestBody Reserva newReserva) {
 
-        // 1) Buscar la reserva igual que en GET /{id}
-        List<Reserva> todas = reservaRepository.findAllReservas();
-        Reserva reserva = todas.stream()
-                .filter(r -> r.getId() == id)
-                .findFirst()
-                .orElse(null);
+    // 1) Buscar la reserva existente
+    List<Reserva> todas = reservaRepository.findAllReservas();
+    Reserva reserva = todas.stream()
+            .filter(r -> r.getId() == id)   // ✔ condición correcta
+            .findFirst()
+            .orElse(null);
 
-        if (reserva == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("No existe reserva con ID " + id);
-        }
-
-        // 2) Leer nuevas plazas (OBLIGATORIO)
-        if (!body.containsKey("plazasReserva")) {
-            return ResponseEntity.badRequest()
-                    .body("Debe indicarse el campo 'plazasReserva'.");
-        }
-
-        Object plazasObj = body.get("plazasReserva");
-        int nuevasPlazas;
-        try {
-            nuevasPlazas = ((Number) plazasObj).intValue();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body("El campo 'plazasReserva' debe ser numérico.");
-        }
-
-        if (nuevasPlazas <= 0) {
-            return ResponseEntity.badRequest()
-                    .body("El número de plazas debe ser mayor que 0.");
-        }
-
-        // 3) Comprobar capacidad de la embarcación asignada
-        String matricula = reserva.getMatriculaEmbarcacion();
-
-        List<Embarcacion> embarcaciones = embarcacionRepository.findAllEmbarcaciones();
-        Embarcacion emb = embarcaciones.stream()
-                .filter(e -> e.getMatricula().equalsIgnoreCase(matricula))
-                .findFirst()
-                .orElse(null);
-
-        if (emb == null) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("La embarcación asociada a la reserva no existe.");
-        }
-
-        // Capacidad disponible: plazas totales - 1 (por el patrón)
-        int plazasDisponibles = emb.getPlazas() - 1;
-
-        if (nuevasPlazas > plazasDisponibles) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("No hay suficientes plazas. La embarcación tiene "
-                            + plazasDisponibles + " plazas disponibles para reservas.");
-        }
-
-        // 4) Recalcular precio (40€/persona)
-        double nuevoPrecio = nuevasPlazas * 40.0;
-
-        // 5) Actualizar en BD
-        boolean ok = reservaRepository.updateDatosReserva(id, nuevasPlazas, nuevoPrecio);
-        if (!ok) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("No se han podido actualizar los datos de la reserva en la base de datos.");
-        }
-
-        // 6) Actualizar el objeto que devolvemos
-        reserva.setPlazasReserva(nuevasPlazas);
-        reserva.setPrecioReserva(nuevoPrecio);
-
-        return ResponseEntity.ok(reserva);
+    if (reserva == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("No existe reserva con ID " + id);
     }
 
+    // -----------------------------
+    // 2) Actualizar sólo los campos presentes
+    // -----------------------------
+
+    // Fecha
+    if (newReserva.getFechaReserva() != null) {
+        reserva.setFechaReserva(newReserva.getFechaReserva());
+    }
+
+    // Plazas
+    if (newReserva.getPlazasReserva() > 0) {
+        reserva.setPlazasReserva(newReserva.getPlazasReserva());
+        reserva.setPrecioReserva(newReserva.getPrecioReserva());
+    }
+
+    // Matrícula
+    if (newReserva.getMatriculaEmbarcacion() != null) {
+        reserva.setMatriculaEmbarcacion(newReserva.getMatriculaEmbarcacion());
+    }
+
+    // -----------------------------
+    // 3) Guardar en BD
+    // -----------------------------
+    boolean ok = reservaRepository.updateReserva(reserva);
+
+    if (!ok) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("No se han podido actualizar los datos de la reserva en la base de datos.");
+    }
+
+    return ResponseEntity.ok(reserva);
+}
     // ---------------------------------------------------------------------
     // Cancelar una reserva que aún no se haya realizado
     // ---------------------------------------------------------------------

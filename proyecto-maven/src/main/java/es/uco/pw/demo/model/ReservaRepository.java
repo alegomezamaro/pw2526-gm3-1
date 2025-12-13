@@ -143,6 +143,24 @@ public boolean updateDatosReserva(int id, int plazas, double precio) {
     }
 }
 
+    public boolean updateReserva(Reserva r) {
+        String sql = "UPDATE Reserva SET plazasReserva = ?, fechaReserva = ?, precioReserva = ? WHERE id = ?";
+        try {
+            jdbcTemplate.update(
+                sql,
+                r.getPlazasReserva(),
+                r.getFechaReserva(),
+                r.getPrecioReserva(),
+                r.getId()
+            );
+            return true;
+        } catch (DataAccessException ex) {
+            System.err.println("Unable to update reserva full in the db");
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean deleteReserva(int id) {
         String sql = "DELETE FROM Reserva WHERE id = ?";
         try {
