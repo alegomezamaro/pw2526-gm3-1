@@ -18,7 +18,7 @@ public class EmbarcacionCliente {
   public static void main(String[] args){
 		sendPostRequests();
 		sendGetRequests();
-    sendPutRequests();
+    	sendPutRequests();
 		sendPatchRequests();
 		sendDeleteRequests();
   }
@@ -40,7 +40,7 @@ public class EmbarcacionCliente {
 		// 2. Embarcaciones de tipo YATE
 		response = rest.getForEntity(baseURL + "/api/embarcaciones?tipo=YATE", Embarcacion[].class);
 		embarcacionesList = Arrays.asList(response.getBody());
-		System.out.println("==== REQUEST 4: GET Embarcacions ====");
+		System.out.println("==== REQUEST 4: GET Embarcacions por tipo (YATE) ====");
 		date = new Date(response.getHeaders().getDate());
 		System.out.println("Response date: " + date);
 		for(Embarcacion s: embarcacionesList){
@@ -111,7 +111,7 @@ public class EmbarcacionCliente {
 
     // 1. Update del nombre de embarcacion
     try{
-			System.out.println("==== REQUEST 7: PATCH (valid) ====");
+			System.out.println("==== REQUEST 7: PATCH (Actualizacion nombre) ====");
 			matricula = "6a-AB-1-1-15";
 			Embarcacion embarcacion1 = new Embarcacion();
 			embarcacion1.setNombre("Patch Boat");
@@ -123,7 +123,7 @@ public class EmbarcacionCliente {
 
     // 2. Cambio de Tipo y Plazas
     try{
-			System.out.println("==== REQUEST 8: PATCH (valid) ====");
+			System.out.println("==== REQUEST 8: PATCH (Actualizacion tipos y plazas) ====");
 			matricula = "7a-AB-1-2-20";
 			Embarcacion embarcacion2 = new Embarcacion();
 			embarcacion2.setTipo(EmbarcacionType.CATAMARAN);
@@ -136,7 +136,7 @@ public class EmbarcacionCliente {
 
     // 3. Intento de actualizar una matricula inválida
     try{
-			System.out.println("==== REQUEST 9: PATCH (invalid) ====");
+			System.out.println("==== REQUEST 9: PATCH (Actualizar con una mátricula invalida) ====");
 			matricula = "Matricula Invalida";
 			Embarcacion embarcacion3 = new Embarcacion();
       embarcacion3.setNombre("Invalido");
@@ -144,8 +144,28 @@ public class EmbarcacionCliente {
       embarcacion3.setPlazas(3);
 			Embarcacion response3 = rest.patchForObject(baseUrl + "/{matricula}", embarcacion3, Embarcacion.class, matricula);
 			System.out.println(response3.toString());
-		}catch(RestClientException exception){
+	}catch(RestClientException exception){
 			System.out.println(exception);
+		}
+
+	try{
+			System.out.println("==== REQUEST 10: PATCH (Vincular patron) ====");
+			matricula = "6a-AB-1-1-15";
+			Integer id = 1;
+			Embarcacion response4 = rest.patchForObject(baseUrl + "/{matricula}/{id}", null, Embarcacion.class, matricula,id);
+			System.out.println("Respuesta del servidor: \n" + response4.toString());
+	}catch(RestClientException exception){
+			System.out.println("Error: " + exception.getMessage());
+		}
+	
+	
+	try{
+			System.out.println("==== REQUEST 11: PATCH (Desvincular patron) ====");
+			matricula = "6a-AB-1-1-15";
+			Embarcacion response5 = rest.patchForObject(baseUrl + "/patron/{matricula}", null, Embarcacion.class, matricula);
+			System.out.println("Respuesta del servidor: \n" + response5.toString());
+	}catch(RestClientException exception){
+			System.out.println("Error: " + exception.getMessage());
 		}
 
   }
@@ -158,7 +178,7 @@ public class EmbarcacionCliente {
 		// 1. Borrar una embarcacion con matricula ABC123
 		try{
 			String matricula = "ABC123";
-			System.out.println("==== REQUEST 10: DELETE ONE OBJECT (valid) ====");
+			System.out.println("==== REQUEST 12: Eliminar una embarcacion (valid) ====");
 			rest.delete(baseUrl + "/{matricula}", matricula);
 		}catch(RestClientException exception){
 			System.out.println(exception);
@@ -166,33 +186,21 @@ public class EmbarcacionCliente {
 
 		// 2. Borrar una embarcacion que no existe
 		try{
-			System.out.println("==== REQUEST 11: DELETE AN OBJECT THAT DOESNT EXIST (no effect) ====");
+			System.out.println("==== REQUEST 13: Eliminar una embarcacion inexistente (no effect) ====");
 			rest.delete(baseUrl + "/{matricula}", "MatriculaInvalida");
 		}catch(RestClientException exception){
 			System.out.println(exception);
 		}
 
-		// 3. Borrarlo todo
-		// Descomentar en caso de querer usar
-
-		/*
-			try{
-				System.out.println("==== REQUEST 12: DELETE ALL OBJECTS (valid) ====");
-				rest.delete(baseUrl);
-			}catch(RestClientException exception){
-				System.out.println(exception);
-			}
-		*/
-
 		try{
-			System.out.println("==== REQUEST 12: DELETE EMBARCACION NOT RENTED ====");
+			System.out.println("==== REQUEST 14: ELIMINAR EMBARCACION NO ALQUILADA ====");
 			rest.delete(baseUrl + "/delete_embarcacion_no_alquilada/{matricula}", "MatriculaInvalida");
 		}catch(RestClientException exception){
 			System.out.println(exception);
 		}
 
 				try{
-			System.out.println("==== REQUEST 12: DELETE EMBARCACION NOT RENTED ====");
+			System.out.println("==== REQUEST 15: ELIMINAR UNA EMBARCACION NO ALQUILADA ====");
 			rest.delete(baseUrl + "/delete_embarcacion_no_alquilada/{matricula}", "MatriculaInvalida");
 		}catch(RestClientException exception){
 			System.out.println(exception);

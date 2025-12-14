@@ -82,7 +82,6 @@ public class SocioApiController {
  
         socio.setFechaAlta(LocalDate.now());
 
-   
         boolean ok = socioRepository.addSocio(socio);
         boolean insOk = inscripcionRepository.addInscripcion(newInscripcion);
         if ( !ok || !insOk ) {
@@ -190,7 +189,19 @@ public class SocioApiController {
 
     // MÉTODOs DELETE
 
-    //Eliminar socio
+    // Eliminar inscripcion
+    @DeleteMapping("/eliminar_inscripcion/{dni}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteInsByDni(@PathVariable String dni) {
+        Socio socio = socioRepository.findSocioByDni(dni);
+        if(socio != null){
+            if(inscripcionRepository.existsInscripcionByTitular(dni)){
+                inscripcionRepository.deleteInscripcionByDniTitular(dni);
+            }
+        }
+    }
+
+    //Eliminar socio sin inscripcion
     @DeleteMapping("/{dni}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSocioByDni(@PathVariable String dni) {

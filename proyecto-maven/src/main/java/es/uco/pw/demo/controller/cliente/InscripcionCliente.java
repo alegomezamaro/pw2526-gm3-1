@@ -1,21 +1,14 @@
 package es.uco.pw.demo.controller.cliente;
 
-import java.util.List;
 import java.util.Arrays;
 import java.util.Date;
-import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import ch.qos.logback.core.pattern.util.RestrictedEscapeUtil;
 import es.uco.pw.demo.model.Inscripcion;
-import es.uco.pw.demo.model.InscripcionRepository;
-import es.uco.pw.demo.model.InscripcionType;
-import es.uco.pw.demo.model.Socio;
 
 public class InscripcionCliente {
   
@@ -59,10 +52,9 @@ public class InscripcionCliente {
 		RestTemplate rest = new RestTemplate();
 		String baseUrl = "http://localhost:8080/api/inscripciones";
 
-		// 1. Borrar una Inscripcion con dni 46072606H
-    // Cambiar a DNI VALIDO
+
 		try{
-			String dni = "42356432J";
+			String dni = "46072606H";
 			System.out.println("==== REQUEST 10: DELETE ONE OBJECT (valid) ====");
 			rest.delete(baseUrl + "/eliminar_inscripcion/{dni}", dni);
 		}catch(RestClientException exception){

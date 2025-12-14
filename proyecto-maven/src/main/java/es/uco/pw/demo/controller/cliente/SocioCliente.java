@@ -153,10 +153,19 @@ public class SocioCliente {
 		RestTemplate rest = new RestTemplate();
 		String baseUrl = "http://localhost:8080/api/socios";
 
-		// 1. Borrar una Socio con dni 23753621A
+		// 1. Borrar una Socio con dni 46072606H
+
 		try{
-			String dni = "23753621A";
-			System.out.println("==== REQUEST 10: DELETE ONE OBJECT (valid) ====");
+			String dni = "46072606H";
+			System.out.println("==== REQUEST 10: DELETE AN INSCRIPTION (valid) ====");
+			rest.delete(baseUrl + "/eliminar_inscripcion/{dni}", dni);
+		}catch(RestClientException exception){
+			System.out.println(exception);
+		}
+
+		try{
+			String dni = "46072606H";
+			System.out.println("==== REQUEST 11: DELETE ONE OBJECT (valid) ====");
 			rest.delete(baseUrl + "/{dni}", dni);
 		}catch(RestClientException exception){
 			System.out.println(exception);
@@ -164,7 +173,7 @@ public class SocioCliente {
 
 		// 2. Borrar una Socio que no existe
 		try{
-			System.out.println("==== REQUEST 11: DELETE AN OBJECT THAT DOESNT EXIST (no effect) ====");
+			System.out.println("==== REQUEST 12: DELETE AN OBJECT THAT DOESNT EXIST (no effect) ====");
 			rest.delete(baseUrl + "/{dni}", "MatriculaInvalida");
 		}catch(RestClientException exception){
 			System.out.println(exception);

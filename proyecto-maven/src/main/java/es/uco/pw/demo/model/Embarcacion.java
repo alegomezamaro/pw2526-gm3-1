@@ -68,5 +68,14 @@ public class Embarcacion {
         this.patronAsignado = patronAsignado;
     }
 
+    @Override
+    public String toString() {
+        return "Matrícula: " + this.matricula + "\n" +
+            "Nombre:    " + this.nombre + "\n" +
+            "Tipo:      " + this.tipo + "\n" +
+            "Plazas:    " + this.plazas + "\n" +
+            "Dims:      " + this.dimensiones + "\n" +
+            "Patrón:    " + this.patronAsignado;
+    }
 
 }
