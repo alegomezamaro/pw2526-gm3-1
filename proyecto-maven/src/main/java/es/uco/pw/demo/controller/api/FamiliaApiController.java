@@ -1,122 +1,158 @@
 package es.uco.pw.demo.controller.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import es.uco.pw.demo.model.Familia;
 import es.uco.pw.demo.model.FamiliaRepository;
+import es.uco.pw.demo.model.Socio;
 import es.uco.pw.demo.model.SocioRepository;
 
 @RestController
-@RequestMapping("/api/socios")
-public class SocioApiController {
+@RequestMapping("/api/familias")
+public class FamiliaApiController {
+
+    private final FamiliaRepository familiaRepository;
     private final SocioRepository socioRepository;
-    private final InscripcionRepository inscripcionRepository;
-    private final FamiliaRepository familiaRepository; // Nuevo repositorio
 
-    // 1. Actualizar constructor para inyectar FamiliaRepository
-    public SocioApiController(SocioRepository socioRepository, 
-                              InscripcionRepository inscripcionRepository,
-                              FamiliaRepository familiaRepository) {
-        this.socioRepository = socioRepository;
-        this.inscripcionRepository = inscripcionRepository;
+    public FamiliaApiController(FamiliaRepository familiaRepository, SocioRepository socioRepository) {
         this.familiaRepository = familiaRepository;
+        this.socioRepository = socioRepository;
     }
 
-    // ... [MANTENER LOS MÉTODOS GET, POST, PUT EXISTENTES] ...
-
-    // 2. Vincular socio a inscripción familiar (PATCH)
-    @PatchMapping(path = "/{dni}/vincular-inscripcion", consumes = "application/json")
-    public ResponseEntity<?> vincularSocioInscripcionF(@PathVariable String dni, @RequestBody Integer idInscripcion) {
-        
-        // Validar Socio
-        Socio socio = socioRepository.findSocioByDni(dni);
-        if (socio == null) return ResponseEntity.notFound().build();
-        if (socio.getFamiliaId() != null) {
-            return ResponseEntity.badRequest().body("El socio ya pertenece a una familia.");
-        }
-
-        // Validar Inscripción
-        Inscripcion inscripcion = inscripcionRepository.findInscripcionById(idInscripcion);
-        if (inscripcion == null) {
-            return ResponseEntity.badRequest().body("Inscripción no encontrada.");
-        }
-        if (inscripcion.getTipoCuota() != InscripcionType.FAMILIAR || inscripcion.getFamiliaId() == null) {
-            return ResponseEntity.badRequest().body("La inscripción no es familiar.");
-        }
-
-        // Obtener Familia y Actualizar
-        Integer famId = inscripcion.getFamiliaId();
-        Familia familia = familiaRepository.findFamiliaById(famId);
-        if (familia == null) return ResponseEntity.internalServerError().body("Familia no encontrada.");
-
-        // Actualizar Socio
-        socio.setFamiliaId(famId);
-        boolean socioOk = socioRepository.updateSocio(socio);
-
-        // Actualizar contador Familia (Asumimos adulto por defecto, o ajustar según lógica)
-        familia.setNumAdultos(familia.getNumAdultos() + 1);
-        boolean famOk = familiaRepository.updateFamilia(familia);
-
-        if (!socioOk || !famOk) {
-            return ResponseEntity.internalServerError().body("Error al actualizar datos en BD.");
-        }
-
-        return ResponseEntity.ok("Socio vinculado correctamente a la familia " + famId);
+    // 1. GET ALL
+    @GetMapping
+    public ResponseEntity<List<Familia>> getAllFamilias() {
+        return ResponseEntity.ok(familiaRepository.findAllFamilias());
     }
 
-    // 3. Desvincular socio de inscripción familiar (PATCH)
-    @PatchMapping(path = "/{dni}/desvincular-familia")
-    public ResponseEntity<?> desvincularSocioFamilia(@PathVariable String dni) {
-        
-        Socio socio = socioRepository.findSocioByDni(dni);
-        if (socio == null) return ResponseEntity.notFound().build();
+    // 2. GET BY ID
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getFamiliaById(@PathVariable Integer id) {
+        Familia familia = familiaRepository.findFamiliaById(id);
+        if (familia == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(familia);
+    }
 
-        Integer famId = socio.getFamiliaId();
-        if (famId == null) {
-            return ResponseEntity.badRequest().body("El socio no está vinculado a ninguna familia.");
+    // 3. CREATE (POST)
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> createFamilia(@RequestBody Familia familia) {
+        if (familia == null || familia.getDniTitular() == null) {
+            return ResponseEntity.badRequest().body("El DNI del titular es obligatorio.");
+        }
+        if (!socioRepository.existsSocioByDni(familia.getDniTitular())) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No existe socio con ese DNI.");
         }
 
-        // Obtener Familia para restar miembro
-        Familia familia = familiaRepository.findFamiliaById(famId);
-        if (familia != null) {
-            // Evitar números negativos
-            if (familia.getNumAdultos() > 0) {
-                familia.setNumAdultos(familia.getNumAdultos() - 1);
-                familiaRepository.updateFamilia(familia);
+        try {
+            familiaRepository.addFamilia(familia);
+
+            // Recuperar el ID generado buscando por el titular (estrategia segura)
+            List<Familia> todas = familiaRepository.findAllFamilias();
+            Familia creada = null;
+            int maxId = -1;
+            for (Familia f : todas) {
+                if (f.getDniTitular().equalsIgnoreCase(familia.getDniTitular())) {
+                    if (f.getId() > maxId) {
+                        maxId = f.getId();
+                        creada = f;
+                    }
+                }
             }
+            return ResponseEntity.status(HttpStatus.CREATED).body(creada != null ? creada : familia);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al crear familia: " + e.getMessage());
         }
-
-        // Desvincular Socio (sin borrarlo)
-        socio.setFamiliaId(null);
-        boolean ok = socioRepository.updateSocio(socio);
-
-        if (!ok) return ResponseEntity.internalServerError().body("Error al desvincular socio.");
-
-        return ResponseEntity.ok("Socio desvinculado correctamente.");
     }
 
-    // 4. Eliminar familia por ID (DELETE)
+    // 4. UPDATE (PATCH)
+    @PatchMapping(path="/{id}", consumes="application/json")
+    public ResponseEntity<?> actualizarFamilia(@PathVariable Integer id, @RequestBody Familia datos){
+        Familia actual = familiaRepository.findFamiliaById(id);
+        if(actual == null) return ResponseEntity.notFound().build();
+
+        if(datos.getNumAdultos() != null && datos.getNumAdultos() >= 0) 
+            actual.setNumAdultos(datos.getNumAdultos());
+        
+        if(datos.getNumNiños() != null && datos.getNumNiños() >= 0) 
+            actual.setNumNiños(datos.getNumNiños());
+
+        try {
+            familiaRepository.updateFamilia(actual);
+            return ResponseEntity.ok(actual);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error al actualizar.");
+        }
+    }
+
+    // 5. VINCULAR SOCIO (Incrementa contador Adultos)
+    @PatchMapping(path = "/{id}/vincular", consumes = "application/json")
+    public ResponseEntity<?> vincularSocio(@PathVariable Integer id, @RequestBody Map<String, String> body) {
+        String dni = body.get("dni");
+        if (dni == null) return ResponseEntity.badRequest().body("Falta el DNI.");
+
+        Familia fam = familiaRepository.findFamiliaById(id);
+        if (fam == null) return ResponseEntity.notFound().build();
+
+        // Validamos que el socio existe, aunque no guardemos la relación en él (limitación BD)
+        Socio socio = socioRepository.findSocioByDni(dni);
+        if (socio == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Socio no encontrado.");
+
+        try {
+            // Solo actualizamos el contador de la familia
+            fam.setNumAdultos(fam.getNumAdultos() + 1);
+            familiaRepository.updateFamilia(fam);
+            
+            return ResponseEntity.ok("Socio vinculado (Contador incrementado).");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error al vincular.");
+        }
+    }
+
+    // 6. DESVINCULAR SOCIO (Decrementa contador Adultos)
+    @PatchMapping(path = "/{id}/desvincular", consumes = "application/json")
+    public ResponseEntity<?> desvincularSocio(@PathVariable Integer id, @RequestBody Map<String, String> body) {
+        String dni = body.get("dni");
+        if (dni == null) return ResponseEntity.badRequest().body("Falta el DNI.");
+
+        Familia fam = familiaRepository.findFamiliaById(id);
+        if (fam == null) return ResponseEntity.notFound().build();
+
+        // Validamos que el socio existe
+        if (!socioRepository.existsSocioByDni(dni)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Socio no encontrado.");
+        }
+
+        try {
+            // Solo decrementamos si hay adultos
+            if (fam.getNumAdultos() > 0) {
+                fam.setNumAdultos(fam.getNumAdultos() - 1);
+                familiaRepository.updateFamilia(fam);
+                return ResponseEntity.ok("Socio desvinculado (Contador decrementado).");
+            } else {
+                return ResponseEntity.badRequest().body("No hay adultos para desvincular.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error al desvincular.");
+        }
+    }
+
+    // 7. DELETE
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteFamilia(@PathVariable Integer id) {
-        Familia familia = familiaRepository.findFamiliaById(id);
-        
-        if(familia != null){
-            // Utilizamos la query definida en sql.properties para borrar por ID
-            // Nota: Asegúrate de que tu repositorio tenga implementado deleteFamiliaresById usando esa query
-            familiaRepository.deleteFamiliaresById(id);
+        if(familiaRepository.findFamiliaById(id) != null){
+            try {
+                familiaRepository.deleteFamilia(id); 
+            } catch (Exception e) {
+                System.err.println("Error al borrar: " + e.getMessage());
+            }
         }
     }
 }
