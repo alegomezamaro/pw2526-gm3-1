@@ -1,15 +1,21 @@
 package es.uco.pw.demo.controller.api;
 
-import es.uco.pw.demo.model.Inscripcion;
-import es.uco.pw.demo.model.InscripcionRepository;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import es.uco.pw.demo.model.InscripcionType;
 import es.uco.pw.demo.model.Familia;
 import es.uco.pw.demo.model.FamiliaRepository;
+import es.uco.pw.demo.model.Inscripcion;
+import es.uco.pw.demo.model.InscripcionRepository;
+import es.uco.pw.demo.model.InscripcionType;
 
 @RestController
 @RequestMapping("/api/inscripciones")
@@ -86,11 +92,10 @@ public class InscripcionApiController {
         }
         else{
             Integer famId = previa.getFamiliaId();
-
-        if(famId != null){
+        if(famId != null && famId > 0){
             Familia famPrevia = familiaRepository.findFamiliaById(famId);
 
-            if(famPrevia.getDniTitular() == dni){
+            if(famPrevia.getDniTitular().equals(dni)){
                 boolean ok = familiaRepository.deleteFamilia(famId);
 
                 if(!ok){
