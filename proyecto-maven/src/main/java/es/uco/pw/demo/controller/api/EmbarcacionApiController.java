@@ -217,7 +217,7 @@ public class EmbarcacionApiController {
     }
 
     // DESVINCULAR PATRON DE UNA EMBARCACION
-    @PatchMapping(path="/desvincular_patron/{matricula}")
+    @PatchMapping(path="patron/{matricula}")
     public ResponseEntity<?> desvincularPatron(@PathVariable String matricula){
 
         Integer patronId = null;
@@ -226,7 +226,20 @@ public class EmbarcacionApiController {
         if ( !ok) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha podido actualizar el Embarcacion con dni: " + matricula);
         } else {
-            return ResponseEntity.ok("Se ha desvinculado el patron de la Embarcacion con Matricula: " + matricula);
+            Embarcacion barcoActualizado = embarcacionRepository.findEmbarcacionByMatricula(matricula);
+            return ResponseEntity.ok(barcoActualizado);
+        }
+    }
+
+    @PatchMapping(path="/{matricula}/{id}")
+    public ResponseEntity<?> vincularPatron(@PathVariable String matricula, @PathVariable Integer id){
+
+        boolean ok = embarcacionRepository.updatePatronAsignado(matricula, id);
+        if ( !ok) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No se ha podido actualizar el Embarcacion con dni: " + matricula);
+        } else {
+            Embarcacion barcoActualizado = embarcacionRepository.findEmbarcacionByMatricula(matricula);
+            return ResponseEntity.ok(barcoActualizado);
         }
     }
 
